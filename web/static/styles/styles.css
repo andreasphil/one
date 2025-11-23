@@ -1,0 +1,50 @@
+:where(*, ::before, ::after) {
+  box-sizing: border-box;
+}
+:where(body) {
+  background-color: light-dark(white, black);
+  color-scheme: light dark;
+  color: light-dark(black, white);
+  font-family: ui-sans-serif, sans-serif;
+  font-size: 1.1em;
+  line-height: 1.6;
+  margin: auto;
+  max-width: 75ch;
+  padding: 4rem 1rem;
+}
+:where(h1, h2, h3, h4, h5, h6) {
+  line-height: 1.2;
+  margin: 2em 0 1rem;
+  text-wrap: balance;
+}
+:where(article, blockquote, header, footer, figure, ol, ul, hr, p, pre) {
+  margin: 1.25em 0;
+}
+:where(ol, ul) {
+  padding-left: 1.5em;
+}
+:where(header nav ul) {
+  column-gap: 1rem;
+  display: inline-flex;
+  flex-wrap: wrap;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  row-gap: 0;
+}
+:where(hr) {
+  border-color: currentColor;
+  border-width: 1px 0 0 0;
+}
+:where(a, a:hover, a:visited, a:active) {
+  color: light-dark(blue, cornflowerblue);
+}
+:where(button, input, select, textarea) {
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+}
+:where(img) {
+  display: block;
+  max-width: 100%;
+}
