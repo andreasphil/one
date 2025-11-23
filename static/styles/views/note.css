@@ -1,0 +1,74 @@
+@scope (.note) {
+  .container {
+    margin-block: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .reader {
+    --disabled-opacity: 1;
+
+    :is(h1, h2):first-child {
+      border-bottom: var(--border-width) solid var(--c-border);
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+    }
+
+    .parent-note-link {
+      --c-link: var(--primary);
+      --c-link-hover: var(--c-fg);
+
+      align-items: center;
+      display: flex;
+      font-size: var(--font-size-small);
+      font-weight: var(--font-weight-medium);
+      gap: 0.75ch;
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-note {
+      align-items: center;
+      color: var(--c-fg-variant);
+      display: none;
+      gap: 0.75ch;
+      justify-content: center;
+      margin-top: 3rem;
+    }
+
+    &:has(section :is(h1, h2):only-child) .empty-note {
+      display: flex;
+    }
+  }
+
+  .child-notes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    ul {
+      list-style-type: none;
+      margin-block: 0;
+      margin-inline: -1rem;
+      padding: 0;
+    }
+
+    li {
+      align-items: center;
+      background: var(--c-surface-variant-bg);
+      display: flex;
+      gap: 0.75ch;
+      padding: 0.75rem 1rem;
+
+      &:first-child {
+        border-top-left-radius: var(--border-radius);
+        border-top-right-radius: var(--border-radius);
+      }
+
+      &:last-child {
+        border-bottom-left-radius: var(--border-radius);
+        border-bottom-right-radius: var(--border-radius);
+      }
+    }
+  }
+}

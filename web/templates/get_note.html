@@ -1,0 +1,48 @@
+{{template "sidebar_layout.html" .}}
+
+{{define "sidebar"}}
+  {{template "navigation.html" .}}
+{{end}}
+
+{{define "content"}}
+<article class="note">
+  <div class="container">
+    <div class="reader">
+      {{if and .Data.Note.Date (not (or .Data.Note.IsDailyNote .Data.Note.Date.IsZero)) }}
+      <a href='/notes/{{.Data.Note.Date.Format "2006-01-02"}}' class="parent-note-link">
+        {{template "calendar.svg"}}
+        {{.Data.Note.Date.Format "02.01.2006"}}
+      </a>
+      {{end}}
+
+      <section class="trim">{{.Data.Html}}</section>
+
+      <div class="empty-note">
+        {{template "ghost.svg"}}
+        This note has no text.
+      </div>
+    </div>
+
+    {{if .Data.Note.Children}}
+    <div class="child-notes">
+      <span class="font-weight-medium color-primary caps font-size-small">On this day</span>
+      <ul class="child-note-list">
+        {{range .Data.Note.Children}}
+        <li>
+          {{if .Icon}}
+            <span class="glow" data-content="{{.Icon}}">{{.Icon}}</span>
+          {{else}}
+            {{template "sticky-note.svg"}}
+          {{end}}
+
+          <a href="/notes/{{.Slug}}" class="clamp">
+            {{.Title}}
+          </a>
+        </li>
+        {{end}}
+      </ul>
+      {{end}}
+    </div>
+  </div>
+</article>
+{{end}}

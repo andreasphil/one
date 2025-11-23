@@ -1,0 +1,53 @@
+{{$currentUrl := .CurrentUrl}}
+<nav>
+  <strong>One</strong>
+  <ul>
+    <li>
+      <a
+        href="/notes/"
+        {{if eq "/notes/" $currentUrl}}aria-current="page"{{end}}
+      >
+        {{template "sticky-note.svg"}}
+        Notes
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        {{template "paperclip.svg"}}
+        Attachments
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        {{template "calendar.svg"}}
+        Calendar
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        {{template "tag.svg"}}
+        Tags
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        {{template "search.svg"}}
+        Search
+      </a>
+    </li>
+
+    <li><hr /></li>
+
+    <li class="caps font-size-small color-primary font-weight-medium">
+      Saved
+    </li>
+
+    <li has-fallback="empty">
+      <div></div>
+      <div fallback-for="empty">
+        <span>{{template "sticker.svg"}}</span>
+        <p>Nothing saved.</p>
+      </div>
+    </li>
+  </ul>
+</nav>

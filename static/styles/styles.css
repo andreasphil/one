@@ -1,0 +1,33 @@
+@layer base, components, utils;
+
+@import "/static/common/design-system.css" layer(base);
+@import "/static/common/design-system-utils.css" layer(utils);
+
+@import "shared/sidebar_layout.css" layer(components);
+@import "views/notes.css" layer(components);
+@import "views/note.css" layer(components);
+
+@layer base {
+  :root {
+    --tint: 320;
+    --body-width: auto;
+    --body-padding-x: 0px;
+    --body-padding-y: 0px;
+  }
+
+  /* TODO: Move to DS */
+  aside > nav > ul > li:not(:has(a, hr)) {
+    padding: 0.375rem 0.75rem;
+  }
+
+  article {
+    min-height: calc(100dvh - calc(2 * var(--outer-spacing-y)));
+  }
+}
+
+@layer components {
+  .container {
+    max-width: 40rem;
+    margin-inline: auto;
+  }
+}

@@ -1,0 +1,10 @@
+{{template "base.html" .}} {{define "page"}}
+<div class="layout">
+  <div class="sidebar">
+    <aside>{{template "sidebar" .}}</aside>
+  </div>
+  <div class="content">
+    <main>{{template "content" .}}</main>
+  </div>
+</div>
+{{end}}

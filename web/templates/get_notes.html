@@ -1,0 +1,48 @@
+{{template "sidebar_layout.html" .}}
+
+{{define "sidebar"}}
+  {{template "navigation.html" .}}
+{{end}}
+
+{{define "content"}}
+<div has-fallback class="notes">
+  <h1 class="no-margin font-size-base">Notes</h1>
+  <ul>
+    {{range .Data.Notes}}
+    <li>
+      <a class="card" href="/notes/{{.Slug}}">
+        <header>
+          {{if .Icon}}
+            <span class="glow" data-content="{{.Icon}}">{{.Icon}}</span>
+          {{else}}
+            {{template "sticky-note.svg"}}
+          {{end}}
+        </header>
+        <p class="clamp" style="--clamp: 2">{{.Title}}</p>
+        <p class="clamp font-weight-normal" style="--clamp: 3">{{.Excerpt}}</p>
+      </a>
+    </li>
+    {{range .Children}}
+    <li>
+      <a class="card" href="/notes/{{.Slug}}">
+        <header>
+          {{if .Icon}}
+            <span class="glow" data-content="{{.Icon}}">{{.Icon}}</span>
+          {{else}}
+            {{template "sticky-note.svg"}}
+          {{end}}
+        </header>
+        <p class="clamp" style="--clamp: 2">{{.Title}}</p>
+        <p class="clamp font-weight-normal" style="--clamp: 3">{{.Excerpt}}</p>
+      </a>
+    </li>
+    {{end}}
+    {{end}}
+  </ul>
+
+  <div fallback-for="empty" style="margin-block: 4rem">
+    <span>{{template "sticker.svg"}}</span>
+    <p>Welcome!</p>
+  </div>
+</div>
+{{end}}
