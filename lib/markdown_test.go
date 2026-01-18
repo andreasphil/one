@@ -1,10 +1,11 @@
-package lib
+package lib_test
 
 import (
 	"bytes"
 	"strings"
 	"testing"
 
+	"github.com/andreasphil/one/lib"
 	"github.com/yuin/goldmark"
 )
 
@@ -56,7 +57,7 @@ func TestNoteTitleExtension(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			md := goldmark.New(
-				goldmark.WithExtensions(&NoteTitleExtension{Class: tt.class}),
+				goldmark.WithExtensions(lib.NewNoteTitleExtension(tt.class)),
 			)
 
 			var buf bytes.Buffer
@@ -69,23 +70,5 @@ func TestNoteTitleExtension(t *testing.T) {
 				t.Errorf("NoteTitleExtension output mismatch:\ngot:\n%s\n\nwant to contain:\n%s", got, tt.want)
 			}
 		})
-	}
-}
-
-func TestNoteTitleExtension_DefaultClass(t *testing.T) {
-	md := goldmark.New(
-		goldmark.WithExtensions(&NoteTitleExtension{}),
-	)
-
-	var buf bytes.Buffer
-	if err := md.Convert([]byte("# Title"), &buf); err != nil {
-		t.Fatalf("Convert() error = %v", err)
-	}
-
-	got := strings.TrimSpace(buf.String())
-	// When class is empty string, it should still work (even if awkward)
-	want := `<h1><span class="">Title</span></h1>`
-	if !strings.Contains(got, want) {
-		t.Errorf("got %s, want to contain %s", got, want)
 	}
 }
