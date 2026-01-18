@@ -54,10 +54,14 @@ func (n Note) Slug() string {
 	return slug.String()
 }
 
+func (n Note) Content() string {
+	titleExp := regexp.MustCompile(`^#{1,2}\s+.+\n`)
+	content := titleExp.ReplaceAllString(n.Raw, "")
+	return strings.TrimSpace(content)
+}
+
 func (n Note) Excerpt() string {
-	textExp := regexp.MustCompile(`^#{1,2}.+\n{1,2}`)
-	excerpt := textExp.ReplaceAllString(n.Raw, "")
-	words := strings.Split(excerpt, " ")
+	words := strings.Split(n.Content(), " ")
 	return strings.Join(words[0:int(math.Min(float64(len(words)), 40))], " ")
 }
 

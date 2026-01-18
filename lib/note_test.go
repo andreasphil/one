@@ -99,6 +99,57 @@ func TestSlug(t *testing.T) {
 	}
 }
 
+func TestContent(t *testing.T) {
+	type testcase struct {
+		name     string
+		raw      string
+		expected string
+	}
+
+	testcases := []testcase{
+		{
+			name:     "basic note with h1 title and content",
+			raw:      "# My Title\n\nThis is the content",
+			expected: "This is the content",
+		},
+		{
+			name:     "child note with h2 title and content",
+			raw:      "## Child Note\n\nThis is child content",
+			expected: "This is child content",
+		},
+		{
+			name:     "only title, no content",
+			raw:      "# Just a title\n",
+			expected: "",
+		},
+		{
+			name:     "multiline content",
+			raw:      "# Title\n\nLine 1\nLine 2\nLine 3",
+			expected: "Line 1\nLine 2\nLine 3",
+		},
+		{
+			name:     "content with level 2 heading preserved",
+			raw:      "# Title\n\n## Subtitle\n\nContent",
+			expected: "## Subtitle\n\nContent",
+		},
+		{
+			name:     "empty raw content",
+			raw:      "",
+			expected: "",
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			note := Note{Raw: tc.raw}
+			result := note.Content()
+			if result != tc.expected {
+				t.Errorf("expected %q, got %q", tc.expected, result)
+			}
+		})
+	}
+}
+
 func TestExcerpt(t *testing.T) {
 	type testcase struct {
 		name     string
@@ -133,9 +184,9 @@ func TestExcerpt(t *testing.T) {
 			expected: "",
 		},
 		{
-			name:     "heading with multiple newlines",
+			name:     "trims whitespace",
 			raw:      "# Title\n\n\nContent after newlines",
-			expected: "\nContent after newlines",
+			expected: "Content after newlines",
 		},
 	}
 
