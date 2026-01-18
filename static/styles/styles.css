@@ -23,6 +23,14 @@
   article {
     min-height: calc(100dvh - calc(2 * var(--outer-spacing-y)));
   }
+
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-group(*) {
+    animation-duration: calc(var(--transition-duration) * 1);
+  }
 }
 
 @layer components {

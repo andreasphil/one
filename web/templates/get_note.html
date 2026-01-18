@@ -7,9 +7,9 @@
 {{define "content"}}
 <article class="note">
   <div class="container">
-    <div class="reader">
+    <div class="text">
       {{if and .Data.Note.Date (not (or .Data.Note.IsDailyNote .Data.Note.Date.IsZero)) }}
-      <a href='/notes/{{.Data.Note.Date.Format "2006-01-02"}}' class="parent-note-link">
+      <a href='/notes/{{.Data.Note.Date.Format "2006-01-02"}}' class="parent-link">
         {{template "calendar.svg"}}
         {{.Data.Note.Date.Format "02.01.2006"}}
       </a>
@@ -17,16 +17,16 @@
 
       <section class="trim">{{.Data.Html}}</section>
 
-      <div class="empty-note">
+      <div class="is-empty">
         {{template "ghost.svg"}}
         This note has no text.
       </div>
     </div>
 
     {{if .Data.Note.Children}}
-    <div class="child-notes">
+    <div class="children">
       <span class="font-weight-medium color-primary caps font-size-small">On this day</span>
-      <ul class="child-note-list">
+      <ul>
         {{range .Data.Note.Children}}
         <li>
           {{if .Icon}}
