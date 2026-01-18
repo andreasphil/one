@@ -3,6 +3,7 @@ package service
 import (
 	"bytes"
 
+	"github.com/andreasphil/one/lib"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
 )
@@ -12,7 +13,12 @@ type MarkdownService struct {
 }
 
 func NewMarkdownService() MarkdownService {
-	markdown := goldmark.New(goldmark.WithExtensions(extension.GFM, extension.Typographer))
+	markdown := goldmark.New(goldmark.WithExtensions(
+		extension.GFM,
+		extension.Typographer,
+		lib.NewNoteTitleExtension("title"),
+	))
+
 	return MarkdownService{renderer: markdown}
 }
 
