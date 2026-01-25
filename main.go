@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/andreasphil/one/cli"
 	"github.com/andreasphil/one/service"
 	"github.com/andreasphil/one/util"
 	"github.com/andreasphil/one/web"
@@ -57,5 +58,6 @@ func serve(config Config) {
 }
 
 func main() {
-	serve(Config{Port: "8080", Path: "test.md"})
+	args := cli.ReadArgs()
+	serve(Config{Port: args.Port, Path: args.Filename})
 }

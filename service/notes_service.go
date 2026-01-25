@@ -21,6 +21,7 @@ func NewNotesService(path string) (*NotesService, error) {
 		index: notes,
 	}
 
+	util.Infof("read notes from %v", path)
 	return &service, nil
 }
 
