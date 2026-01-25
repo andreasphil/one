@@ -1,0 +1,28 @@
+.breadcrumbs {
+  display: flex;
+  gap: 0.75ch;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    align-items: center;
+    display: inline-flex;
+    gap: 0.75ch;
+
+    & + & {
+      margin-top: 0;
+
+      &::before {
+        color: var(--c-fg-variant);
+        content: "/";
+      }
+    }
+  }
+
+  h1 {
+    font-size: var(--font-size-base);
+    line-height: var(--line-height);
+    margin: 0;
+  }
+}

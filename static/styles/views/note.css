@@ -1,6 +1,6 @@
 @scope (.note-view) {
   .container {
-    margin-block: 3rem;
+    margin-block: 2.375rem;
     display: flex;
     flex-direction: column;
     gap: 3rem;

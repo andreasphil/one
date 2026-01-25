@@ -9,11 +9,12 @@ import (
 )
 
 type ServerInit struct {
-	Static           fs.FS
-	Port             string
-	NotesLoader      adapter.NotesLoader
-	NoteLoader       adapter.NoteLoader
-	MarkdownRenderer adapter.MarkdownRenderer
+	Static            fs.FS
+	Port              string
+	NotesLoader       adapter.NotesLoader
+	NoteLoader        adapter.NoteLoader
+	NotesByDateFinder adapter.NotesByDateFinder
+	MarkdownRenderer  adapter.MarkdownRenderer
 }
 
 func NewServer(init ServerInit) http.Server {
@@ -22,6 +23,9 @@ func NewServer(init ServerInit) http.Server {
 	router.Handle("/{$}", http.RedirectHandler("/notes/", http.StatusTemporaryRedirect))
 	router.HandleFunc("GET /notes/{$}", getNotes(init.NotesLoader))
 	router.HandleFunc("GET /notes/{slug}", getNote(init.NoteLoader, init.NotesLoader, init.MarkdownRenderer))
+
+	router.Handle("GET /calendar/{$}", getCalendar())
+	router.HandleFunc("GET /calendar/{year}/{month}", getCalendarMonth(init.NotesByDateFinder))
 
 	router.Handle("GET /attachments/{$}", getHelloWorld())
 	router.Handle("GET /tags/{$}", getHelloWorld())

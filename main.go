@@ -33,11 +33,12 @@ func serve(config Config) {
 	markdownService := service.NewMarkdownService()
 
 	server := web.NewServer(web.ServerInit{
-		Static:           static,
-		Port:             config.Port,
-		NotesLoader:      notesService,
-		NoteLoader:       notesService,
-		MarkdownRenderer: &markdownService,
+		Static:            static,
+		Port:              config.Port,
+		NotesLoader:       notesService,
+		NoteLoader:        notesService,
+		NotesByDateFinder: notesService,
+		MarkdownRenderer:  &markdownService,
 	})
 
 	go func() {

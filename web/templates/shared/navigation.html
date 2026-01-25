@@ -21,7 +21,10 @@
       </a>
     </li>
     <li>
-      <a href="#">
+      <a
+        href="/calendar/"
+        {{if hasPrefix $currentUrl "/calendar/"}}aria-current="page"{{end}}
+      >
         {{template "calendar.svg"}}
         Calendar
       </a>

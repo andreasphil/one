@@ -3,7 +3,9 @@
 @import "/static/common/design-system.css" layer(base);
 @import "/static/common/design-system-utils.css" layer(utils);
 
+@import "components/breadcrumbs.css" layer(components);
 @import "shared/sidebar_layout.css" layer(components);
+@import "views/calendar.css" layer(components);
 @import "views/hello_world.css" layer(components);
 @import "views/notes.css" layer(components);
 @import "views/note.css" layer(components);

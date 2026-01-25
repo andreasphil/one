@@ -1,6 +1,9 @@
 @scope (.notes-view) {
   :scope {
-    margin: 4rem 0 4rem 1rem;
+    display: grid;
+    gap: 1.25rem;
+    grid-template-rows: min-content auto;
+    padding: 4rem 0 4rem 1rem;
   }
 
   ul {
@@ -10,7 +13,7 @@
     grid-auto-rows: 1fr;
     grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
     list-style-type: none;
-    margin-top: 1.25rem;
+    margin: 0;
     padding: 0;
   }
 
