@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/andreasphil/one/lib"
+	"github.com/andreasphil/one/util"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -210,48 +211,48 @@ func TestExtractTags(t *testing.T) {
 	type testcase struct {
 		name     string
 		input    string
-		expected lib.Set[string]
+		expected util.Set[string]
 	}
 
 	testcases := []testcase{
 		{
 			name:     "no tags",
 			input:    "# Note 1\n\nLine 1\n",
-			expected: lib.NewSet[string](),
+			expected: util.NewSet[string](),
 		},
 		{
 			name:     "tag in title",
 			input:    "# Note 1 #tag\n",
-			expected: lib.NewSetFrom([]string{"#tag"}),
+			expected: util.NewSetFrom([]string{"#tag"}),
 		},
 		{
 			name:     "tag in body",
 			input:    "# Note 1\n\nLine 1 #tag\n",
-			expected: lib.NewSetFrom([]string{"#tag"}),
+			expected: util.NewSetFrom([]string{"#tag"}),
 		},
 		{
 			name:     "multiple tags",
 			input:    "# Note 1 #tag_1\n\nLine 1 #tag_2\n",
-			expected: lib.NewSetFrom([]string{"#tag_1", "#tag_2"}),
+			expected: util.NewSetFrom([]string{"#tag_1", "#tag_2"}),
 		},
 		{
 			name:     "multiple tags in one line",
 			input:    "# Note 1\n\nLine #tag_1 1 #tag_2\n",
-			expected: lib.NewSetFrom([]string{"#tag_1", "#tag_2"}),
+			expected: util.NewSetFrom([]string{"#tag_1", "#tag_2"}),
 		},
 		{
 			name:     "duplicate tags",
 			input:    "# Note 1\n\nLine 1 #tag_1\n\nLine 2 #tag_1",
-			expected: lib.NewSetFrom([]string{"#tag_1"}),
+			expected: util.NewSetFrom([]string{"#tag_1"}),
 		},
 		{
 			name:     "tags in fenced code block",
 			input:    "# Note 1\n\n```\n#tag_in_code\n```\n",
-			expected: lib.NewSet[string](),
+			expected: util.NewSet[string](),
 		},
 	}
 
-	exportSetInternals := cmp.AllowUnexported(lib.NewSet[string]())
+	exportSetInternals := cmp.AllowUnexported(util.NewSet[string]())
 
 	for _, i := range testcases {
 		t.Run(i.name, func(t *testing.T) {

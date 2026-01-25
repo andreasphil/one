@@ -16,7 +16,7 @@ type Note struct {
 	Title    string
 	Icon     string
 	Date     time.Time
-	Tags     Set[string]
+	Tags     util.Set[string]
 	Children []Note
 	Raw      string
 }
@@ -24,7 +24,7 @@ type Note struct {
 func NewNote(title string) Note {
 	return Note{
 		Title: title,
-		Tags:  NewSet[string](),
+		Tags:  util.NewSet[string](),
 	}
 }
 

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/andreasphil/one/lib"
+	"github.com/andreasphil/one/util"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -334,7 +335,7 @@ func TestFindRecursive(t *testing.T) {
 					t.Errorf("expected slug %q, got %q", tc.slug, result.Slug())
 				}
 			} else {
-				exportSetInternals := cmp.AllowUnexported(lib.NewSet[string]())
+				exportSetInternals := cmp.AllowUnexported(util.NewSet[string]())
 				if !cmp.Equal(result, lib.Note{}, exportSetInternals) {
 					t.Errorf("expected empty Note{}, got %+v", result)
 				}

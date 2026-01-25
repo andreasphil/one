@@ -1,14 +1,14 @@
-package lib_test
+package util_test
 
 import (
 	"slices"
 	"testing"
 
-	"github.com/andreasphil/one/lib"
+	"github.com/andreasphil/one/util"
 )
 
 func TestNewSet(t *testing.T) {
-	result := lib.NewSet[string]()
+	result := util.NewSet[string]()
 
 	if result.Len() != 0 {
 		t.Errorf("constructor did not return an empty set")
@@ -17,7 +17,7 @@ func TestNewSet(t *testing.T) {
 
 func TestNewSetFrom(t *testing.T) {
 	values := []string{"one", "two"}
-	result := lib.NewSetFrom(values)
+	result := util.NewSetFrom(values)
 
 	for _, expected := range values {
 		if !result.Has(expected) {
@@ -28,7 +28,7 @@ func TestNewSetFrom(t *testing.T) {
 
 func TestAddOne(t *testing.T) {
 	values := []string{"one"}
-	set := lib.NewSet[string]()
+	set := util.NewSet[string]()
 	added := set.Add(values...)
 
 	if added != len(values) {
@@ -42,7 +42,7 @@ func TestAddOne(t *testing.T) {
 
 func TestAddMultiple(t *testing.T) {
 	values := []string{"one", "two", "three"}
-	set := lib.NewSet[string]()
+	set := util.NewSet[string]()
 	added := set.Add(values...)
 
 	if added != len(values) {
@@ -56,7 +56,7 @@ func TestAddMultiple(t *testing.T) {
 
 func TestAddDuplicate(t *testing.T) {
 	values := []string{"one", "two", "two"}
-	set := lib.NewSet[string]()
+	set := util.NewSet[string]()
 	added := set.Add(values...)
 
 	if added != 2 {
@@ -66,7 +66,7 @@ func TestAddDuplicate(t *testing.T) {
 
 func TestAddExisting(t *testing.T) {
 	values := []string{"one", "two", "three"}
-	set := lib.NewSetFrom([]string{"three"})
+	set := util.NewSetFrom([]string{"three"})
 	added := set.Add(values...)
 
 	if added != 2 {
@@ -75,7 +75,7 @@ func TestAddExisting(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	set := lib.NewSetFrom([]string{"one", "two"})
+	set := util.NewSetFrom([]string{"one", "two"})
 	deleted := set.Delete("one")
 
 	if deleted != 1 {
@@ -88,7 +88,7 @@ func TestDelete(t *testing.T) {
 }
 
 func TestNoopDelete(t *testing.T) {
-	set := lib.NewSetFrom([]string{"one", "two"})
+	set := util.NewSetFrom([]string{"one", "two"})
 	deleted := set.Delete("three")
 
 	if deleted != 0 {
@@ -101,7 +101,7 @@ func TestNoopDelete(t *testing.T) {
 }
 
 func TestDeleteMultiple(t *testing.T) {
-	set := lib.NewSetFrom([]string{"one", "two", "three"})
+	set := util.NewSetFrom([]string{"one", "two", "three"})
 	deleted := set.Delete("one", "three")
 
 	if deleted != 2 {
@@ -114,7 +114,7 @@ func TestDeleteMultiple(t *testing.T) {
 }
 
 func TestHasReturnsTrue(t *testing.T) {
-	set := lib.NewSet[string]()
+	set := util.NewSet[string]()
 	set.Add("one")
 	hasValue := set.Has("one")
 
@@ -124,7 +124,7 @@ func TestHasReturnsTrue(t *testing.T) {
 }
 
 func TestHasReturnsFalse(t *testing.T) {
-	set := lib.NewSet[string]()
+	set := util.NewSet[string]()
 	set.Add("one")
 	hasValue := set.Has("two")
 
@@ -135,7 +135,7 @@ func TestHasReturnsFalse(t *testing.T) {
 
 func TestToSlice(t *testing.T) {
 	values := []string{"one", "two"}
-	set := lib.NewSetFrom(values)
+	set := util.NewSetFrom(values)
 	result := set.ToSlice()
 
 	if len(result) != len(values) {
@@ -150,7 +150,7 @@ func TestToSlice(t *testing.T) {
 }
 
 func TestLen(t *testing.T) {
-	set := lib.NewSetFrom([]string{"one", "two"})
+	set := util.NewSetFrom([]string{"one", "two"})
 	length := set.Len()
 
 	if length != 2 {
