@@ -5,7 +5,7 @@
 {{end}}
 
 {{define "content"}}
-<article class="note">
+<article class="note-view">
   <div class="container">
     <div class="text">
       {{if and .Data.Note.Date (not (or .Data.Note.IsDailyNote .Data.Note.Date.IsZero)) }}
