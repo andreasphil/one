@@ -1,0 +1,5 @@
+@scope (.hello-world-view) {
+  :scope {
+    padding: 4rem 0 4rem 1rem;
+  }
+}

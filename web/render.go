@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strings"
 )
 
 type data[T any] struct {
@@ -17,7 +18,11 @@ type nilPage data[struct{}]
 type renderFunc[T any] func(http.ResponseWriter, data[T]) error
 
 func newRenderFunc[T any](name string) renderFunc[T] {
-	t := template.Must(template.ParseGlob("./web/templates/shared/*.html"))
+	helpers := template.FuncMap{
+		"hasPrefix": strings.HasPrefix,
+	}
+
+	t := template.Must(template.New("").Funcs(helpers).ParseGlob("./web/templates/shared/*.html"))
 	template.Must(t.ParseGlob("./web/templates/icons/*.svg"))
 
 	fullName := fmt.Sprintf("./web/templates/%v", name)

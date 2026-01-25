@@ -5,14 +5,17 @@
     <li>
       <a
         href="/notes/"
-        {{if eq "/notes/" $currentUrl}}aria-current="page"{{end}}
+        {{if hasPrefix $currentUrl "/notes/"}}aria-current="page"{{end}}
       >
         {{template "sticky-note.svg"}}
         Notes
       </a>
     </li>
     <li>
-      <a href="#">
+      <a
+        href="/attachments/"
+        {{if hasPrefix $currentUrl "/attachments/"}}aria-current="page"{{end}}
+      >
         {{template "paperclip.svg"}}
         Attachments
       </a>
@@ -24,13 +27,19 @@
       </a>
     </li>
     <li>
-      <a href="#">
+      <a
+        href="/tags/"
+        {{if hasPrefix $currentUrl "/tags/"}}aria-current="page"{{end}}
+      >
         {{template "tag.svg"}}
         Tags
       </a>
     </li>
     <li>
-      <a href="#">
+      <a
+        href="/search/"
+        {{if hasPrefix $currentUrl "/search/"}}aria-current="page"{{end}}
+      >
         {{template "search.svg"}}
         Search
       </a>
