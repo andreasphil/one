@@ -9,10 +9,6 @@
   .text {
     --disabled-opacity: 1;
 
-    :is(.title, .parent-link) {
-      view-transition-name: note-title;
-    }
-
     :is(h1, h2):first-child {
       border-bottom: var(--border-width) solid var(--c-border);
       margin-bottom: 2rem;
