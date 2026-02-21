@@ -1,0 +1,8 @@
+[tools]
+air = "latest"
+
+[tasks.dev]
+usage = """
+  arg "<file>" default="test.md"
+"""
+run = "air ${usage_file}"
