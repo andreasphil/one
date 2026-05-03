@@ -1,3 +1,7 @@
+.antialiased {
+  -webkit-font-smoothing: antialiased;
+}
+
 .font-mono {
   font-family: var(--font-family-mono);
   font-size: var(--font-size-mono);
@@ -183,14 +187,6 @@
 
 .margin-y-outer-spacing {
   margin-block: var(--outer-spacing-y);
-}
-
-.no-padding {
-  padding: 0;
-}
-
-.padding-y-body {
-  padding-block: var(--body-padding-y);
 }
 
 .visually-hidden:not(:focus):not(:active) {

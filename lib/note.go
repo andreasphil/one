@@ -60,6 +60,10 @@ func (n Note) Content() string {
 	return strings.TrimSpace(content)
 }
 
+func (n Note) IsEmpty() bool {
+	return len(n.Content()) == 0
+}
+
 func (n Note) Excerpt() string {
 	words := strings.Split(n.Content(), " ")
 	return strings.Join(words[0:int(math.Min(float64(len(words)), 40))], " ")

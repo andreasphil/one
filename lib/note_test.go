@@ -343,3 +343,38 @@ func TestFindRecursive(t *testing.T) {
 		})
 	}
 }
+
+func TestIsEmpty(t *testing.T) {
+	type testcase struct {
+		name     string
+		note     lib.Note
+		expected bool
+	}
+
+	testcases := []testcase{
+		{
+			name:     "returns that note is empty",
+			note:     lib.Note{Raw: "# Title\n\n"},
+			expected: true,
+		},
+		{
+			name:     "returns that note with title is empty",
+			note:     lib.Note{Raw: ""},
+			expected: true,
+		},
+		{
+			name:     "returns that note has content",
+			note:     lib.Note{Raw: "# Title\n\nContent"},
+			expected: false,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := tc.note.IsEmpty()
+			if result != tc.expected {
+				t.Errorf("expected %v, got %v", tc.expected, result)
+			}
+		})
+	}
+}

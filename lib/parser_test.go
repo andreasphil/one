@@ -250,6 +250,16 @@ func TestExtractTags(t *testing.T) {
 			input:    "# Note 1\n\n```\n#tag_in_code\n```\n",
 			expected: util.NewSet[string](),
 		},
+		{
+			name:     "at the start of a line",
+			input:    "# Note 1\n\n#tag_1 Line 1",
+			expected: util.NewSetFrom([]string{"#tag_1"}),
+		},
+		{
+			name:     "anchors in links",
+			input:    "# Note 1\n\n[A link](https://example.com/#not_a_tag)",
+			expected: util.NewSet[string](),
+		},
 	}
 
 	exportSetInternals := cmp.AllowUnexported(util.NewSet[string]())

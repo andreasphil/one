@@ -1,0 +1,14 @@
+{{template "base.html" .}} {{define "page"}}
+<header>
+  <nav>
+    <ul>
+      <li>One</li>
+      <li>
+        <a href="/notes">Notes</a>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<main>{{template "content" .}}</main>
+{{end}}

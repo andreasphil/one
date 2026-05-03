@@ -1,48 +1,32 @@
-{{template "sidebar_layout.html" .}}
+{{template "layout.html" .}} {{define "content"}}
+<div>
+  {{if and .Data.Note.Date (not (or .Data.Note.IsDailyNote .Data.Note.Date.IsZero)) }}
+  <a href='/notes/{{.Data.Note.Date.Format "2006-01-02"}}'>
+    {{.Data.Note.Date.Format "02.01.2006"}}
+  </a>
+  {{end}}
 
-{{define "sidebar"}}
-  {{template "navigation.html" .}}
-{{end}}
+  <section>{{.Data.Html}}</section>
 
-{{define "content"}}
-<article class="note-view">
-  <div class="container">
-    <div class="text">
-      {{if and .Data.Note.Date (not (or .Data.Note.IsDailyNote .Data.Note.Date.IsZero)) }}
-      <a href='/notes/{{.Data.Note.Date.Format "2006-01-02"}}' class="parent-link">
-        {{template "calendar.svg"}}
-        {{.Data.Note.Date.Format "02.01.2006"}}
-      </a>
+  {{if .Data.Note.IsEmpty}}
+  <div>This note has no text.</div>
+  {{end}}
+</div>
+
+{{if .Data.Note.Children}}
+<div>
+  <span>On this day</span>
+  <ul>
+    {{range .Data.Note.Children}}
+    <li>
+      {{if .Icon}}
+      <span>{{.Icon}}</span>
       {{end}}
 
-      <section class="trim">{{.Data.Html}}</section>
-
-      <div class="is-empty">
-        {{template "ghost.svg"}}
-        This note has no text.
-      </div>
-    </div>
-
-    {{if .Data.Note.Children}}
-    <div class="children">
-      <span class="font-weight-medium color-primary caps font-size-small">On this day</span>
-      <ul>
-        {{range .Data.Note.Children}}
-        <li>
-          {{if .Icon}}
-            <span class="glow" data-content="{{.Icon}}">{{.Icon}}</span>
-          {{else}}
-            {{template "sticky-note.svg"}}
-          {{end}}
-
-          <a href="/notes/{{.Slug}}" class="clamp">
-            {{.Title}}
-          </a>
-        </li>
-        {{end}}
-      </ul>
-      {{end}}
-    </div>
-  </div>
-</article>
+      <a href="/notes/{{.Slug}}"> {{.Title}} </a>
+    </li>
+    {{end}}
+  </ul>
+  {{end}}
+</div>
 {{end}}

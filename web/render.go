@@ -23,7 +23,7 @@ func newRenderFunc[T any](name string) renderFunc[T] {
 	}
 
 	t := template.Must(template.New("").Funcs(helpers).ParseGlob("./web/templates/shared/*.html"))
-	template.Must(t.ParseGlob("./web/templates/icons/*.svg"))
+	// template.Must(t.ParseGlob("./web/templates/icons/*.svg"))
 
 	fullName := fmt.Sprintf("./web/templates/%v", name)
 	template.Must(t.ParseFiles(fullName))

@@ -50,7 +50,7 @@ func Parse(input io.Reader) ([]Note, error) {
 	var root *Note
 	var current *Note
 
-	tagsExp := regexp.MustCompile(`#\w+`)
+	tagsExp := regexp.MustCompile(`(^|\s)#\w+`)
 	dateExp := regexp.MustCompile(`^# (\d{2}\.\d{2}\.\d{4})`)
 
 	var isFencedBlock bool = false
@@ -86,8 +86,8 @@ func Parse(input io.Reader) ([]Note, error) {
 
 			// Parse tags
 			tags := tagsExp.FindAllString(line, -1)
-			if len(tags) > 0 {
-				current.Tags.Add(tags...)
+			for _, tag := range tags {
+				current.Tags.Add(strings.TrimSpace(tag))
 			}
 
 			// Parse date, only in note name for now
