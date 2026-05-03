@@ -18,11 +18,20 @@ func getNotes(loader adapter.NotesLoader) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		notes := loader.LoadNotes()
+		filter := r.URL.Query().Get("filter")
+		if filter == "" {
+			filter = "all"
+		}
+
+		search := r.URL.Query().Get("q")
 
 		err := render(w, data[notesPageData]{
-			Title:      "Notes",
-			CurrentUrl: r.URL.Path,
-			Data:       notesPageData{Notes: notes},
+			Title:         "Notes",
+			CurrentUrl:    r.URL.Path,
+			CurrentFilter: filter,
+			CurrentSearch: search,
+			CurrentQuery:  r.URL.RawQuery,
+			Data:          notesPageData{Notes: notes},
 		})
 
 		if err != nil {
@@ -43,6 +52,11 @@ func getNote(noteLoader adapter.NoteLoader, notesLoader adapter.NotesLoader, ren
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		slug := r.PathValue("slug")
+		search := r.URL.Query().Get("q")
+		filter := r.URL.Query().Get("filter")
+		if filter == "" {
+			filter = "all"
+		}
 
 		notes := notesLoader.LoadNotes()
 
@@ -58,8 +72,11 @@ func getNote(noteLoader adapter.NoteLoader, notesLoader adapter.NotesLoader, ren
 		}
 
 		err = render(w, data[notePageData]{
-			Title:      note.Title,
-			CurrentUrl: r.URL.Path,
+			Title:         note.Title,
+			CurrentUrl:    r.URL.Path,
+			CurrentSearch: search,
+			CurrentFilter: filter,
+			CurrentQuery:  r.URL.RawQuery,
 			Data: notePageData{
 				Notes: notes,
 				Note:  note,

@@ -3,10 +3,31 @@
 @import "/static/common/design-system.css" layer(base);
 @import "/static/common/design-system-utils.css" layer(utils);
 
+@import "components/breadcrumbs.css";
+@import "components/note.css";
+@import "components/notes_list.css";
+
+@import "shared/layout.css";
+
 @layer base {
   :root {
-    --body-padding-x: 1rem;
-    --body-padding-y: 1rem;
+    --body-padding-x: 0px;
+    --body-padding-y: 0px;
     --body-width: unset;
+    --font-size: clamp(14px, 0.187vw + 13.308px, 16px);
+    --outer-spacing-y: 0px;
+    --tint: 330;
+  }
+
+  article {
+    --outer-spacing-y: 1.5rem;
+  }
+
+  /* Fixes ----------------------------------------------- */
+
+  .card {
+    header {
+      margin-bottom: 1.5lh;
+    }
   }
 }

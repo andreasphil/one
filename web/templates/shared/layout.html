@@ -1,3 +1,6 @@
-{{ template "base.html" . }} {{ define "page" }}
-<main>{{ template "content" . }}</main>
+{{ template "base.html" . }}
+{{ define "page" }}
+  <main class="layout">
+    {{ template "content" . }}
+  </main>
 {{ end }}

@@ -1,0 +1,36 @@
+<ul class="notes-list">
+  {{ range .Data.Notes }}
+    <li>
+      {{ $noteUrl := printf "/notes/%s" .Slug }}
+      {{ $noteHref := withQuery $noteUrl $.CurrentQuery }}
+      <a
+        class="card"
+        href="{{ $noteHref }}"
+        {{ if eq $.CurrentUrl $noteUrl }}aria-current="page"{{ end }}
+      >
+        <header class="glow" data-content="{{ .Icon }}">
+          {{ if .Icon }}
+            {{ .Icon }}
+          {{ else }}
+            {{ template "sticky-note.svg" }}
+          {{ end }}
+        </header>
+        <p class="clamp" style="--clamp: 2">{{ .Title }}</p>
+        <p class="clamp" style="--clamp: 2">{{ .Excerpt }}</p>
+      </a>
+    </li>
+    {{ range .Children }}
+      <li>
+        {{ $childUrl := printf "/notes/%s" .Slug }}
+        {{ $childHref := withQuery $childUrl $.CurrentQuery }}
+        <a class="card" href="{{ $childHref }}">
+          <header class="glow" data-content="{{ .Icon }}">
+            {{ if .Icon }}{{ .Icon }}{{ end }}
+          </header>
+          <p class="clamp" style="--clamp: 2">{{ .Title }}</p>
+          <p class="clamp" style="--clamp: 2">{{ .Excerpt }}</p>
+        </a>
+      </li>
+    {{ end }}
+  {{ end }}
+</ul>

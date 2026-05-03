@@ -1,32 +1,91 @@
-{{template "layout.html" .}} {{define "content"}}
-<div>
-  {{if and .Data.Note.Date (not (or .Data.Note.IsDailyNote .Data.Note.Date.IsZero)) }}
-  <a href='/notes/{{.Data.Note.Date.Format "2006-01-02"}}'>
-    {{.Data.Note.Date.Format "02.01.2006"}}
-  </a>
-  {{end}}
+{{ template "layout.html" . }}
 
-  <section>{{.Data.Html}}</section>
+{{ define "content" }}
+  <section>
+    <header>
+      <ul role="tablist">
+        <li role="tab">
+          <a
+            href="{{ .CurrentUrl }}?filter=all{{ if .CurrentSearch }}
+              &q={{ urlquery .CurrentSearch }}
+            {{ end }}"
+            aria-selected="{{ eq .CurrentFilter "all" }}"
+            >All</a
+          >
+        </li>
+        <li role="tab">
+          <a
+            href="{{ .CurrentUrl }}?filter=daily{{ if .CurrentSearch }}
+              &q={{ urlquery .CurrentSearch }}
+            {{ end }}"
+            aria-selected="{{ eq .CurrentFilter "daily" }}"
+            >Daily</a
+          >
+        </li>
+        <li role="tab">
+          <a
+            href="{{ .CurrentUrl }}?filter=kb{{ if .CurrentSearch }}
+              &q={{ urlquery .CurrentSearch }}
+            {{ end }}"
+            aria-selected="{{ eq .CurrentFilter "kb" }}"
+            >Knowledge Base</a
+          >
+        </li>
+      </ul>
 
-  {{if .Data.Note.IsEmpty}}
-  <div>This note has no text.</div>
-  {{end}}
-</div>
+      <form method="get" action="{{ .CurrentUrl }}">
+        <input type="hidden" name="filter" value="{{ .CurrentFilter }}" />
+        <input type="search" placeholder="Search..." name="q" value="{{ .CurrentSearch }}" />
+      </form>
+    </header>
 
-{{if .Data.Note.Children}}
-<div>
-  <span>On this day</span>
-  <ul>
-    {{range .Data.Note.Children}}
-    <li>
-      {{if .Icon}}
-      <span>{{.Icon}}</span>
-      {{end}}
+    {{ template "notes_list.html" . }}
+  </section>
 
-      <a href="/notes/{{.Slug}}">{{.Title}}</a>
-    </li>
-    {{end}}
-  </ul>
-  {{end}}
-</div>
-{{end}}
+  <section>
+    <header>
+      <ul class="breadcrumbs">
+        {{ if and .Data.Note.Date (not (or .Data.Note.IsDailyNote .Data.Note.Date.IsZero)) }}
+          <li>
+            <a href="/notes/{{ .Data.Note.Date.Format "2006-01-02" }}">
+              {{- .Data.Note.Date.Format "02.01.2006" -}}
+            </a>
+          </li>
+        {{ end }}
+        <li>{{- .Data.Note.Title -}}</li>
+      </ul>
+    </header>
+
+    <div class="note">
+      <article class="note-content">
+        {{ if .Data.Note.IsEmpty }}
+          <p class="empty">{{ template "ghost.svg" }} This note has no text.</p>
+        {{ else }}
+          {{ .Data.Html }}
+        {{ end }}
+      </article>
+
+      {{ if .Data.Note.Children }}
+        <div class="note-metadata">
+          <p class="font-size-small caps color-primary font-weight-medium">On this day</p>
+          <ul>
+            {{ range .Data.Note.Children }}
+              <li>
+                {{ $childUrl := printf "/notes/%s" .Slug }}
+                {{ $childHref := withQuery $childUrl $.CurrentQuery }}
+                {{ if .Icon }}
+                  <span class="glow" data-content="{{ .Icon }}">{{ .Icon }}</span>
+                {{ else }}
+                  {{ template "sticky-note.svg" }}
+                {{ end }}
+                <a href="{{ $childHref }}">
+                  {{ .Title }}
+                </a>
+              </li>
+            {{ end }}
+          </ul>
+        </div>
+      {{ end }}
+    </div>
+  </section>
+{{ end }}

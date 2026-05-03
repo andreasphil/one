@@ -1,13 +1,7 @@
-{{template "layout.html" .}} {{define "content"}}
-<div>
-  <h1>Notes</h1>
-
-  <ul>
-    {{range .Data.Notes}}
-    <li><a href="/notes/{{.Slug}}">{{.Title}}:</a> {{.Excerpt}}</li>
-    {{range .Children}}
-    <li><a href="/notes/{{.Slug}}">{{.Title}}:</a> {{.Excerpt}}</li>
-    {{end}} {{end}}
-  </ul>
-</div>
-{{end}}
+{{ template "layout.html" . }}
+{{ define "content" }}
+  <section>
+    <h1>Notes</h1>
+    {{ template "notes_list.html" . }}
+  </section>
+{{ end }}

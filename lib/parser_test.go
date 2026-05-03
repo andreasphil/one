@@ -397,3 +397,73 @@ func TestExtractIcon(t *testing.T) {
 		})
 	}
 }
+
+func TestGenerateTitle(t *testing.T) {
+	type testcase struct {
+		name     string
+		input    string
+		expected string
+	}
+
+	testcases := []testcase{
+		{
+			name:     "regular title",
+			input:    "# Note 1\n\nLine 1\n",
+			expected: "Note 1",
+		},
+		{
+			name:     "emoji in title",
+			input:    "# 🎉 Note 1\n",
+			expected: "Note 1",
+		},
+	}
+
+	for _, i := range testcases {
+		t.Run(i.name, func(t *testing.T) {
+			result, err := lib.Parse(strings.NewReader(i.input))
+
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			if diff := cmp.Diff(i.expected, result[0].Title); diff != "" {
+				t.Errorf("icon mismatch:\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestGenerateChildTitle(t *testing.T) {
+	type testcase struct {
+		name     string
+		input    string
+		expected string
+	}
+
+	testcases := []testcase{
+		{
+			name:     "regular title",
+			input:    "# 03.04.2026\n\n## Child Note 1\n",
+			expected: "Child Note 1",
+		},
+		{
+			name:     "emoji in title",
+			input:    "# 03.04.2026\n\n## 🎉 Child Note 1",
+			expected: "Child Note 1",
+		},
+	}
+
+	for _, i := range testcases {
+		t.Run(i.name, func(t *testing.T) {
+			result, err := lib.Parse(strings.NewReader(i.input))
+
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			if diff := cmp.Diff(i.expected, result[0].Children[0].Title); diff != "" {
+				t.Errorf("icon mismatch:\n%s", diff)
+			}
+		})
+	}
+}

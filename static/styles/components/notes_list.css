@@ -1,0 +1,19 @@
+.notes-list {
+  background-color: var(--c-bg);
+  display: grid;
+  gap: 1rem;
+  grid-auto-rows: 1fr;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  list-style-type: none;
+  margin: 0;
+  padding: 1rem;
+
+  .card {
+    height: 100%;
+
+    &[aria-current="page"] {
+      outline: var(--outline);
+      outline-offset: var(--outline-inset);
+    }
+  }
+}
