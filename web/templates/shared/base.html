@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{.Title}}{{if .Title}} | {{end}}One</title>
+    <title>{{ .Title }}{{ if .Title }} | {{ end }}One</title>
 
     <link rel="stylesheet" href="/static/styles/styles.css" />
   </head>
   <body>
-    {{template "page" .}}
+    {{ template "page" . }}
   </body>
 </html>

@@ -6,3 +6,6 @@ usage = """
   arg "<file>" default="test.md"
 """
 run = "air ${usage_file}"
+
+[tasks.fmt]
+run = ["go fmt", "pnpm prettier -cw ."]
