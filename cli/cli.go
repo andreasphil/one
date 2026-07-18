@@ -7,10 +7,8 @@ import (
 	"io"
 )
 
-// TODO: Error handling, differentiate between fatal and control flow
 func Run(args []string, stdout io.Writer, stderr io.Writer) error {
 	if len(args) == 0 {
-		// TODO: Print usage
 		return errors.New("no command specified")
 	}
 
@@ -18,7 +16,6 @@ func Run(args []string, stdout io.Writer, stderr io.Writer) error {
 
 	switch args[0] {
 	case "help", "--help", "-help":
-		// TODO: Print usage
 		return nil
 
 	case "list", "ls":
