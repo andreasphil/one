@@ -1,10 +1,14 @@
 package web
 
 import (
+	"embed"
 	"fmt"
 	"html/template"
 	"net/http"
 )
+
+//go:embed templates
+var templatesFS embed.FS
 
 type data[T any] struct {
 	Title      string
@@ -29,12 +33,11 @@ func newRenderFunc[T any](name string) renderFunc[T] {
 		// },
 	}
 
-	t := template.Must(template.New("").Funcs(helpers).ParseGlob("./web/templates/shared/*.html"))
-	// template.Must(t.ParseGlob("./web/templates/components/*.html"))
-	// template.Must(t.ParseGlob("./web/templates/icons/*.svg"))
+	t := template.Must(template.New("").Funcs(helpers).ParseFS(templatesFS, "templates/shared/*.html"))
+	// template.Must(t.ParseFS(templatesFS, "templates/components/*.html"))
+	// template.Must(t.ParseFS(templatesFS, "templates/icons/*.svg"))
 
-	fullName := fmt.Sprintf("./web/templates/%v", name)
-	template.Must(t.ParseFiles(fullName))
+	template.Must(t.ParseFS(templatesFS, fmt.Sprintf("templates/%v", name)))
 
 	return func(w http.ResponseWriter, data data[T]) error {
 		return t.ExecuteTemplate(w, name, data)

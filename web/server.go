@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-//go:embed static/*
+//go:embed static
 var static embed.FS
 
 type ServerInit struct {
