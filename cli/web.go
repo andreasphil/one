@@ -21,29 +21,34 @@ type webCmdInit struct {
 func serve(args webCmdInit, stdout io.Writer, _ io.Writer) error {
 	notes, err := lib.ParseFile(args.input)
 	if err != nil {
-		util.Errorf("failed to read notes from %v, %v", args.input, err)
-		return err
+		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)
 	}
 
 	util.Infof("parsed %v notes", len(notes))
 
-	context, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
 	server := web.NewServer(web.ServerInit{
 		Port: args.port,
 	})
 
+	errChan := make(chan error, 1)
+
 	go func() {
 		util.Infof("serving at http://localhost:%v", args.port)
 
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			util.Errorf("server exited with an error: %v", err)
+			errChan <- fmt.Errorf("server exited with an error: %v", err)
 		}
 	}()
 
-	<-context.Done()
-	server.Shutdown(context)
+	select {
+	case <-ctx.Done():
+		server.Shutdown(ctx)
+	case err := <-errChan:
+		return err
+	}
 
 	fmt.Println()
 	util.Infof("bye :)")

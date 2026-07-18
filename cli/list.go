@@ -17,8 +17,7 @@ type listCmdInit struct {
 func list(args listCmdInit, stdout io.Writer, _ io.Writer) error {
 	notes, err := lib.ParseFile(args.input)
 	if err != nil {
-		util.Errorf("failed to read notes from %v, %v", args.input, err)
-		return err
+		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)
 	}
 
 	util.Infof("parsed %v notes", len(notes))

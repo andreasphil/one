@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/andreasphil/one/lib"
@@ -16,8 +17,7 @@ type sortCmdInit struct {
 func sort(args sortCmdInit, _ io.Writer, _ io.Writer) error {
 	notes, err := lib.ParseFile(args.input)
 	if err != nil {
-		util.Errorf("failed to read notes from %v, %v", args.input, err)
-		return err
+		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)
 	}
 
 	util.Infof("parsed %v notes", len(notes))
@@ -31,6 +31,9 @@ func sort(args sortCmdInit, _ io.Writer, _ io.Writer) error {
 
 	if args.check {
 		util.Warnf("check only. no changes have been made")
+		if didSort {
+			return fmt.Errorf("notes need sorting")
+		}
 		return nil
 	}
 
@@ -41,8 +44,7 @@ func sort(args sortCmdInit, _ io.Writer, _ io.Writer) error {
 
 	err = util.WriteTextFile(lib.Stringify(notes), output, 0644)
 	if err != nil {
-		util.Errorf("could not write to %v, %v", output, err)
-		return err
+		return fmt.Errorf("could not write to %v, %v", output, err)
 	}
 
 	util.Okf("sorted")
