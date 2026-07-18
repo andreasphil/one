@@ -39,7 +39,7 @@ func sort(args sortCmdInit, _ io.Writer, _ io.Writer) error {
 		output = args.input
 	}
 
-	err = util.WriteTextFile(lib.Stringify(notes), output)
+	err = util.WriteTextFile(lib.Stringify(notes), output, 0644)
 	if err != nil {
 		util.Errorf("could not write to %v, %v", output, err)
 		return err
