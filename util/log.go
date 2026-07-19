@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 )
 
 const (
@@ -22,24 +21,19 @@ func style(color string, text string) string {
 }
 
 func Infof(format string, v ...any) {
-	log.Printf(style(blue, "INFO")+" "+format, v...)
+	log.Printf(style(blue, "→")+" "+format, v...)
 }
 
 func Warnf(format string, v ...any) {
-	log.Printf(style(yellow, "WARN")+" "+format, v...)
+	log.Printf(style(yellow, "△")+" "+format, v...)
 }
 
 func Errorf(format string, v ...any) {
-	log.Printf(style(red, "ERROR")+" "+format, v...)
+	log.Printf(style(red, "✗")+" "+format, v...)
 }
 
 func Okf(format string, v ...any) {
-	log.Printf(style(green, "OK")+" "+format, v...)
-}
-
-func Fatalf(format string, v ...any) {
-	log.Printf(style(bgRed+black, " FATAL ")+" "+format, v...)
-	os.Exit(1)
+	log.Printf(style(green, "✓")+" "+format, v...)
 }
 
 func HttpErrorf(w http.ResponseWriter, status int, format string, v ...any) {
