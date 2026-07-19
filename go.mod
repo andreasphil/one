@@ -4,11 +4,13 @@ go 1.25.4
 
 require github.com/google/go-cmp v0.7.0
 
-require github.com/forPelevin/gomoji v1.4.1
+require (
+	charm.land/lipgloss/v2 v2.0.3
+	github.com/forPelevin/gomoji v1.4.1
+	github.com/yuin/goldmark v1.8.4
+)
 
 require (
-	charm.land/bubbletea/v2 v2.0.6 // indirect
-	charm.land/lipgloss/v2 v2.0.3 // indirect
 	github.com/charmbracelet/colorprofile v0.4.3 // indirect
 	github.com/charmbracelet/ultraviolet v0.0.0-20260416155717-489999b90468 // indirect
 	github.com/charmbracelet/x/ansi v0.11.7 // indirect

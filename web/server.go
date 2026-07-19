@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/andreasphil/one/web/adapter"
+	"github.com/andreasphil/one/web/service"
 )
 
 //go:embed static
@@ -17,10 +18,13 @@ type ServerInit struct {
 }
 
 func NewServer(init ServerInit) http.Server {
+	var markdownRenderer adapter.MarkdownRenderer = service.NewMarkdownService()
+
 	router := http.NewServeMux()
 
 	router.Handle("/{$}", http.RedirectHandler("/notes/", http.StatusTemporaryRedirect))
 	router.HandleFunc("GET /notes/{$}", getNotes(init.Notes))
+	router.HandleFunc("GET /notes/{slug}/{$}", getNote(init.Notes, markdownRenderer))
 
 	router.Handle("/static/", http.FileServerFS(static))
 

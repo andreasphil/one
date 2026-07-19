@@ -1,0 +1,23 @@
+{{ template "layout.html" . }}
+{{ define "content" }}
+  <h1>{{ .Data.Note.Title }}</h1>
+
+  {{ if .Data.Note.IsEmpty }}
+    <p>This note has no text.</p>
+  {{ else }}
+    <article>
+      {{ .Data.Html }}
+    </article>
+  {{ end }}
+
+  {{ if .Data.Note.Children }}
+    <h2>Also on this day</h2>
+    <ul>
+      {{ range .Data.Note.Children }}
+        <li>
+          <a href="/notes/{{ .Slug }}">{{ .Title }}</a>
+        </li>
+      {{ end }}
+    </ul>
+  {{ end }}
+{{ end }}
