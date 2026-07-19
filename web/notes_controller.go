@@ -5,9 +5,10 @@ import (
 
 	"github.com/andreasphil/one/lib"
 	"github.com/andreasphil/one/util"
+	"github.com/andreasphil/one/web/adapter"
 )
 
-func getNotes() http.HandlerFunc {
+func getNotes(notes adapter.NotesProvider) http.HandlerFunc {
 	type getNotesData struct {
 		Notes []lib.Note
 	}
@@ -15,10 +16,12 @@ func getNotes() http.HandlerFunc {
 	render := newRenderFunc[getNotesData]("get_notes.html")
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		notes := notes.Notes()
+
 		err := render(w, data[getNotesData]{
 			Title:      "Notes",
 			CurrentUrl: r.URL.Path,
-			Data:       getNotesData{},
+			Data:       getNotesData{Notes: notes},
 		})
 
 		if err != nil {

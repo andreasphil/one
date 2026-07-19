@@ -13,6 +13,12 @@ import (
 	"github.com/andreasphil/one/web"
 )
 
+type staticNotesProvider []lib.Note
+
+func (s staticNotesProvider) Notes() []lib.Note {
+	return s
+}
+
 type webCmdInit struct {
 	input string
 	port  string
@@ -30,7 +36,8 @@ func serve(args webCmdInit, stdout io.Writer, _ io.Writer) error {
 	defer stop()
 
 	server := web.NewServer(web.ServerInit{
-		Port: args.port,
+		Port:  args.port,
+		Notes: staticNotesProvider(notes),
 	})
 
 	errChan := make(chan error, 1)

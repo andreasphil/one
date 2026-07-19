@@ -1,4 +1,21 @@
 {{ template "layout.html" . }}
 {{ define "content" }}
-  <h1>Hello world!</h1>
+  <h1>{{ len .Data.Notes }} notes</h1>
+
+  <ul>
+    {{ range .Data.Notes }}
+      <li>
+        <a href="/notes/{{ .Slug }}">{{ .Title }}</a>
+        {{ if .Children }}
+          <ul>
+            {{ range .Children }}
+              <li>
+                <a href="/notes/{{ .Slug }}">{{ .Title }}</a>
+              </li>
+            {{ end }}
+          </ul>
+        {{ end }}
+      </li>
+    {{ end }}
+  </ul>
 {{ end }}
