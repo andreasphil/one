@@ -1,2 +1,12 @@
+[tools]
+air = "latest"
+go = "latest"
+
+[tasks.dev]
+usage = """
+  arg "<file>" default="test.md"
+"""
+run = "air -- web --input ${usage_file}"
+
 [tasks.fmt]
 run = ["go fmt", "pnpm prettier -cw web/"]
