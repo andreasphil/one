@@ -1,0 +1,22 @@
+@scope (.layout) to (:is(aside, main) > *) {
+  :scope {
+    display: grid;
+    grid-template-areas: "sidebar content";
+    grid-template-columns: 20rem auto;
+    height: 100dvh;
+  }
+
+  aside {
+    border-right: var(--border-width) solid var(--c-border);
+    grid-area: sidebar;
+    overflow: auto;
+    padding: 4rem 2.75rem 4rem 2rem;
+  }
+
+  main {
+    grid-area: content;
+    overflow: auto;
+    padding: 4rem 2rem;
+    background-color: var(--c-surface-bg);
+  }
+}

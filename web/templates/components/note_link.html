@@ -1,0 +1,13 @@
+{{ $noteUrl := printf "/notes/%s/" .Note.Slug }}
+<a
+  href="{{ $noteUrl }}"
+  title="{{ .Note.Title }}"
+  {{ if eq .CurrentUrl $noteUrl }}aria-current="page"{{ end }}
+>
+  {{ if .Note.Icon }}
+    <span class="glow" data-content="{{ .Note.Icon }}">{{ .Note.Icon }}</span>
+  {{ else }}
+    {{ template "sticky-note.svg" }}
+  {{ end }}
+  <span class="clamp">{{ .Note.Title }}</span>
+</a>

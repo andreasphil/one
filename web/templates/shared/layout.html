@@ -1,6 +1,16 @@
 {{ template "base.html" . }}
+
+{{ define "sidebar" }}Test{{ end }}
+{{ define "content" }}{{ end }}
+
 {{ define "page" }}
-  <main class="layout">
-    {{ template "content" . }}
-  </main>
+  <div class="layout">
+    <aside>
+      {{ template "sidebar" . }}
+    </aside>
+
+    <main>
+      {{ template "content" . }}
+    </main>
+  </div>
 {{ end }}

@@ -1,21 +1,14 @@
 {{ template "layout.html" . }}
-{{ define "content" }}
-  <h1>{{ len .Data.Notes }} notes</h1>
+{{ define "sidebar" }}
+  {{ template "sidebar.html" . }}
+{{ end }}
 
-  <ul>
-    {{ range .Data.Notes }}
-      <li>
-        <a href="/notes/{{ .Slug }}">{{ .Title }}</a>
-        {{ if .Children }}
-          <ul>
-            {{ range .Children }}
-              <li>
-                <a href="/notes/{{ .Slug }}">{{ .Title }}</a>
-              </li>
-            {{ end }}
-          </ul>
-        {{ end }}
-      </li>
-    {{ end }}
-  </ul>
+{{ define "content" }}
+  <div has-fallback="empty">
+    <div></div>
+    <div fallback-for="empty">
+      <p>{{ template "sticker.svg" }}</p>
+      <p>Welcome!</p>
+    </div>
+  </div>
 {{ end }}

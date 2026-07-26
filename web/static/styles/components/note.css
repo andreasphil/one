@@ -1,0 +1,6 @@
+@scope (.note) {
+  :scope {
+    max-width: 80ch;
+    margin-inline: auto;
+  }
+}

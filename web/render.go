@@ -31,11 +31,30 @@ func newRenderFunc[T any](name string) renderFunc[T] {
 		// 	u := url.URL{Path: path, RawQuery: query}
 		// 	return template.URL(u.String())
 		// },
+
+		"dict": func(values ...any) (map[string]any, error) {
+			if len(values)%2 != 0 {
+				return nil, fmt.Errorf("dict: odd number of arguments")
+			}
+
+			d := make(map[string]any, len(values)/2)
+
+			for i := 0; i < len(values); i += 2 {
+				key, ok := values[i].(string)
+				if !ok {
+					return nil, fmt.Errorf("dict: keys must be strings")
+				}
+
+				d[key] = values[i+1]
+			}
+
+			return d, nil
+		},
 	}
 
 	t := template.Must(template.New("").Funcs(helpers).ParseFS(templatesFS, "templates/shared/*.html"))
-	// template.Must(t.ParseFS(templatesFS, "templates/components/*.html"))
-	// template.Must(t.ParseFS(templatesFS, "templates/icons/*.svg"))
+	template.Must(t.ParseFS(templatesFS, "templates/components/*.html"))
+	template.Must(t.ParseFS(templatesFS, "templates/icons/*.svg"))
 
 	template.Must(t.ParseFS(templatesFS, fmt.Sprintf("templates/%v", name)))
 

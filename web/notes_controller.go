@@ -33,8 +33,9 @@ func getNotes(notes adapter.NotesProvider) http.HandlerFunc {
 
 func getNote(notes adapter.NotesProvider, renderer adapter.MarkdownRenderer) http.HandlerFunc {
 	type getNoteData struct {
-		Note lib.Note
-		Html template.HTML
+		Notes []lib.Note
+		Note  lib.Note
+		Html  template.HTML
 	}
 
 	render := newRenderFunc[getNoteData]("get_note.html")
@@ -57,7 +58,7 @@ func getNote(notes adapter.NotesProvider, renderer adapter.MarkdownRenderer) htt
 		err = render(w, data[getNoteData]{
 			Title:      note.Title,
 			CurrentUrl: r.URL.Path,
-			Data:       getNoteData{Note: note, Html: html},
+			Data:       getNoteData{Notes: notes, Note: note, Html: html},
 		})
 
 		if err != nil {
