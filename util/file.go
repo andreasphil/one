@@ -5,6 +5,9 @@ import (
 	"path/filepath"
 )
 
+// WriteTextFile writes content to path with the given permissions. It writes to
+// a temporary file in the same directory first and atomically renames it into
+// place, to avoid leaving a partially written file behind in case of an error.
 func WriteTextFile(content string, path string, permissions os.FileMode) error {
 	success := false
 

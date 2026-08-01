@@ -31,8 +31,8 @@ func cleanupTitle(title string) string {
 	return strings.TrimSpace(title)
 }
 
-// Parses an input into a structured list of notes. The input value follows an
-// opinionated subset of markdown, with the following conventions:
+// Parse parses an input into a structured list of notes. The input value
+// follows an opinionated subset of markdown, with the following conventions:
 //
 //   - the file must start with a level one heading (or be empty)
 //   - a level 1 heading indicates the start of a new note, with all content
@@ -124,6 +124,8 @@ func Parse(input io.Reader) ([]Note, error) {
 	return notes, nil
 }
 
+// ParseFile reads the file at path and parses it into a structured list of
+// notes. See Parse for details on the expected file format.
 func ParseFile(path string) ([]Note, error) {
 	absPath, err := filepath.Abs(path)
 	if err != nil {

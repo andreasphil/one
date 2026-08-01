@@ -24,6 +24,9 @@ func Walk(notes []Note, fn func(Note) bool) bool {
 	return true
 }
 
+// GetRecursive searches notes and their children for a note matching slug,
+// returning it along with true if found. If no note matches, it returns a
+// zero-value Note and false.
 func GetRecursive(notes []Note, slug string) (Note, bool) {
 	var found Note
 	ok := false
@@ -41,6 +44,10 @@ func GetRecursive(notes []Note, slug string) (Note, bool) {
 	return found, ok
 }
 
+// Sort sorts notes in place, with daily notes ordered by date (descending)
+// before all other notes ordered alphabetically by title (ascending, case
+// insensitive). It returns the sorted notes along with whether sorting actually
+// changed the order (i.e. whether notes were not already sorted).
 func Sort(notes []Note) ([]Note, bool) {
 	compare := func(a Note, b Note) int {
 		return cmp.Or(
@@ -57,6 +64,8 @@ func Sort(notes []Note) ([]Note, bool) {
 	return notes, !isSorted
 }
 
+// Stringify serializes notes back into their onefile markdown representation,
+// with a blank line between top-level notes and a single trailing newline.
 func Stringify(notes []Note) string {
 	if len(notes) == 0 {
 		return ""
