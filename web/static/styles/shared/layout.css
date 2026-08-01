@@ -1,8 +1,8 @@
 @scope (.layout) to (:is(aside, main) > *) {
   :scope {
     display: grid;
-    grid-template-areas: "sidebar content";
-    grid-template-columns: 20rem auto;
+    grid-template-areas: ". sidebar content bg-spacer";
+    grid-template-columns: 1fr 20rem minmax(auto, 90rem) 1fr;
     height: 100dvh;
   }
 
@@ -10,13 +10,16 @@
     border-right: var(--border-width) solid var(--c-border);
     grid-area: sidebar;
     overflow: auto;
-    padding: 4rem 2.75rem 4rem 2rem;
   }
 
   main {
+    background-color: var(--c-surface-bg);
     grid-area: content;
     overflow: auto;
-    padding: 4rem 2rem;
-    background-color: var(--c-surface-bg);
+  }
+
+  div:last-child {
+    background: var(--c-surface-bg);
+    grid-area: bg-spacer;
   }
 }
