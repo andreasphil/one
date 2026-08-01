@@ -1,0 +1,56 @@
+@scope (.note-view) {
+  :scope {
+    display: grid;
+    grid-template-areas: "note details";
+    grid-template-columns: 1fr 20rem;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .content {
+    grid-area: note;
+    overflow: auto;
+    padding: 4rem 2rem;
+  }
+
+  aside {
+    border-left: var(--border-width) solid var(--c-border);
+    grid-area: details;
+    overflow: auto;
+    padding: 4rem 2rem;
+
+    &:has(nav:empty) {
+      display: none;
+    }
+  }
+
+  .note {
+    --c-link-hover: var(--c-fg);
+    --c-link: var(--primary);
+    --outer-spacing-y: 1rem;
+
+    line-height: 1.75;
+    margin-inline: auto;
+    max-width: 80ch;
+
+    > :first-child {
+      margin-top: 0;
+    }
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+
+    :is(h1, h2, h3) {
+      margin-top: calc(var(--outer-spacing-y) * 2);
+    }
+
+    :is(ol, ul) {
+      padding-left: 2rem;
+    }
+
+    li {
+      margin-top: 0.25rem;
+    }
+  }
+}

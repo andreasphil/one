@@ -4,28 +4,45 @@
 {{ end }}
 
 {{ define "content" }}
-  <div class="note">
-    <h1>{{ .Data.Note.Title }}</h1>
+  <div class="note-view">
+    <div class="content">
+      <div class="note">
+        <h1>{{ .Data.Note.Title }}</h1>
 
-    <div has-fallback="{{ if .Data.Note.IsEmpty }}empty{{ end }}">
-      <div>
-        {{- .Data.Html -}}
-      </div>
-      <div fallback-for="empty">
-        <p>{{ template "ghost.svg" }}</p>
-        <p>This note has no text.</p>
+        <div has-fallback="{{ if .Data.Note.IsEmpty }}empty{{ end }}">
+          <div>{{- .Data.Html -}}</div>
+          <div fallback-for="empty">
+            <p>{{ template "ghost.svg" }}</p>
+            <p>This note has no text.</p>
+          </div>
+        </div>
       </div>
     </div>
 
-    {{ if .Data.Note.Children }}
-      <h2>Also on this day</h2>
-      <ul>
-        {{ range .Data.Note.Children }}
-          <li>
-            <a href="/notes/{{ .Slug }}">{{ .Title }}</a>
-          </li>
-        {{ end }}
-      </ul>
-    {{ end }}
+    <aside>
+      <nav>
+        {{- if not .Data.Note.Date.IsZero -}}
+          {{ $noteDate := .Data.Note.Date.Format "Monday, 2. January 2006" }}
+          {{ if .Data.Note.IsDailyNote }}
+            <span class="font-weight-medium">{{ $noteDate }}</span>
+          {{ else }}
+            <a href="/notes/{{ .Data.Note.Date.Format "2006-01-02" }}">
+              {{ $noteDate }}
+            </a>
+          {{ end }}
+        {{- end -}}
+
+        {{- if .Data.Note.Children -}}
+          <ul>
+            <li class="caps font-size-small color-primary font-weight-medium">Also on this day</li>
+            {{ range .Data.Note.Children }}
+              <li>
+                {{ template "note_link.html" (dict "Note" . ) }}
+              </li>
+            {{ end }}
+          </ul>
+        {{- end -}}
+      </nav>
+    </aside>
   </div>
 {{ end }}
