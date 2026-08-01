@@ -1,0 +1,10 @@
+.navigation {
+  padding: 4rem 2rem;
+
+  li ul {
+    border-left: var(--border-width) solid var(--c-border);
+    margin-left: 0.75rem;
+    margin-right: 0;
+    padding-left: 0.75rem;
+  }
+}

@@ -5,6 +5,7 @@
 
 @import "./components/note.css" layer(components);
 @import "./shared/layout.css" layer(components);
+@import "./shared/navigation.css" layer(components);
 
 @layer base {
   :root {
