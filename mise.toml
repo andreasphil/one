@@ -4,7 +4,7 @@ go = "latest"
 
 [tasks.dev]
 usage = """
-  arg "<file>" default="test.md"
+  arg "<file>" default="one.md"
 """
 run = "air -- web --input ${usage_file}"
 
