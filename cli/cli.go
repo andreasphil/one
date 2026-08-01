@@ -34,6 +34,13 @@ func Run(args []string, stdout io.Writer, stderr io.Writer) error {
 
 		return sort(sortCmdInit{input: *sortInput, output: *sortOutput, check: *sortCheck}, stdout, stderr)
 
+	case "lint":
+		lintFlags := flag.NewFlagSet("lint", flag.ExitOnError)
+		lintInput := lintFlags.String("input", "one.md", "file to read")
+		lintFlags.Parse(params)
+
+		return lint(lintCmdInit{input: *lintInput}, stdout, stderr)
+
 	case "format", "fmt":
 		formatFlags := flag.NewFlagSet("format", flag.ExitOnError)
 		formatInput := formatFlags.String("input", "one.md", "file to read")

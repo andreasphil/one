@@ -6,18 +6,39 @@ import (
 	"strings"
 )
 
-func GetRecursive(notes []Note, slug string) (Note, bool) {
-	for _, v := range notes {
-		if v.Slug() == slug {
-			return v, true
-		} else if len(v.Children) > 0 {
-			if note, found := GetRecursive(v.Children, slug); found {
-				return note, true
-			}
+// Walk recursively visits every note and its children, in depth-first,
+// pre-order (i.e. a note is visited before its children). fn is called once per
+// note. Traversal stops as soon as fn returns false, in which case Walk also
+// returns false. If every note was visited, Walk returns true.
+func Walk(notes []Note, fn func(Note) bool) bool {
+	for _, note := range notes {
+		if !fn(note) {
+			return false
+		}
+
+		if len(note.Children) > 0 && !Walk(note.Children, fn) {
+			return false
 		}
 	}
 
-	return Note{}, false
+	return true
+}
+
+func GetRecursive(notes []Note, slug string) (Note, bool) {
+	var found Note
+	ok := false
+
+	Walk(notes, func(note Note) bool {
+		if note.Slug() != slug {
+			return true
+		}
+
+		found = note
+		ok = true
+		return false
+	})
+
+	return found, ok
 }
 
 func Sort(notes []Note) ([]Note, bool) {

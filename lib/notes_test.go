@@ -90,6 +90,103 @@ func TestGetRecursive(t *testing.T) {
 	}
 }
 
+func TestWalk(t *testing.T) {
+	notes := []lib.Note{
+		{Title: "Root 1"},
+		{
+			Title: "Root 2",
+			Children: []lib.Note{
+				{Title: "Child 1"},
+				{
+					Title: "Child 2",
+					Children: []lib.Note{
+						{Title: "Grandchild 1"},
+					},
+				},
+			},
+		},
+		{Title: "Root 3"},
+	}
+
+	t.Run("visits every note in depth-first, pre-order", func(t *testing.T) {
+		var visited []string
+
+		result := lib.Walk(notes, func(n lib.Note) bool {
+			visited = append(visited, n.Title)
+			return true
+		})
+
+		expected := []string{
+			"Root 1", "Root 2", "Child 1", "Child 2", "Grandchild 1", "Root 3",
+		}
+
+		if !cmp.Equal(visited, expected) {
+			t.Errorf("expected visited %v, got %v", expected, visited)
+		}
+
+		if !result {
+			t.Errorf("expected result to be true, got false")
+		}
+	})
+
+	t.Run("stops early when fn returns false", func(t *testing.T) {
+		var visited []string
+
+		result := lib.Walk(notes, func(n lib.Note) bool {
+			visited = append(visited, n.Title)
+			return n.Title != "Child 1"
+		})
+
+		expected := []string{"Root 1", "Root 2", "Child 1"}
+
+		if !cmp.Equal(visited, expected) {
+			t.Errorf("expected visited %v, got %v", expected, visited)
+		}
+
+		if result {
+			t.Errorf("expected result to be false, got true")
+		}
+	})
+
+	t.Run("stopping in nested children also stops parent traversal", func(t *testing.T) {
+		var visited []string
+
+		result := lib.Walk(notes, func(n lib.Note) bool {
+			visited = append(visited, n.Title)
+			return n.Title != "Grandchild 1"
+		})
+
+		expected := []string{
+			"Root 1", "Root 2", "Child 1", "Child 2", "Grandchild 1",
+		}
+
+		if !cmp.Equal(visited, expected) {
+			t.Errorf("expected visited %v, got %v", expected, visited)
+		}
+
+		if result {
+			t.Errorf("expected result to be false, got true")
+		}
+	})
+
+	t.Run("handles empty slice", func(t *testing.T) {
+		var visited []string
+
+		result := lib.Walk([]lib.Note{}, func(n lib.Note) bool {
+			visited = append(visited, n.Title)
+			return true
+		})
+
+		if len(visited) != 0 {
+			t.Errorf("expected no notes to be visited, got %v", visited)
+		}
+
+		if !result {
+			t.Errorf("expected result to be true, got false")
+		}
+	})
+}
+
 func TestSort(t *testing.T) {
 	type testcase struct {
 		name          string

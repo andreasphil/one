@@ -16,18 +16,13 @@ type formatCmdInit struct {
 	check  bool
 }
 
-func format(args formatCmdInit, _ io.Writer, _ io.Writer) error {
+func execFormatter(content []byte, filename string) (string, error) {
 	execPath, err := exec.LookPath("oxfmt")
 	if err != nil {
-		return fmt.Errorf("oxfmt is not installed or not in PATH: %v", err)
+		return "", fmt.Errorf("oxfmt is not installed or not in PATH: %v", err)
 	}
 
-	content, err := os.ReadFile(args.input)
-	if err != nil {
-		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)
-	}
-
-	cmd := exec.Command(execPath, "--stdin-filepath", args.input)
+	cmd := exec.Command(execPath, "--stdin-filepath", filename)
 	cmd.Stdin = bytes.NewReader(content)
 
 	var stdout, stderr bytes.Buffer
@@ -35,10 +30,23 @@ func format(args formatCmdInit, _ io.Writer, _ io.Writer) error {
 	cmd.Stderr = &stderr
 
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("oxfmt failed to format %v: %v: %v", args.input, err, stderr.String())
+		return "", fmt.Errorf("oxfmt failed to format %v: %v: %v", filename, err, stderr.String())
 	}
 
-	formatted := stdout.String()
+	return stdout.String(), nil
+}
+
+func format(args formatCmdInit, _ io.Writer, _ io.Writer) error {
+	content, err := os.ReadFile(args.input)
+	if err != nil {
+		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)
+	}
+
+	formatted, err := execFormatter(content, args.input)
+	if err != nil {
+		return err
+	}
+
 	didFormat := formatted != string(content)
 
 	if !didFormat {
