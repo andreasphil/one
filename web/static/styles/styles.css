@@ -3,6 +3,7 @@
 @import "/static/common/design-system.css" layer(base);
 @import "/static/common/design-system-utils.css" layer(utils);
 
+@import "./components/tag.css" layer(components);
 @import "./shared/layout.css" layer(components);
 @import "./shared/navigation.css" layer(components);
 @import "./views/note.css" layer(components);

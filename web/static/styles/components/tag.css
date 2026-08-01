@@ -1,0 +1,29 @@
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5ch;
+}
+
+.tag {
+  align-items: center;
+  border-radius: var(--border-radius-small);
+  border: var(--border-width) solid var(--c-border);
+  color: var(--c-fg-variant);
+  display: inline-flex;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-mono);
+  gap: 0.75ch;
+  padding: 0.1rem 0.375rem;
+  text-decoration: none;
+
+  &:hover {
+    background-color: var(--primary-50);
+    border-color: var(--primary-200);
+    color: var(--primary);
+  }
+
+  &:focus-visible {
+    outline: var(--outline);
+    outline-offset: var(--outline-outset);
+  }
+}

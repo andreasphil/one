@@ -19,8 +19,8 @@
     overflow: auto;
     padding: 4rem 2rem;
 
-    &:has(nav:empty) {
-      display: none;
+    section > * {
+      padding-block: 0.375rem;
     }
   }
 

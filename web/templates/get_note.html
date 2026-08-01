@@ -24,12 +24,14 @@
         {{- if not .Data.Note.Date.IsZero -}}
           {{ $noteDate := .Data.Note.Date.Format "Monday, 2. January 2006" }}
           {{ if .Data.Note.IsDailyNote }}
-            <span class="font-weight-medium">{{ $noteDate }}</span>
+            <span class="color-variant">{{ $noteDate }}</span>
           {{ else }}
             <a href="/notes/{{ .Data.Note.Date.Format "2006-01-02" }}">
               {{ $noteDate }}
             </a>
           {{ end }}
+        {{- else -}}
+          <span class="color-variant">Knowledge Base</span>
         {{- end -}}
 
         {{- if .Data.Note.Children -}}
@@ -42,6 +44,26 @@
             {{ end }}
           </ul>
         {{- end -}}
+
+
+        <section>
+          <div class="caps font-size-small color-primary font-weight-medium">Tags</div>
+          <div has-fallback>
+            <div class="tags">
+              {{- range .Data.Note.Tags.ToSlice -}}
+                <a class="tag" href="#">
+                  {{ template "tag.svg" }}
+                  {{ slice . 1 }}
+                </a>
+              {{- end -}}
+            </div>
+
+            <div fallback-for="empty">
+              <p>{{ template "tag-x.svg" }}</p>
+              <small>This note has no tags.</small>
+            </div>
+          </div>
+        </section>
       </nav>
     </aside>
   </div>
