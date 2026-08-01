@@ -31,7 +31,7 @@
           {{ if .Data.Note.IsDailyNote }}
             <span class="color-variant">{{ $noteDate }}</span>
           {{ else }}
-            <a href="/notes/{{ .Data.Note.Date.Format "2006-01-02" }}">
+            <a href="/notes/{{ .Data.Note.Date.Format "2006-01-02" }}/">
               {{ $noteDate }}
             </a>
           {{ end }}
