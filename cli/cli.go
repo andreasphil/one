@@ -34,6 +34,15 @@ func Run(args []string, stdout io.Writer, stderr io.Writer) error {
 
 		return sort(sortCmdInit{input: *sortInput, output: *sortOutput, check: *sortCheck}, stdout, stderr)
 
+	case "format", "fmt":
+		formatFlags := flag.NewFlagSet("format", flag.ExitOnError)
+		formatInput := formatFlags.String("input", "one.md", "file to read")
+		formatOutput := formatFlags.String("output", "", "file to write to. writes to input if not specified")
+		formatCheck := formatFlags.Bool("check", false, "if set, only reports if the file needs formatting without writing any changes")
+		formatFlags.Parse(params)
+
+		return format(formatCmdInit{input: *formatInput, output: *formatOutput, check: *formatCheck}, stdout, stderr)
+
 	case "web":
 		webFlags := flag.NewFlagSet("web", flag.ExitOnError)
 		webInput := webFlags.String("input", "one.md", "file to read")

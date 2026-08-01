@@ -25,7 +25,7 @@ func sort(args sortCmdInit, _ io.Writer, _ io.Writer) error {
 	notes, didSort := lib.Sort(notes)
 	if !didSort {
 		util.Infof("notes already sorted")
-	} else {
+	} else if !args.check {
 		util.Infof("notes need sorting")
 	}
 
