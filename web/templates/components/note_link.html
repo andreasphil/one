@@ -5,5 +5,10 @@
   {{ if eq .CurrentUrl $noteUrl }}aria-current="page"{{ end }}
 >
   {{ template "sticky-note.svg" }}
-  <span class="clamp">{{ .Note.Title }}</span>
+  <span class="clamp">
+    {{ if .Note.IsDailyNote }}
+      {{ .Note.Date.Format "Mon," }}
+    {{ end }}
+    {{ .Note.Title }}
+  </span>
 </a>
