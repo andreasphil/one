@@ -15,6 +15,7 @@
   gap: 0.75ch;
   padding: 0.1rem 0.375rem;
   text-decoration: none;
+  transition-property: color, border-color, background-color;
 
   &:hover {
     background-color: var(--primary-50);
