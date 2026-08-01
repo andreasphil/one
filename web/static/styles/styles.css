@@ -13,6 +13,7 @@
     --body-padding-x: 0px;
     --body-padding-y: 0px;
     --body-width: initial;
+    --tint: 320;
   }
 
   /* TODO: Fix in DS */
