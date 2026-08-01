@@ -27,6 +27,7 @@ func getNotes(notes adapter.NotesProvider) http.HandlerFunc {
 
 		if err != nil {
 			util.HttpErrorf(w, http.StatusInternalServerError, "failed to render page template: %v", err)
+			return
 		}
 	}
 }
@@ -53,6 +54,7 @@ func getNote(notes adapter.NotesProvider, renderer adapter.MarkdownRenderer) htt
 		html, err := renderer.Render(note.Content())
 		if err != nil {
 			util.HttpErrorf(w, http.StatusUnprocessableEntity, "failed to render note to html: %v", err)
+			return
 		}
 
 		err = render(w, data[getNoteData]{
