@@ -7,7 +7,12 @@
   <div class="note-view">
     <div class="content">
       <div class="note">
-        <h1>{{ .Data.Note.Title }}</h1>
+        <h1>
+          {{ if .Data.Note.Icon }}
+            <span class="glow" data-content="{{ .Data.Note.Icon }}">{{ .Data.Note.Icon }}</span>
+          {{ end }}
+          {{ .Data.Note.Title }}
+        </h1>
 
         <div has-fallback="{{ if .Data.Note.IsEmpty }}empty{{ end }}">
           <div>{{- .Data.Html -}}</div>

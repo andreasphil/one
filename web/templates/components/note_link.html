@@ -4,10 +4,6 @@
   title="{{ .Note.Title }}"
   {{ if eq .CurrentUrl $noteUrl }}aria-current="page"{{ end }}
 >
-  {{ if .Note.Icon }}
-    <span class="glow" data-content="{{ .Note.Icon }}">{{ .Note.Icon }}</span>
-  {{ else }}
-    {{ template "sticky-note.svg" }}
-  {{ end }}
+  {{ template "sticky-note.svg" }}
   <span class="clamp">{{ .Note.Title }}</span>
 </a>
