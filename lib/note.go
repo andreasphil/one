@@ -9,7 +9,7 @@ import (
 	"github.com/andreasphil/one/util"
 )
 
-var dateExp = regexp.MustCompile(`^\d{2}\.\d{2}\.\d{4}$`)
+var dateTitleExp = regexp.MustCompile(`^\d{2}\.\d{2}\.\d{4}$`)
 var normalizeExp = regexp.MustCompile(`[^\wäöüß]+`)
 
 type Note struct {
@@ -61,7 +61,7 @@ func (n Note) IsEmpty() bool {
 }
 
 func (n Note) IsDailyNote() bool {
-	return !n.Date.IsZero() && dateExp.MatchString(n.Title)
+	return !n.Date.IsZero() && dateTitleExp.MatchString(n.Title)
 }
 
 func (n Note) Excerpt(maxWords int) (string, bool) {

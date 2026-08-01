@@ -22,8 +22,13 @@ func last[T ~[]I, I any](slice T) *I {
 	return &slice[len(slice)-1]
 }
 
+var tagsExp = regexp.MustCompile(`(^|\s)#\w+`)
+var dateExp = regexp.MustCompile(`^# (\d{2}\.\d{2}\.\d{4})`)
+
 func cleanupTitle(title string) string {
-	return strings.TrimSpace(gomoji.RemoveEmojis(title))
+	title = gomoji.RemoveEmojis(title)
+	title = tagsExp.ReplaceAllString(title, "")
+	return strings.TrimSpace(title)
 }
 
 // Parses an input into a structured list of notes. The input value follows an
@@ -47,9 +52,6 @@ func Parse(input io.Reader) ([]Note, error) {
 	var notes []Note
 	var root *Note
 	var current *Note
-
-	tagsExp := regexp.MustCompile(`(^|\s)#\w+`)
-	dateExp := regexp.MustCompile(`^# (\d{2}\.\d{2}\.\d{4})`)
 
 	var isFencedBlock bool = false
 

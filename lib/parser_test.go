@@ -416,6 +416,21 @@ func TestGenerateTitle(t *testing.T) {
 			input:    "# 🎉 Note 1\n",
 			expected: "Note 1",
 		},
+		{
+			name:     "tag in title",
+			input:    "# Note 1 #tag\n",
+			expected: "Note 1",
+		},
+		{
+			name:     "multiple tags in title",
+			input:    "# Note 1 #tag_1 #tag_2\n",
+			expected: "Note 1",
+		},
+		{
+			name:     "tag at the start of title",
+			input:    "# #tag Note 1\n",
+			expected: "Note 1",
+		},
 	}
 
 	for _, i := range testcases {
@@ -449,6 +464,11 @@ func TestGenerateChildTitle(t *testing.T) {
 		{
 			name:     "emoji in title",
 			input:    "# 03.04.2026\n\n## 🎉 Child Note 1",
+			expected: "Child Note 1",
+		},
+		{
+			name:     "tag in title",
+			input:    "# 03.04.2026\n\n## Child Note 1 #tag",
 			expected: "Child Note 1",
 		},
 	}
