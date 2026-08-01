@@ -10,3 +10,6 @@ run = "air -- web --input ${usage_file}"
 
 [tasks.fmt]
 run = ["go fmt", "pnpm prettier -cw web/"]
+
+[tasks.test]
+run = "go test ./..."
