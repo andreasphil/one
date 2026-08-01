@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"io"
 
-	"charm.land/lipgloss/v2"
-	"charm.land/lipgloss/v2/tree"
 	"github.com/andreasphil/one/lib"
 	"github.com/andreasphil/one/util"
 )
@@ -22,19 +20,27 @@ func list(args listCmdInit, stdout io.Writer, _ io.Writer) error {
 
 	util.Infof("parsed %v notes", len(notes))
 
-	t := tree.New()
-	t.Root(fmt.Sprintf("%v notes", len(notes)))
-
-	for _, note := range notes {
-		node := tree.Root(note.Title)
-		t.Child(node)
-
-		for _, childNote := range note.Children {
-			node.Child(childNote.Title)
-		}
-	}
-
-	lipgloss.Fprintln(stdout, t)
+	fmt.Fprintf(stdout, "%v notes\n", len(notes))
+	printTree(stdout, notes, "")
 
 	return nil
+}
+
+func printTree(w io.Writer, notes []lib.Note, prefix string) {
+	for i, note := range notes {
+		last := i == len(notes)-1
+
+		connector := "├─ "
+		childPrefix := prefix + "│  "
+		if last {
+			connector = "└─ "
+			childPrefix = prefix + "   "
+		}
+
+		fmt.Fprintf(w, "%v%v%v\n", prefix, connector, note.Title)
+
+		if len(note.Children) > 0 {
+			printTree(w, note.Children, childPrefix)
+		}
+	}
 }
