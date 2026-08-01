@@ -1,21 +1,36 @@
 package cli
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"io"
 )
 
+// usage prints top-level usage information, listing all available commands.
+func usage(w io.Writer) {
+	fmt.Fprint(w, `Usage: one <command> [flags]
+
+Commands:
+  list, ls      List notes and their structure
+  sort          Sort notes
+  lint          Check notes for issues
+  format, fmt   Format notes
+  web           Serve notes over HTTP
+
+Run 'one <command> --help' for the flags of a specific command.
+`)
+}
+
 func Run(args []string, stdout io.Writer, stderr io.Writer) error {
 	if len(args) == 0 {
-		return errors.New("no command specified")
+		return fmt.Errorf("no command specified (run 'one help' for usage)")
 	}
 
 	params := args[1:]
 
 	switch args[0] {
 	case "help", "--help", "-help":
+		usage(stdout)
 		return nil
 
 	case "list", "ls":
@@ -59,6 +74,6 @@ func Run(args []string, stdout io.Writer, stderr io.Writer) error {
 		return serve(webCmdInit{input: *webInput, port: *webPort}, stdout, stderr)
 
 	default:
-		return fmt.Errorf("unknown command: %v", args[0])
+		return fmt.Errorf("unknown command: %v (run 'one help' for usage)", args[0])
 	}
 }
