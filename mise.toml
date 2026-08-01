@@ -1,6 +1,8 @@
 [tools]
 air = "latest"
 go = "latest"
+node = "26"
+pnpm = "latest"
 
 [tasks.dev]
 usage = """
