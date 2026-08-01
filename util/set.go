@@ -20,7 +20,7 @@ func NewSetFrom[T comparable](initial []T) Set[T] {
 	return set
 }
 
-func (s *Set[T]) Add(values ...T) int {
+func (s Set[T]) Add(values ...T) int {
 	added := 0
 
 	for _, value := range values {
@@ -33,7 +33,7 @@ func (s *Set[T]) Add(values ...T) int {
 	return added
 }
 
-func (s *Set[T]) Delete(values ...T) int {
+func (s Set[T]) Delete(values ...T) int {
 	deleted := 0
 
 	for _, value := range values {
@@ -46,16 +46,16 @@ func (s *Set[T]) Delete(values ...T) int {
 	return deleted
 }
 
-func (s *Set[T]) Has(value T) bool {
+func (s Set[T]) Has(value T) bool {
 	_, ok := s.values[value]
 	return ok
 }
 
-func (s *Set[T]) ToSlice() []T {
+func (s Set[T]) ToSlice() []T {
 	values := maps.Keys(s.values)
 	return slices.Collect(values)
 }
 
-func (s *Set[T]) Len() int {
+func (s Set[T]) Len() int {
 	return len(s.values)
 }
