@@ -14,9 +14,12 @@
     --body-padding-x: 0px;
     --body-padding-y: 0px;
     --body-width: initial;
+    --font-size: 15px;
     --tint: 320;
   }
 
-  /* TODO: Fix in DS */
-  /* ... */
+  /* TODO: Fix in Design System */
+  nav :is(strong:first-child, a) {
+    gap: 0.75ch;
+  }
 }

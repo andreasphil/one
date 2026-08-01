@@ -2,7 +2,7 @@
   :scope {
     display: grid;
     grid-template-areas: ". sidebar content bg-spacer";
-    grid-template-columns: 1fr 20rem minmax(auto, 90rem) 1fr;
+    grid-template-columns: 1fr 18rem minmax(auto, 90rem) 1fr;
     height: 100dvh;
   }
 
