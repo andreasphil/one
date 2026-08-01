@@ -130,6 +130,14 @@ figure > blockquote {
 
 :is(ol, ul, dl) {
   margin: var(--outer-spacing-y) 0;
+
+  li & {
+    margin-block: 0;
+  }
+}
+
+ul {
+  list-style-type: disc;
 }
 
 li {
@@ -795,7 +803,7 @@ nav {
   padding: 0;
   display: flex;
 
-  & strong:first-child {
+  & :is(strong:first-child, a) {
     align-items: center;
     gap: .75rem;
     display: flex;
@@ -825,28 +833,21 @@ nav {
       flex: none;
       padding: .375rem .75rem;
     }
-  }
 
-  & a {
-    border-radius: var(--border-radius);
-    font-weight: var(--font-weight-medium);
-    align-items: center;
-    gap: .75ch;
-    padding: .375rem .75rem;
-    text-decoration: none;
-    display: inline-flex;
+    & a {
+      border-radius: var(--border-radius);
+      font-weight: var(--font-weight-medium);
+      padding: .375rem .75rem;
+      text-decoration: none;
 
-    &:focus-visible {
-      outline-offset: var(--outline-inset);
-      outline: var(--outline);
-    }
+      &:focus-visible {
+        outline-offset: var(--outline-inset);
+        outline: var(--outline);
+      }
 
-    &[aria-current="true"], &[aria-current="location"], &[aria-current="page"] {
-      background: var(--c-surface-variant-bg);
-    }
-
-    &:only-child {
-      display: flex;
+      &[aria-current="true"], &[aria-current="location"], &[aria-current="page"] {
+        background: var(--c-surface-variant-bg);
+      }
     }
   }
 
