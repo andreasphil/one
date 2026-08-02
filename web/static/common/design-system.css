@@ -191,7 +191,7 @@ strong {
 }
 
 :is(sup, sub) {
-  font-size: .75rem;
+  font-size: .75em;
 }
 
 a {
@@ -237,13 +237,13 @@ a {
   --font-family: system-ui, sans-serif;
   --font-family-mono: ui-monospace, Menlo, Consolas, monospace;
   --font-size: 1rem;
-  --font-size-small: calc(var(--font-size) * .875);
-  --font-size-h6: var(--font-size);
-  --font-size-h5: var(--font-size);
-  --font-size-h4: calc(var(--font-size) * 1.1);
-  --font-size-h3: calc(var(--font-size) * 1.25);
-  --font-size-h2: calc(var(--font-size) * 1.45);
-  --font-size-h1: calc(var(--font-size) * 2);
+  --font-size-small: .875em;
+  --font-size-h6: 1em;
+  --font-size-h5: 1em;
+  --font-size-h4: 1.1em;
+  --font-size-h3: 1.25em;
+  --font-size-h2: 1.45em;
+  --font-size-h1: 2em;
   --font-size-mono: .9em;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
@@ -803,9 +803,15 @@ nav {
   padding: 0;
   display: flex;
 
-  & :is(strong:first-child, a) {
+  & strong:first-child {
     align-items: center;
     gap: .75rem;
+    display: flex;
+  }
+
+  & a {
+    align-items: center;
+    gap: .75ch;
     display: flex;
   }
 
@@ -1159,6 +1165,44 @@ ul[role="tablist"] {
 
 [has-fallback] > :first-child:empty, :is([has-fallback="empty"], [has-fallback="loading"], [has-fallback="error"]) > :first-child {
   display: none !important;
+}
+
+.prose {
+  --c-link-hover: var(--c-fg);
+  --c-link: var(--primary);
+  --outer-spacing-y: 1rem;
+  --prose-font-size: var(--font-size);
+  --prose-line-height: 1.75;
+  --prose-max-width: 80ch;
+  font-size: var(--prose-font-size);
+  line-height: var(--prose-line-height);
+  max-width: var(--prose-max-width);
+  text-wrap: pretty;
+  margin-inline: auto;
+
+  & > :first-child {
+    margin-top: 0;
+  }
+
+  & > :last-child {
+    margin-bottom: 0;
+  }
+
+  & h1 {
+    margin-bottom: calc(var(--outer-spacing-y) * 2);
+  }
+
+  & :is(h1, h2, h3) {
+    margin-top: calc(var(--outer-spacing-y) * 2);
+  }
+
+  & :is(ol, ul) {
+    padding-left: 2rem;
+  }
+
+  & li {
+    margin-top: .25rem;
+  }
 }
 
 [aria-busy="true"] {
