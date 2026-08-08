@@ -1,8 +1,8 @@
 [tools]
-air = "latest"
-go = "latest"
+air = "1.67.4"
+go = "1.26.5"
 node = "26"
-pnpm = "latest"
+pnpm = "11"
 
 [tasks.dev]
 usage = """
