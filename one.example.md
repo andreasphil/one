@@ -589,8 +589,6 @@ next_scheduled_change: "after the holiday special"
 
 # 25.03.2026
 
-Rehearsal day for the spring benefit. #rehearsal
-
 ## Rehearsal 🎻
 
 Ran the full benefit program start to finish:
