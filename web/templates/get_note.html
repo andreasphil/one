@@ -33,14 +33,21 @@
         {{- if not .Data.Note.Date.IsZero -}}
           {{ $noteDate := .Data.Note.Date.Format "Monday, 2. January 2006" }}
           {{ if .Data.Note.IsDailyNote }}
-            <span class="color-variant">{{ $noteDate }}</span>
+            <span class="color-variant">
+              {{ template "calendar.svg" }}
+              {{ $noteDate }}
+            </span>
           {{ else }}
             <a href="/notes/{{ .Data.Note.Date.Format "2006-01-02" }}/">
+              <span class="color-variant">{{ template "calendar.svg" }}</span>
               {{ $noteDate }}
             </a>
           {{ end }}
         {{- else -}}
-          <span class="color-variant">Knowledge Base</span>
+          <span class="color-variant">
+            {{ template "sparkles.svg" }}
+            Knowledge Base
+          </span>
         {{- end -}}
 
         {{- if .Data.Note.Children -}}
