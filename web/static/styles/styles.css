@@ -23,6 +23,6 @@
   }
 
   .prose {
-    --prose-font-size: 16px;
+    --prose-font-size: clamp(14px, 0.187vw + 13.308px, 16px);
   }
 }
