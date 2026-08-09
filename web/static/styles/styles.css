@@ -11,9 +11,6 @@
 
 @layer base {
   /* --- TODO: fix in design system --- */
-  nav :is(strong:first-child, a) {
-    gap: 0.75ch;
-  }
   /* --- end todo --- */
 
   :root {
