@@ -25,4 +25,14 @@
   .prose {
     --prose-font-size: clamp(14px, 0.187vw + 13.308px, 16px);
   }
+
+  em,
+  blockquote {
+    font-family: var(--font-family-display);
+    font-style: italic;
+  }
+}
+
+:root {
+  --font-family-display: Georgia, serif;
 }
