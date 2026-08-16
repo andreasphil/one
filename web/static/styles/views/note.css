@@ -1,33 +1,35 @@
 @scope (.note-view) {
   :scope {
-    display: grid;
-    grid-auto-rows: max-content;
-    grid-template-areas: "note note" "details details";
-    grid-template-columns: 1fr 18rem;
+    display: flex;
+    flex-direction: column;
     height: 100%;
 
-    @media (width >= 1024px) {
-      grid-auto-rows: unset;
-      grid-template-areas: "note details";
+    @container (width >= 640px) {
+      flex-direction: row;
     }
   }
 
   .content {
-    grid-area: note;
-    overflow: auto;
+    flex: 1;
     padding: 4rem 2rem;
+
+    @container (width >= 640px) {
+      overflow: auto;
+    }
   }
 
   aside {
-    border-top: var(--border-width) solid var(--c-border);
-    grid-area: details;
-    overflow: auto;
+    border: 0px solid var(--c-border);
+    border-top-width: var(--border-width);
+    flex: none;
     padding: 2rem;
 
-    @media (width >= 1024px) {
-      border-left: var(--border-width) solid var(--c-border);
-      border-top: none;
+    @container (width >= 640px) {
+      border-left-width: var(--border-width);
+      border-top-width: 0px;
+      overflow: auto;
       padding-block: 4rem;
+      width: 18rem;
     }
 
     nav {
