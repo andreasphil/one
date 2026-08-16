@@ -1,22 +1,35 @@
 @scope (.layout) to (:is(aside, main) > *) {
   :scope {
-    display: grid;
-    grid-template-areas: "sidebar content";
-    grid-template-columns: 18rem auto;
-    height: 100dvh;
-  }
+    display: flex;
+    flex-direction: column;
 
-  aside {
-    border-right: var(--border-width) solid var(--c-border);
-    container-type: inline-size;
-    grid-area: sidebar;
-    overflow: auto;
+    @media (width >= 640px) {
+      flex-direction: row;
+      height: 100dvh;
+    }
   }
 
   main {
     background-color: var(--c-surface-bg);
     container-type: inline-size;
-    grid-area: content;
-    overflow: auto;
+    flex: 1;
+
+    @media (width >= 640px) {
+      overflow: auto;
+    }
+  }
+
+  aside {
+    border: 0px solid var(--c-border);
+    border-bottom-width: var(--border-width);
+    container-type: inline-size;
+    flex: none;
+
+    @media (width >= 640px) {
+      border-bottom-width: 0px;
+      border-right-width: var(--border-width);
+      overflow: auto;
+      width: 18rem;
+    }
   }
 }
