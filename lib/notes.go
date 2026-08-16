@@ -64,9 +64,9 @@ func Sort(notes []Note) ([]Note, bool) {
 	return notes, !isSorted
 }
 
-// Stringify serializes notes back into their onefile markdown representation,
+// ToString serializes notes back into their onefile markdown representation,
 // with a blank line between top-level notes and a single trailing newline.
-func Stringify(notes []Note) string {
+func ToString(notes []Note) string {
 	if len(notes) == 0 {
 		return ""
 	}
