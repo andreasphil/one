@@ -67,7 +67,7 @@
           <div has-fallback>
             <div class="tags">
               {{- range .Data.Note.Tags.ToSlice -}}
-                <a class="tag" href="#">
+                <a class="tag" href="/tags/{{ slice . 1 }}/">
                   {{ template "tag.svg" }}
                   {{ slice . 1 }}
                 </a>

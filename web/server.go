@@ -28,6 +28,8 @@ func NewServer(init ServerInit) http.Server {
 
 	router.HandleFunc("GET /search/{$}", getSearch(init.Notes, markdownRenderer))
 
+	router.HandleFunc("GET /tags/{tag}/{$}", getTag())
+
 	router.Handle("/static/", http.FileServerFS(static))
 
 	return http.Server{
