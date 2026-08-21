@@ -1,0 +1,49 @@
+{{ template "layout.html" . }}
+{{ define "sidebar" }}
+  {{ template "navigation.html" . }}
+{{ end }}
+
+{{ define "content" }}
+  <div class="search-view">
+    <form action="/search">
+      <label for="searchbox" class="visually-hidden">Search</label>
+      <input
+        id="searchbox"
+        autofocus
+        name="query"
+        placeholder="Search..."
+        type="search"
+        value="{{ .Data.Query }}"
+      />
+    </form>
+
+    {{ if .Data.Query }}
+      <output class="caps font-size-small color-primary font-weight-medium">
+        {{ len .Data.Results }} result{{ if ne (len .Data.Results) 1 }}s{{ end }} for
+        "{{ .Data.Query }}"
+      </output>
+
+      <div has-fallback="{{ if not (len .Data.Results) }}empty{{ end }}">
+        <ul class="search-results">
+          {{ range $i, $result := .Data.Results }}
+            <li>
+              <header>
+                <a href="/notes/{{ .Slug }}/">{{ $result.Title }}</a>
+                {{ if not $result.Date.IsZero }}
+                  <span class="color-variant">(on {{ $result.Date.Format "02.01.2006" }})</span>
+                {{ end }}
+              </header>
+              <div class="prose">
+                {{ $result.Html }}
+              </div>
+            </li>
+          {{ end }}
+        </ul>
+        <div fallback-for="empty">
+          <p>{{ template "search.svg" }}</p>
+          <p>No search results.</p>
+        </div>
+      </div>
+    {{ end }}
+  </div>
+{{ end }}

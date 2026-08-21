@@ -26,6 +26,8 @@ func NewServer(init ServerInit) http.Server {
 	router.HandleFunc("GET /notes/{$}", getNotes(init.Notes))
 	router.HandleFunc("GET /notes/{slug}/{$}", getNote(init.Notes, markdownRenderer))
 
+	router.HandleFunc("GET /search/{$}", getSearch(init.Notes, markdownRenderer))
+
 	router.Handle("/static/", http.FileServerFS(static))
 
 	return http.Server{
