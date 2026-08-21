@@ -1,6 +1,7 @@
 [tools]
 air = "1.67.4"
-go = "1.26.6"
+go = "1.27.0"
+"go:golang.org/x/tools/gopls" = "0.23.0"
 node = "26"
 pnpm = "11"
 
