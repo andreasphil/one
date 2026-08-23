@@ -313,13 +313,13 @@ func TestSortNormalizesNewline(t *testing.T) {
 
 	notes, _ = note.Sort(notes)
 
-	result := note.ToString(notes)
+	result := note.String(notes)
 	if result != expected {
 		t.Errorf("expected %q, got %q", expected, result)
 	}
 }
 
-func TestToString(t *testing.T) {
+func TestString(t *testing.T) {
 	type testcase struct {
 		name     string
 		input    string
@@ -356,7 +356,7 @@ func TestToString(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 
-			result := note.ToString(notes)
+			result := note.String(notes)
 			if result != tc.expected {
 				t.Errorf("expected %q, got %q", tc.expected, result)
 			}

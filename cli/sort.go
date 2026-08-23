@@ -42,7 +42,7 @@ func sort(args sortCmdInit, _ io.Writer, _ io.Writer) error {
 		output = args.input
 	}
 
-	err = util.WriteTextFile(note.ToString(notes), output, 0644)
+	err = util.WriteTextFile(note.String(notes), output, 0644)
 	if err != nil {
 		return fmt.Errorf("could not write to %v, %v", output, err)
 	}

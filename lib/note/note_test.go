@@ -8,8 +8,8 @@ import (
 	"github.com/andreasphil/one/lib/note"
 )
 
-func TestNewNote(t *testing.T) {
-	n := note.NewNote("Test Title")
+func TestNew(t *testing.T) {
+	n := note.New("Test Title")
 
 	if n.Title != "Test Title" {
 		t.Errorf("expected title 'Test Title', got %q", n.Title)
@@ -312,7 +312,7 @@ func TestIsDailyNote(t *testing.T) {
 	}
 }
 
-func TestString(t *testing.T) {
+func TestNoteString(t *testing.T) {
 	type testcase struct {
 		name     string
 		input    string

@@ -133,10 +133,10 @@ func TestHasReturnsFalse(t *testing.T) {
 	}
 }
 
-func TestToSlice(t *testing.T) {
+func TestValues(t *testing.T) {
 	values := []string{"one", "two"}
 	set := util.NewSetFrom(values)
-	result := set.ToSlice()
+	result := set.Values()
 
 	if len(result) != len(values) {
 		t.Errorf("unexpected length: was %v, expected %v", len(result), len(values))

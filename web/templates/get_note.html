@@ -66,7 +66,7 @@
           <div class="caps font-size-small color-primary font-weight-medium">Tags</div>
           <div has-fallback>
             <div class="tags">
-              {{- range .Data.Note.Tags.ToSlice -}}
+              {{- range .Data.Note.Tags.Values -}}
                 <a class="tag" href="/tags/{{ slice . 1 }}/">
                   {{ template "tag.svg" }}
                   {{ slice . 1 }}

@@ -24,8 +24,8 @@ type Note struct {
 	Raw      string
 }
 
-// NewNote creates a new, empty Note with the given title.
-func NewNote(title string) Note {
+// New creates a new, empty Note with the given title.
+func New(title string) Note {
 	return Note{
 		Title: title,
 		Tags:  util.NewSet[string](),

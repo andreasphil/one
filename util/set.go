@@ -59,8 +59,8 @@ func (s Set[T]) Has(value T) bool {
 	return ok
 }
 
-// ToSlice returns the set's values as a slice, in no particular order.
-func (s Set[T]) ToSlice() []T {
+// Values returns the set's values as a slice, in no particular order.
+func (s Set[T]) Values() []T {
 	values := maps.Keys(s.values)
 	return slices.Collect(values)
 }

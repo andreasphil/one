@@ -75,7 +75,7 @@ func Parse(input io.Reader) ([]Note, error) {
 		if shouldParseDetail {
 			// Level 1 heading = new note
 			if title, found := strings.CutPrefix(line, "# "); found {
-				notes = append(notes, NewNote(cleanupTitle(title)))
+				notes = append(notes, New(cleanupTitle(title)))
 				root = last(notes)
 				current = root
 			} else if current == nil {
@@ -89,7 +89,7 @@ func Parse(input io.Reader) ([]Note, error) {
 			if childTitle, found := strings.CutPrefix(line, "## "); found && root != nil && root.IsDailyNote() {
 				current = root
 
-				childNote := NewNote(cleanupTitle(childTitle))
+				childNote := New(cleanupTitle(childTitle))
 				childNote.Date = current.Date
 
 				current.Children = append(current.Children, childNote)
