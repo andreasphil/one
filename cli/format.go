@@ -10,7 +10,7 @@ import (
 	"github.com/andreasphil/one/util"
 )
 
-type formatCmdInit struct {
+type formatArgs struct {
 	input  string
 	output string
 	check  bool
@@ -36,7 +36,7 @@ func execFormatter(content []byte, filename string) (string, error) {
 	return stdout.String(), nil
 }
 
-func format(args formatCmdInit, _ io.Writer, _ io.Writer) error {
+func format(args formatArgs, _ io.Writer, _ io.Writer) error {
 	content, err := os.ReadFile(args.input)
 	if err != nil {
 		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)

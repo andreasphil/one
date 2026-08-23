@@ -19,12 +19,12 @@ func (s staticNotesProvider) Notes() []note.Note {
 	return s
 }
 
-type webCmdInit struct {
+type webArgs struct {
 	input string
 	port  string
 }
 
-func serve(args webCmdInit, stdout io.Writer, _ io.Writer) error {
+func serve(args webArgs, stdout io.Writer, _ io.Writer) error {
 	notes, err := note.ParseFile(args.input)
 	if err != nil {
 		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)
@@ -35,7 +35,7 @@ func serve(args webCmdInit, stdout io.Writer, _ io.Writer) error {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
-	server := web.NewServer(web.ServerInit{
+	server := web.NewServer(web.ServerArgs{
 		Port:  args.port,
 		Notes: staticNotesProvider(notes),
 	})

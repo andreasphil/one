@@ -8,13 +8,13 @@ import (
 	"github.com/andreasphil/one/util"
 )
 
-type sortCmdInit struct {
+type sortArgs struct {
 	input  string
 	output string
 	check  bool
 }
 
-func sort(args sortCmdInit, _ io.Writer, _ io.Writer) error {
+func sort(args sortArgs, _ io.Writer, _ io.Writer) error {
 	notes, err := note.ParseFile(args.input)
 	if err != nil {
 		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)

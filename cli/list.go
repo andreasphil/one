@@ -8,11 +8,11 @@ import (
 	"github.com/andreasphil/one/util"
 )
 
-type listCmdInit struct {
+type listArgs struct {
 	input string
 }
 
-func list(args listCmdInit, stdout io.Writer, _ io.Writer) error {
+func list(args listArgs, stdout io.Writer, _ io.Writer) error {
 	notes, err := note.ParseFile(args.input)
 	if err != nil {
 		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)

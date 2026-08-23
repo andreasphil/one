@@ -9,11 +9,11 @@ import (
 	"github.com/andreasphil/one/util"
 )
 
-type lintCmdInit struct {
+type lintArgs struct {
 	input string
 }
 
-func lint(args lintCmdInit, _ io.Writer, _ io.Writer) error {
+func lint(args lintArgs, _ io.Writer, _ io.Writer) error {
 	hadWarnings := false
 
 	// Parses without errors

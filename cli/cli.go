@@ -38,7 +38,7 @@ func Run(args []string, stdout io.Writer, stderr io.Writer) error {
 		listInput := listFlags.String("input", "one.md", "file to read")
 		listFlags.Parse(params)
 
-		return list(listCmdInit{input: *listInput}, stdout, stderr)
+		return list(listArgs{input: *listInput}, stdout, stderr)
 
 	case "sort":
 		sortFlags := flag.NewFlagSet("sort", flag.ExitOnError)
@@ -47,14 +47,14 @@ func Run(args []string, stdout io.Writer, stderr io.Writer) error {
 		sortCheck := sortFlags.Bool("check", false, "if set, only reports if the file needs sorting without writing any changes")
 		sortFlags.Parse(params)
 
-		return sort(sortCmdInit{input: *sortInput, output: *sortOutput, check: *sortCheck}, stdout, stderr)
+		return sort(sortArgs{input: *sortInput, output: *sortOutput, check: *sortCheck}, stdout, stderr)
 
 	case "lint":
 		lintFlags := flag.NewFlagSet("lint", flag.ExitOnError)
 		lintInput := lintFlags.String("input", "one.md", "file to read")
 		lintFlags.Parse(params)
 
-		return lint(lintCmdInit{input: *lintInput}, stdout, stderr)
+		return lint(lintArgs{input: *lintInput}, stdout, stderr)
 
 	case "format", "fmt":
 		formatFlags := flag.NewFlagSet("format", flag.ExitOnError)
@@ -63,7 +63,7 @@ func Run(args []string, stdout io.Writer, stderr io.Writer) error {
 		formatCheck := formatFlags.Bool("check", false, "if set, only reports if the file needs formatting without writing any changes")
 		formatFlags.Parse(params)
 
-		return format(formatCmdInit{input: *formatInput, output: *formatOutput, check: *formatCheck}, stdout, stderr)
+		return format(formatArgs{input: *formatInput, output: *formatOutput, check: *formatCheck}, stdout, stderr)
 
 	case "web":
 		webFlags := flag.NewFlagSet("web", flag.ExitOnError)
@@ -71,7 +71,7 @@ func Run(args []string, stdout io.Writer, stderr io.Writer) error {
 		webPort := webFlags.String("port", "8080", "port to serve on")
 		webFlags.Parse(params)
 
-		return serve(webCmdInit{input: *webInput, port: *webPort}, stdout, stderr)
+		return serve(webArgs{input: *webInput, port: *webPort}, stdout, stderr)
 
 	default:
 		return fmt.Errorf("unknown command: %v (run 'one help' for usage)", args[0])

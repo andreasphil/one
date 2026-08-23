@@ -23,28 +23,28 @@ type MarkdownRenderer interface {
 	Render(input string) (template.HTML, error)
 }
 
-type ServerInit struct {
+type ServerArgs struct {
 	Port  string
 	Notes NotesProvider
 }
 
-func NewServer(init ServerInit) http.Server {
+func NewServer(args ServerArgs) http.Server {
 	var markdownRenderer MarkdownRenderer = service.NewMarkdown()
 
 	router := http.NewServeMux()
 
 	router.Handle("/{$}", http.RedirectHandler("/notes/", http.StatusTemporaryRedirect))
-	router.HandleFunc("GET /notes/{$}", getNotes(init.Notes))
-	router.HandleFunc("GET /notes/{slug}/{$}", getNote(init.Notes, markdownRenderer))
+	router.HandleFunc("GET /notes/{$}", getNotes(args.Notes))
+	router.HandleFunc("GET /notes/{slug}/{$}", getNote(args.Notes, markdownRenderer))
 
-	router.HandleFunc("GET /search/{$}", getSearch(init.Notes, markdownRenderer))
+	router.HandleFunc("GET /search/{$}", getSearch(args.Notes, markdownRenderer))
 
 	router.HandleFunc("GET /tags/{tag}/{$}", getTag())
 
 	router.Handle("/static/", http.FileServerFS(static))
 
 	return http.Server{
-		Addr:    fmt.Sprintf(":%v", init.Port),
+		Addr:    fmt.Sprintf(":%v", args.Port),
 		Handler: router,
 	}
 }

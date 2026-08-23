@@ -28,7 +28,7 @@ func newTestServer(t *testing.T, markdown string) (http.Handler, []note.Note) {
 		t.Fatalf("failed to parse test notes: %v", err)
 	}
 
-	server := web.NewServer(web.ServerInit{Notes: fakeNotesProvider(notes), Port: "0"})
+	server := web.NewServer(web.ServerArgs{Notes: fakeNotesProvider(notes), Port: "0"})
 	return server.Handler, notes
 }
 
