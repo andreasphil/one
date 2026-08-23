@@ -29,7 +29,7 @@ type ServerInit struct {
 }
 
 func NewServer(init ServerInit) http.Server {
-	var markdownRenderer MarkdownRenderer = service.NewMarkdownService()
+	var markdownRenderer MarkdownRenderer = service.NewMarkdown()
 
 	router := http.NewServeMux()
 

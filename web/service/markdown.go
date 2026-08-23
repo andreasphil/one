@@ -9,22 +9,25 @@ import (
 	"github.com/yuin/goldmark/extension"
 )
 
-type MarkdownService struct {
+// Markdown renders the markdown source of a note as HTML, with GFM,
+// typographer and #tag support enabled.
+type Markdown struct {
 	renderer goldmark.Markdown
 }
 
-func NewMarkdownService() MarkdownService {
-	markdown := goldmark.New(goldmark.WithExtensions(
+// NewMarkdown creates a Markdown renderer.
+func NewMarkdown() Markdown {
+	md := goldmark.New(goldmark.WithExtensions(
 		extension.GFM,
 		extension.Typographer,
 
 		&markdown.Tag{Prefix: "/tags/"},
 	))
 
-	return MarkdownService{renderer: markdown}
+	return Markdown{renderer: md}
 }
 
-func (m MarkdownService) Render(input string) (template.HTML, error) {
+func (m Markdown) Render(input string) (template.HTML, error) {
 	out := bytes.Buffer{}
 	if err := m.renderer.Convert([]byte(input), &out); err != nil {
 		return "", err
