@@ -16,7 +16,7 @@ type searchResult struct {
 	Html  template.HTML
 }
 
-func getSearch(notes NotesProvider, renderer MarkdownRenderer) http.HandlerFunc {
+func getSearch(provider NotesProvider, renderer MarkdownRenderer) http.HandlerFunc {
 	type getSearchData struct {
 		Notes   []note.Note
 		Results []searchResult
@@ -26,7 +26,7 @@ func getSearch(notes NotesProvider, renderer MarkdownRenderer) http.HandlerFunc 
 	render := newRenderFunc[getSearchData]("get_search.html")
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		notes := notes.Notes()
+		notes := provider.Notes()
 
 		query := r.URL.Query().Get("query")
 

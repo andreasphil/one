@@ -8,7 +8,7 @@ import (
 	"github.com/andreasphil/one/util"
 )
 
-func getNotes(notes NotesProvider) http.HandlerFunc {
+func getNotes(provider NotesProvider) http.HandlerFunc {
 	type getNotesData struct {
 		Notes []note.Note
 	}
@@ -16,7 +16,7 @@ func getNotes(notes NotesProvider) http.HandlerFunc {
 	render := newRenderFunc[getNotesData]("get_notes.html")
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		notes := notes.Notes()
+		notes := provider.Notes()
 
 		err := render(w, data[getNotesData]{
 			Title:      "Notes",
@@ -31,7 +31,7 @@ func getNotes(notes NotesProvider) http.HandlerFunc {
 	}
 }
 
-func getNote(notes NotesProvider, renderer MarkdownRenderer) http.HandlerFunc {
+func getNote(provider NotesProvider, renderer MarkdownRenderer) http.HandlerFunc {
 	type getNoteData struct {
 		Notes []note.Note
 		Note  note.Note
@@ -41,7 +41,7 @@ func getNote(notes NotesProvider, renderer MarkdownRenderer) http.HandlerFunc {
 	render := newRenderFunc[getNoteData]("get_note.html")
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		notes := notes.Notes()
+		notes := provider.Notes()
 		slug := r.PathValue("slug")
 
 		n, found := note.GetRecursive(notes, slug)
