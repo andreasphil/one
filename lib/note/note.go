@@ -12,7 +12,7 @@ import (
 var dateTitleExp = regexp.MustCompile(`^\d{2}\.\d{2}\.\d{4}$`)
 var normalizeExp = regexp.MustCompile(`[^\wäöüß]+`)
 
-// Note represents a single note parsed from an onefile. Daily notes (notes
+// Note represents a single note parsed from a notes file. Daily notes (notes
 // whose title is a date in the format of DD.MM.YYYY) may have children,
 // which represent the level 2 headings within that daily note.
 type Note struct {

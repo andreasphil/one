@@ -130,7 +130,7 @@ func Parse(input io.Reader) ([]Note, error) {
 	}
 
 	if isFencedBlock {
-		return nil, errors.New("invalid onefile content, fenced code block was not closed")
+		return nil, errors.New("invalid notes file content, fenced code block was not closed")
 	}
 
 	return notes, nil

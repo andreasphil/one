@@ -376,7 +376,7 @@ func TestUnclosedFencedBlock(t *testing.T) {
 		t.Errorf("expected error for unclosed fenced code block")
 	}
 
-	expectedMsg := "invalid onefile content, fenced code block was not closed"
+	expectedMsg := "invalid notes file content, fenced code block was not closed"
 	if err.Error() != expectedMsg {
 		t.Errorf("expected error message %q, got %q", expectedMsg, err.Error())
 	}
