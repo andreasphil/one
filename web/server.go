@@ -3,22 +3,33 @@ package web
 import (
 	"embed"
 	"fmt"
+	"html/template"
 	"net/http"
 
-	"github.com/andreasphil/one/web/adapter"
+	"github.com/andreasphil/one/lib/note"
 	"github.com/andreasphil/one/web/service"
 )
 
 //go:embed static
 var static embed.FS
 
+// NotesProvider supplies the notes the server renders.
+type NotesProvider interface {
+	Notes() []note.Note
+}
+
+// MarkdownRenderer converts the markdown source of a note into HTML.
+type MarkdownRenderer interface {
+	Render(input string) (template.HTML, error)
+}
+
 type ServerInit struct {
 	Port  string
-	Notes adapter.NotesProvider
+	Notes NotesProvider
 }
 
 func NewServer(init ServerInit) http.Server {
-	var markdownRenderer adapter.MarkdownRenderer = service.NewMarkdownService()
+	var markdownRenderer MarkdownRenderer = service.NewMarkdownService()
 
 	router := http.NewServeMux()
 

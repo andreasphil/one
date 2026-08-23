@@ -6,10 +6,9 @@ import (
 
 	"github.com/andreasphil/one/lib/note"
 	"github.com/andreasphil/one/util"
-	"github.com/andreasphil/one/web/adapter"
 )
 
-func getNotes(notes adapter.NotesProvider) http.HandlerFunc {
+func getNotes(notes NotesProvider) http.HandlerFunc {
 	type getNotesData struct {
 		Notes []note.Note
 	}
@@ -32,7 +31,7 @@ func getNotes(notes adapter.NotesProvider) http.HandlerFunc {
 	}
 }
 
-func getNote(notes adapter.NotesProvider, renderer adapter.MarkdownRenderer) http.HandlerFunc {
+func getNote(notes NotesProvider, renderer MarkdownRenderer) http.HandlerFunc {
 	type getNoteData struct {
 		Notes []note.Note
 		Note  note.Note

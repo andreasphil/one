@@ -7,7 +7,6 @@ import (
 
 	"github.com/andreasphil/one/lib/note"
 	"github.com/andreasphil/one/util"
-	"github.com/andreasphil/one/web/adapter"
 )
 
 type searchResult struct {
@@ -17,7 +16,7 @@ type searchResult struct {
 	Html  template.HTML
 }
 
-func getSearch(notes adapter.NotesProvider, renderer adapter.MarkdownRenderer) http.HandlerFunc {
+func getSearch(notes NotesProvider, renderer MarkdownRenderer) http.HandlerFunc {
 	type getSearchData struct {
 		Notes   []note.Note
 		Results []searchResult
