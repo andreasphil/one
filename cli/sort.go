@@ -14,23 +14,23 @@ type sortArgs struct {
 	check  bool
 }
 
-func sort(args sortArgs, _ io.Writer, _ io.Writer) error {
+func sort(args sortArgs, _ io.Writer, stderr io.Writer) error {
 	notes, err := note.ParseFile(args.input)
 	if err != nil {
 		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)
 	}
 
-	util.Infof("parsed %v notes", len(notes))
+	util.Infof(stderr, "parsed %v notes", len(notes))
 
 	notes, didSort := note.Sort(notes)
 	if !didSort {
-		util.Infof("notes already sorted")
+		util.Infof(stderr, "notes already sorted")
 	} else if !args.check {
-		util.Infof("notes need sorting")
+		util.Infof(stderr, "notes need sorting")
 	}
 
 	if args.check {
-		util.Warnf("check only. no changes have been made")
+		util.Warnf(stderr, "check only. no changes have been made")
 		if didSort {
 			return fmt.Errorf("notes need sorting")
 		}
@@ -47,6 +47,6 @@ func sort(args sortArgs, _ io.Writer, _ io.Writer) error {
 		return fmt.Errorf("could not write to %v, %v", output, err)
 	}
 
-	util.Successf("sorted")
+	util.Successf(stderr, "sorted")
 	return nil
 }

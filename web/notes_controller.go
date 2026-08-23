@@ -2,13 +2,14 @@ package web
 
 import (
 	"html/template"
+	"io"
 	"net/http"
 
 	"github.com/andreasphil/one/lib/note"
 	"github.com/andreasphil/one/util"
 )
 
-func getNotes(provider NotesProvider) http.HandlerFunc {
+func getNotes(errw io.Writer, provider NotesProvider) http.HandlerFunc {
 	type getNotesData struct {
 		Notes []note.Note
 	}
@@ -25,13 +26,13 @@ func getNotes(provider NotesProvider) http.HandlerFunc {
 		})
 
 		if err != nil {
-			util.HttpErrorf(w, http.StatusInternalServerError, "failed to render page template: %v", err)
+			util.HttpErrorf(errw, w, http.StatusInternalServerError, "failed to render page template: %v", err)
 			return
 		}
 	}
 }
 
-func getNote(provider NotesProvider, renderer MarkdownRenderer) http.HandlerFunc {
+func getNote(errw io.Writer, provider NotesProvider, renderer MarkdownRenderer) http.HandlerFunc {
 	type getNoteData struct {
 		Notes []note.Note
 		Note  note.Note
@@ -46,13 +47,13 @@ func getNote(provider NotesProvider, renderer MarkdownRenderer) http.HandlerFunc
 
 		n, found := note.FindBySlug(notes, slug)
 		if !found {
-			util.HttpErrorf(w, http.StatusNotFound, "note %v not found", slug)
+			util.HttpErrorf(errw, w, http.StatusNotFound, "note %v not found", slug)
 			return
 		}
 
 		html, err := renderer.Render(n.Content())
 		if err != nil {
-			util.HttpErrorf(w, http.StatusUnprocessableEntity, "failed to render note to html: %v", err)
+			util.HttpErrorf(errw, w, http.StatusUnprocessableEntity, "failed to render note to html: %v", err)
 			return
 		}
 
@@ -63,7 +64,7 @@ func getNote(provider NotesProvider, renderer MarkdownRenderer) http.HandlerFunc
 		})
 
 		if err != nil {
-			util.HttpErrorf(w, http.StatusInternalServerError, "failed to render page template: %v", err)
+			util.HttpErrorf(errw, w, http.StatusInternalServerError, "failed to render page template: %v", err)
 			return
 		}
 	}

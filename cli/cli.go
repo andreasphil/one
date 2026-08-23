@@ -5,26 +5,30 @@ import (
 	"flag"
 	"fmt"
 	"io"
+
+	"github.com/andreasphil/one/util"
 )
 
 func usage(w io.Writer) {
-	fmt.Fprint(w, `Usage: one <command> [flags]
+	fmt.Fprint(w, ` Usage: one <command> [flags]
 
-Commands:
-  list, ls      List notes and their structure
-  sort          Sort notes
-  lint          Check notes for issues
-  format, fmt   Format notes
-  web           Serve notes over HTTP
+ Commands:
+   list, ls      List notes and their structure
+   sort          Sort notes
+   lint          Check notes for issues
+   format, fmt   Format notes
+   web           Serve notes over HTTP
 
-Run 'one <command> --help' for the flags of a specific command.
+ Run 'one <command> --help' for the flags of a specific command.
 `)
 }
 
 // Run executes the command named by the first of args, with the rest passed to
-// that command as flags. Output meant for the user is written to stdout and
+// that command as flags. Data is written to stdout, logs and diagnostics to
 // stderr. It returns an error if the command is unknown or if it failed.
 func Run(args []string, stdout io.Writer, stderr io.Writer) error {
+	util.Banner(stderr, "one")
+
 	if len(args) == 0 {
 		return fmt.Errorf("no command specified (run 'one help' for usage)")
 	}

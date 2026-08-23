@@ -10,7 +10,7 @@ import (
 func main() {
 	code := 0
 	if err := cli.Run(os.Args[1:], os.Stdout, os.Stderr); err != nil {
-		util.Errorf("%v", err)
+		util.Errorf(os.Stderr, "%v\n", err)
 		code = 1
 	}
 

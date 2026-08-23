@@ -24,26 +24,27 @@ type webArgs struct {
 	port  string
 }
 
-func serve(args webArgs, stdout io.Writer, _ io.Writer) error {
+func serve(args webArgs, _ io.Writer, stderr io.Writer) error {
 	notes, err := note.ParseFile(args.input)
 	if err != nil {
 		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)
 	}
 
-	util.Infof("parsed %v notes", len(notes))
+	util.Infof(stderr, "parsed %v notes", len(notes))
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
 	server := web.NewServer(web.ServerArgs{
-		Port:  args.port,
-		Notes: staticNotesProvider(notes),
+		Port:   args.port,
+		Notes:  staticNotesProvider(notes),
+		Errors: stderr,
 	})
 
 	errChan := make(chan error, 1)
 
 	go func() {
-		util.Infof("serving at http://localhost:%v", args.port)
+		util.Infof(stderr, "serving at http://localhost:%v", args.port)
 
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			errChan <- fmt.Errorf("server exited with an error: %v", err)
@@ -57,8 +58,8 @@ func serve(args webArgs, stdout io.Writer, _ io.Writer) error {
 		return err
 	}
 
-	fmt.Println()
-	util.Infof("bye :)")
+	fmt.Fprintln(stderr)
+	util.Infof(stderr, "bye :)")
 
 	return nil
 }

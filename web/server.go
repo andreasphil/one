@@ -5,6 +5,7 @@ import (
 	"embed"
 	"fmt"
 	"html/template"
+	"io"
 	"net/http"
 
 	"github.com/andreasphil/one/lib/note"
@@ -30,6 +31,8 @@ type ServerArgs struct {
 	Port string
 	// Notes supplies the notes the server renders.
 	Notes NotesProvider
+	// Errors is where request errors are logged. Defaults to io.Discard.
+	Errors io.Writer
 }
 
 // NewServer creates a server with the routes, templates and static files of
@@ -37,13 +40,18 @@ type ServerArgs struct {
 func NewServer(args ServerArgs) http.Server {
 	var markdownRenderer MarkdownRenderer = service.NewMarkdown()
 
+	errw := args.Errors
+	if errw == nil {
+		errw = io.Discard
+	}
+
 	router := http.NewServeMux()
 
 	router.Handle("/{$}", http.RedirectHandler("/notes/", http.StatusTemporaryRedirect))
-	router.HandleFunc("GET /notes/{$}", getNotes(args.Notes))
-	router.HandleFunc("GET /notes/{slug}/{$}", getNote(args.Notes, markdownRenderer))
+	router.HandleFunc("GET /notes/{$}", getNotes(errw, args.Notes))
+	router.HandleFunc("GET /notes/{slug}/{$}", getNote(errw, args.Notes, markdownRenderer))
 
-	router.HandleFunc("GET /search/{$}", getSearch(args.Notes, markdownRenderer))
+	router.HandleFunc("GET /search/{$}", getSearch(errw, args.Notes, markdownRenderer))
 
 	router.HandleFunc("GET /tags/{tag}/{$}", getTag())
 

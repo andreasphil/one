@@ -2,52 +2,72 @@ package util
 
 import (
 	"fmt"
-	"log"
+	"io"
 	"net/http"
+	"strings"
+	"unicode/utf8"
 )
 
 const (
 	reset  = "\033[0m"
+	bold   = "\033[1m"
 	blue   = "\033[34m"
 	yellow = "\033[33m"
 	red    = "\033[31m"
 	green  = "\033[32m"
-	bgRed  = "\033[41m"
-	black  = "\033[30m"
+	gray   = "\033[90m"
+
+	// 256 color palette colors
+	plum = "\033[38;5;176m"
 )
+
+const face = "(っᵔᴗᵔ)っ"
 
 func style(color string, text string) string {
 	return color + text + reset
 }
 
-// Infof logs an informational message, formatted according to format, and
-// prefixed with a blue arrow.
-func Infof(format string, v ...any) {
-	log.Printf(style(blue, "→")+" "+format, v...)
+// Banner writes text to w in a violet rounded frame.
+func Banner(w io.Writer, text string) {
+	rule := strings.Repeat("─", utf8.RuneCountInString(text)+4)
+
+	fmt.Fprintf(w, "\n %v\n", style(plum, "╭"+rule+"╮"))
+	fmt.Fprintf(w, " %v  %v  %v  %v\n", style(plum, "│"), style(bold, text), style(plum, "│"), style(gray, face))
+	fmt.Fprintf(w, " %v\n\n", style(plum, "╰"+rule+"╯"))
 }
 
-// Warnf logs a warning message, formatted according to format, and prefixed
-// with a yellow triangle.
-func Warnf(format string, v ...any) {
-	log.Printf(style(yellow, "△")+" "+format, v...)
+func logf(w io.Writer, marker string, format string, v ...any) {
+	fmt.Fprintf(w, " "+marker+" "+format+"\n", v...)
 }
 
-// Errorf logs an error message, formatted according to format, and prefixed
-// with a red cross.
-func Errorf(format string, v ...any) {
-	log.Printf(style(red, "✗")+" "+format, v...)
+// Infof writes an informational message to w, formatted according to format,
+// and prefixed with a gray arrow.
+func Infof(w io.Writer, format string, v ...any) {
+	logf(w, style(gray, "→"), format, v...)
 }
 
-// Successf logs a success message, formatted according to format, and prefixed
-// with a green checkmark.
-func Successf(format string, v ...any) {
-	log.Printf(style(green, "✓")+" "+format, v...)
+// Warnf writes a warning message to w, formatted according to format, and
+// prefixed with a yellow triangle.
+func Warnf(w io.Writer, format string, v ...any) {
+	logf(w, style(yellow, "△"), format, v...)
 }
 
-// HttpErrorf logs an error message formatted according to format, and writes it
-// as an HTTP error response with the given status code.
-func HttpErrorf(w http.ResponseWriter, status int, format string, v ...any) {
+// Errorf writes an error message to w, formatted according to format, and
+// prefixed with a red cross.
+func Errorf(w io.Writer, format string, v ...any) {
+	logf(w, style(red, "✗"), format, v...)
+}
+
+// Successf writes a success message to w, formatted according to format, and
+// prefixed with a green checkmark.
+func Successf(w io.Writer, format string, v ...any) {
+	logf(w, style(green, "✓"), format, v...)
+}
+
+// HttpErrorf writes an error message, formatted according to format, to errw,
+// and sends it as an HTTP error response with the given status code.
+func HttpErrorf(errw io.Writer, w http.ResponseWriter, status int, format string, v ...any) {
 	message := fmt.Sprintf(format, v...)
-	Errorf("%v %v", status, message)
+	Errorf(errw, "%v %v", status, message)
 	http.Error(w, message, status)
 }

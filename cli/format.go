@@ -36,7 +36,7 @@ func execFormatter(content []byte, filename string) (string, error) {
 	return stdout.String(), nil
 }
 
-func format(args formatArgs, _ io.Writer, _ io.Writer) error {
+func format(args formatArgs, _ io.Writer, stderr io.Writer) error {
 	content, err := os.ReadFile(args.input)
 	if err != nil {
 		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)
@@ -50,13 +50,13 @@ func format(args formatArgs, _ io.Writer, _ io.Writer) error {
 	didFormat := formatted != string(content)
 
 	if !didFormat {
-		util.Infof("notes already formatted")
+		util.Infof(stderr, "notes already formatted")
 	} else if !args.check {
-		util.Infof("notes need formatting")
+		util.Infof(stderr, "notes need formatting")
 	}
 
 	if args.check {
-		util.Warnf("check only. no changes have been made")
+		util.Warnf(stderr, "check only. no changes have been made")
 		if didFormat {
 			return fmt.Errorf("notes need formatting")
 		}
@@ -73,6 +73,6 @@ func format(args formatArgs, _ io.Writer, _ io.Writer) error {
 		return fmt.Errorf("could not write to %v, %v", output, err)
 	}
 
-	util.Successf("formatted")
+	util.Successf(stderr, "formatted")
 	return nil
 }

@@ -12,13 +12,13 @@ type listArgs struct {
 	input string
 }
 
-func list(args listArgs, stdout io.Writer, _ io.Writer) error {
+func list(args listArgs, stdout io.Writer, stderr io.Writer) error {
 	notes, err := note.ParseFile(args.input)
 	if err != nil {
 		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)
 	}
 
-	util.Infof("parsed %v notes", len(notes))
+	util.Infof(stderr, "parsed %v notes\n", len(notes))
 
 	fmt.Fprintf(stdout, "%v notes\n", len(notes))
 	printTree(stdout, notes, "")

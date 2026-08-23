@@ -13,72 +13,72 @@ type lintArgs struct {
 	input string
 }
 
-func lint(args lintArgs, _ io.Writer, _ io.Writer) error {
+func lint(args lintArgs, _ io.Writer, stderr io.Writer) error {
 	hadWarnings := false
 
 	// Parses without errors
 	notes, err := note.ParseFile(args.input)
 	if err != nil {
-		util.Warnf("failed to parse %v: %v", args.input, err)
+		util.Warnf(stderr, "failed to parse %v: %v", args.input, err)
 		return fmt.Errorf("linting failed")
 	}
 
-	util.Infof("parses without errors (%v notes)", len(notes))
+	util.Infof(stderr, "parses without errors (%v notes)", len(notes))
 
 	// Is sorted
 	if _, didSort := note.Sort(notes); didSort {
-		util.Warnf("notes are not sorted")
+		util.Warnf(stderr, "notes are not sorted")
 		hadWarnings = true
 	} else {
-		util.Infof("notes are sorted")
+		util.Infof(stderr, "notes are sorted")
 	}
 
 	// Is formatted, would format without errors
 	if content, err := os.ReadFile(args.input); err != nil {
-		util.Warnf("failed to read %v: %v", args.input, err)
+		util.Warnf(stderr, "failed to read %v: %v", args.input, err)
 		hadWarnings = true
 	} else if formatted, err := execFormatter(content, args.input); err != nil {
-		util.Warnf("%v", err)
+		util.Warnf(stderr, "%v", err)
 		hadWarnings = true
 	} else if formatted != string(content) {
-		util.Warnf("notes are not formatted")
+		util.Warnf(stderr, "notes are not formatted")
 		hadWarnings = true
 	} else {
-		util.Infof("notes are formatted")
+		util.Infof(stderr, "notes are formatted")
 	}
 
 	// Has duplicate slugs
 	if duplicates := note.DuplicateSlugs(notes); len(duplicates) > 0 {
 		for _, slug := range duplicates {
-			util.Warnf("duplicate slug: %v", slug)
+			util.Warnf(stderr, "duplicate slug: %v", slug)
 		}
 		hadWarnings = true
 	} else {
-		util.Infof("no duplicate slugs")
+		util.Infof(stderr, "no duplicate slugs")
 	}
 
 	// Has empty titles
 	if count := note.CountEmptyTitles(notes); count > 0 {
-		util.Warnf("%v notes have empty titles (after cleanup)", count)
+		util.Warnf(stderr, "%v notes have empty titles (after cleanup)", count)
 		hadWarnings = true
 	} else {
-		util.Infof("no empty titles")
+		util.Infof(stderr, "no empty titles")
 	}
 
 	// Has empty notes
 	if empty := note.EmptyNotes(notes); len(empty) > 0 {
 		for _, n := range empty {
-			util.Warnf("empty note: %v", n.Title)
+			util.Warnf(stderr, "empty note: %v", n.Title)
 		}
 		hadWarnings = true
 	} else {
-		util.Infof("no empty notes")
+		util.Infof(stderr, "no empty notes")
 	}
 
 	if hadWarnings {
 		return fmt.Errorf("lint found issues")
 	}
 
-	util.Successf("no issues found")
+	util.Successf(stderr, "no issues found")
 	return nil
 }

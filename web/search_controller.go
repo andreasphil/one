@@ -2,6 +2,7 @@ package web
 
 import (
 	"html/template"
+	"io"
 	"net/http"
 	"time"
 
@@ -16,7 +17,7 @@ type searchResult struct {
 	Html  template.HTML
 }
 
-func getSearch(provider NotesProvider, renderer MarkdownRenderer) http.HandlerFunc {
+func getSearch(errw io.Writer, provider NotesProvider, renderer MarkdownRenderer) http.HandlerFunc {
 	type getSearchData struct {
 		Notes   []note.Note
 		Results []searchResult
@@ -34,7 +35,7 @@ func getSearch(provider NotesProvider, renderer MarkdownRenderer) http.HandlerFu
 		for _, match := range note.Containing(notes, query) {
 			html, err := renderer.Render(match.Content())
 			if err != nil {
-				util.HttpErrorf(w, http.StatusUnprocessableEntity, "failed to render note to html: %v", err)
+				util.HttpErrorf(errw, w, http.StatusUnprocessableEntity, "failed to render note to html: %v", err)
 				return
 			}
 
@@ -58,7 +59,7 @@ func getSearch(provider NotesProvider, renderer MarkdownRenderer) http.HandlerFu
 		})
 
 		if err != nil {
-			util.HttpErrorf(w, http.StatusInternalServerError, "failed to render page template: %v", err)
+			util.HttpErrorf(errw, w, http.StatusInternalServerError, "failed to render page template: %v", err)
 			return
 		}
 	}
