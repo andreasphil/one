@@ -10,7 +10,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestChunkNotes(t *testing.T) {
+func TestParseSplitsNotesOnHeadings(t *testing.T) {
 	type testcase struct {
 		name     string
 		input    string
@@ -219,7 +219,7 @@ func TestChunkNotes(t *testing.T) {
 	}
 }
 
-func TestRequireHeading(t *testing.T) {
+func TestParseRequiresLeadingHeading(t *testing.T) {
 	input := "test\n\n# Note 1"
 	_, err := note.Parse(strings.NewReader(input))
 
@@ -228,7 +228,7 @@ func TestRequireHeading(t *testing.T) {
 	}
 }
 
-func TestRequireContent(t *testing.T) {
+func TestParseRequiresContent(t *testing.T) {
 	input := ""
 	result, err := note.Parse(strings.NewReader(input))
 
@@ -241,7 +241,7 @@ func TestRequireContent(t *testing.T) {
 	}
 }
 
-func TestExtractTags(t *testing.T) {
+func TestParseExtractsTags(t *testing.T) {
 	type testcase struct {
 		name     string
 		input    string
@@ -313,7 +313,7 @@ func TestExtractTags(t *testing.T) {
 	}
 }
 
-func TestExtractDate(t *testing.T) {
+func TestParseExtractsDate(t *testing.T) {
 	type testcase struct {
 		name     string
 		input    string
@@ -368,7 +368,7 @@ func TestExtractDate(t *testing.T) {
 	}
 }
 
-func TestUnclosedFencedBlock(t *testing.T) {
+func TestParseRejectsUnclosedFence(t *testing.T) {
 	input := "# Note 1\n\n```\ncode block"
 	_, err := note.Parse(strings.NewReader(input))
 
@@ -382,7 +382,7 @@ func TestUnclosedFencedBlock(t *testing.T) {
 	}
 }
 
-func TestExtractIcon(t *testing.T) {
+func TestParseExtractsIcon(t *testing.T) {
 	type testcase struct {
 		name     string
 		input    string
@@ -432,7 +432,7 @@ func TestExtractIcon(t *testing.T) {
 	}
 }
 
-func TestGenerateTitle(t *testing.T) {
+func TestParseCleansUpTitle(t *testing.T) {
 	type testcase struct {
 		name     string
 		input    string
@@ -482,7 +482,7 @@ func TestGenerateTitle(t *testing.T) {
 	}
 }
 
-func TestGenerateChildTitle(t *testing.T) {
+func TestParseCleansUpChildTitle(t *testing.T) {
 	type testcase struct {
 		name     string
 		input    string
