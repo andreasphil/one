@@ -1,24 +1,24 @@
-package lib_test
+package note_test
 
 import (
 	"testing"
 	"time"
 
-	"github.com/andreasphil/one/lib"
+	"github.com/andreasphil/one/lib/note"
 	"github.com/google/go-cmp/cmp"
 )
 
 func TestDuplicateSlugs(t *testing.T) {
 	type testcase struct {
 		name     string
-		notes    []lib.Note
+		notes    []note.Note
 		expected []string
 	}
 
 	testcases := []testcase{
 		{
 			name: "returns nil if there are no duplicates",
-			notes: []lib.Note{
+			notes: []note.Note{
 				{Title: "Root 1"},
 				{Title: "Root 2"},
 			},
@@ -26,7 +26,7 @@ func TestDuplicateSlugs(t *testing.T) {
 		},
 		{
 			name: "returns duplicate slugs at the root level",
-			notes: []lib.Note{
+			notes: []note.Note{
 				{Title: "Root 1"},
 				{Title: "Root 1"},
 				{Title: "Root 2"},
@@ -35,10 +35,10 @@ func TestDuplicateSlugs(t *testing.T) {
 		},
 		{
 			name: "returns duplicate slugs across nested children",
-			notes: []lib.Note{
+			notes: []note.Note{
 				{
 					Title: "Root 1",
-					Children: []lib.Note{
+					Children: []note.Note{
 						{Title: "Child 1"},
 					},
 				},
@@ -48,7 +48,7 @@ func TestDuplicateSlugs(t *testing.T) {
 		},
 		{
 			name: "returns each duplicate slug only once, in first-seen order",
-			notes: []lib.Note{
+			notes: []note.Note{
 				{Title: "B"},
 				{Title: "A"},
 				{Title: "B"},
@@ -59,12 +59,12 @@ func TestDuplicateSlugs(t *testing.T) {
 		},
 		{
 			name:     "returns nil for empty input",
-			notes:    []lib.Note{},
+			notes:    []note.Note{},
 			expected: nil,
 		},
 		{
 			name: "treats daily notes with the same date as duplicates",
-			notes: []lib.Note{
+			notes: []note.Note{
 				{
 					Title: "01.01.2025",
 					Date:  time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -80,7 +80,7 @@ func TestDuplicateSlugs(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := lib.DuplicateSlugs(tc.notes)
+			result := note.DuplicateSlugs(tc.notes)
 			if !cmp.Equal(result, tc.expected) {
 				t.Errorf("expected %v, got %v", tc.expected, result)
 			}
@@ -91,14 +91,14 @@ func TestDuplicateSlugs(t *testing.T) {
 func TestEmptyTitles(t *testing.T) {
 	type testcase struct {
 		name     string
-		notes    []lib.Note
+		notes    []note.Note
 		expected int
 	}
 
 	testcases := []testcase{
 		{
 			name: "returns 0 if there are no empty titles",
-			notes: []lib.Note{
+			notes: []note.Note{
 				{Title: "Root 1"},
 				{Title: "Root 2"},
 			},
@@ -106,7 +106,7 @@ func TestEmptyTitles(t *testing.T) {
 		},
 		{
 			name: "counts notes with empty titles at the root level",
-			notes: []lib.Note{
+			notes: []note.Note{
 				{Title: ""},
 				{Title: "Root 2"},
 			},
@@ -114,14 +114,14 @@ func TestEmptyTitles(t *testing.T) {
 		},
 		{
 			name: "counts notes with empty titles in nested children",
-			notes: []lib.Note{
+			notes: []note.Note{
 				{
 					Title: "Root 1",
-					Children: []lib.Note{
+					Children: []note.Note{
 						{Title: ""},
 						{
 							Title: "Child 2",
-							Children: []lib.Note{
+							Children: []note.Note{
 								{Title: ""},
 							},
 						},
@@ -132,14 +132,14 @@ func TestEmptyTitles(t *testing.T) {
 		},
 		{
 			name:     "returns 0 for empty input",
-			notes:    []lib.Note{},
+			notes:    []note.Note{},
 			expected: 0,
 		},
 	}
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := lib.EmptyTitles(tc.notes)
+			result := note.EmptyTitles(tc.notes)
 			if result != tc.expected {
 				t.Errorf("expected %v, got %v", tc.expected, result)
 			}
@@ -150,21 +150,21 @@ func TestEmptyTitles(t *testing.T) {
 func TestEmptyNotes(t *testing.T) {
 	type testcase struct {
 		name     string
-		notes    []lib.Note
+		notes    []note.Note
 		expected []string
 	}
 
 	testcases := []testcase{
 		{
 			name: "returns nil if there are no empty notes",
-			notes: []lib.Note{
+			notes: []note.Note{
 				{Title: "Root 1", Raw: "# Root 1\n\nContent"},
 			},
 			expected: nil,
 		},
 		{
 			name: "returns titles of notes without content at the root level",
-			notes: []lib.Note{
+			notes: []note.Note{
 				{Title: "Root 1", Raw: "# Root 1\n\n"},
 				{Title: "Root 2", Raw: "# Root 2\n\nContent"},
 			},
@@ -172,11 +172,11 @@ func TestEmptyNotes(t *testing.T) {
 		},
 		{
 			name: "returns titles of notes without content in nested children",
-			notes: []lib.Note{
+			notes: []note.Note{
 				{
 					Title: "Root 1",
 					Raw:   "# Root 1\n\n",
-					Children: []lib.Note{
+					Children: []note.Note{
 						{Title: "Child 1", Raw: "## Child 1\n\n"},
 						{Title: "Child 2", Raw: "## Child 2\n\nContent"},
 					},
@@ -186,11 +186,11 @@ func TestEmptyNotes(t *testing.T) {
 		},
 		{
 			name: "does not count notes with children as empty, even if their own content is empty",
-			notes: []lib.Note{
+			notes: []note.Note{
 				{
 					Title: "Root 1",
 					Raw:   "# Root 1\n\n",
-					Children: []lib.Note{
+					Children: []note.Note{
 						{Title: "Child 1", Raw: "## Child 1\n\nContent"},
 					},
 				},
@@ -199,14 +199,14 @@ func TestEmptyNotes(t *testing.T) {
 		},
 		{
 			name:     "returns nil for empty input",
-			notes:    []lib.Note{},
+			notes:    []note.Note{},
 			expected: nil,
 		},
 	}
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := lib.EmptyNotes(tc.notes)
+			result := note.EmptyNotes(tc.notes)
 			if !cmp.Equal(result, tc.expected) {
 				t.Errorf("expected %v, got %v", tc.expected, result)
 			}

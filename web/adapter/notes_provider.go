@@ -1,7 +1,7 @@
 package adapter
 
-import "github.com/andreasphil/one/lib"
+import "github.com/andreasphil/one/lib/note"
 
 type NotesProvider interface {
-	Notes() []lib.Note
+	Notes() []note.Note
 }

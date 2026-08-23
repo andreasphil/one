@@ -1,11 +1,11 @@
-package lib_test
+package note_test
 
 import (
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/andreasphil/one/lib"
+	"github.com/andreasphil/one/lib/note"
 	"github.com/andreasphil/one/util"
 	"github.com/google/go-cmp/cmp"
 )
@@ -13,20 +13,20 @@ import (
 func TestGetRecursive(t *testing.T) {
 	type testcase struct {
 		name     string
-		notes    []lib.Note
+		notes    []note.Note
 		slug     string
 		expectOk bool
 	}
 
-	notes := []lib.Note{
+	notes := []note.Note{
 		{Title: "Root 1"},
 		{
 			Title: "Root 2",
-			Children: []lib.Note{
+			Children: []note.Note{
 				{Title: "Child 1"},
 				{
 					Title: "Child 2",
-					Children: []lib.Note{
+					Children: []note.Note{
 						{Title: "Grandchild 1"},
 					},
 				},
@@ -62,7 +62,7 @@ func TestGetRecursive(t *testing.T) {
 		},
 		{
 			name:     "search in empty slice",
-			notes:    []lib.Note{},
+			notes:    []note.Note{},
 			slug:     "any",
 			expectOk: false,
 		},
@@ -70,7 +70,7 @@ func TestGetRecursive(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result, ok := lib.GetRecursive(tc.notes, tc.slug)
+			result, ok := note.GetRecursive(tc.notes, tc.slug)
 
 			if ok != tc.expectOk {
 				t.Errorf("expected ok=%v, got ok=%v", tc.expectOk, ok)
@@ -82,7 +82,7 @@ func TestGetRecursive(t *testing.T) {
 				}
 			} else {
 				exportSetInternals := cmp.AllowUnexported(util.NewSet[string]())
-				if !cmp.Equal(result, lib.Note{}, exportSetInternals) {
+				if !cmp.Equal(result, note.Note{}, exportSetInternals) {
 					t.Errorf("expected empty Note{}, got %+v", result)
 				}
 			}
@@ -91,15 +91,15 @@ func TestGetRecursive(t *testing.T) {
 }
 
 func TestWalk(t *testing.T) {
-	notes := []lib.Note{
+	notes := []note.Note{
 		{Title: "Root 1"},
 		{
 			Title: "Root 2",
-			Children: []lib.Note{
+			Children: []note.Note{
 				{Title: "Child 1"},
 				{
 					Title: "Child 2",
-					Children: []lib.Note{
+					Children: []note.Note{
 						{Title: "Grandchild 1"},
 					},
 				},
@@ -111,7 +111,7 @@ func TestWalk(t *testing.T) {
 	t.Run("visits every note in depth-first, pre-order", func(t *testing.T) {
 		var visited []string
 
-		result := lib.Walk(notes, func(n lib.Note) bool {
+		result := note.Walk(notes, func(n note.Note) bool {
 			visited = append(visited, n.Title)
 			return true
 		})
@@ -132,7 +132,7 @@ func TestWalk(t *testing.T) {
 	t.Run("stops early when fn returns false", func(t *testing.T) {
 		var visited []string
 
-		result := lib.Walk(notes, func(n lib.Note) bool {
+		result := note.Walk(notes, func(n note.Note) bool {
 			visited = append(visited, n.Title)
 			return n.Title != "Child 1"
 		})
@@ -151,7 +151,7 @@ func TestWalk(t *testing.T) {
 	t.Run("stopping in nested children also stops parent traversal", func(t *testing.T) {
 		var visited []string
 
-		result := lib.Walk(notes, func(n lib.Note) bool {
+		result := note.Walk(notes, func(n note.Note) bool {
 			visited = append(visited, n.Title)
 			return n.Title != "Grandchild 1"
 		})
@@ -172,7 +172,7 @@ func TestWalk(t *testing.T) {
 	t.Run("handles empty slice", func(t *testing.T) {
 		var visited []string
 
-		result := lib.Walk([]lib.Note{}, func(n lib.Note) bool {
+		result := note.Walk([]note.Note{}, func(n note.Note) bool {
 			visited = append(visited, n.Title)
 			return true
 		})
@@ -190,7 +190,7 @@ func TestWalk(t *testing.T) {
 func TestSort(t *testing.T) {
 	type testcase struct {
 		name          string
-		notes         []lib.Note
+		notes         []note.Note
 		expected      []string
 		expectDidSort bool
 	}
@@ -198,7 +198,7 @@ func TestSort(t *testing.T) {
 	testcases := []testcase{
 		{
 			name: "sorts daily notes by date (descending)",
-			notes: []lib.Note{
+			notes: []note.Note{
 				{
 					Title: "01.01.2025",
 					Date:  time.Date(2025, 01, 01, 0, 0, 0, 0, time.UTC),
@@ -217,7 +217,7 @@ func TestSort(t *testing.T) {
 		},
 		{
 			name: "sorts knowledge base notes alphabetically (ascending)",
-			notes: []lib.Note{
+			notes: []note.Note{
 				{
 					Title: "B",
 				},
@@ -233,7 +233,7 @@ func TestSort(t *testing.T) {
 		},
 		{
 			name: "groups all daily notes before knowledge base notes",
-			notes: []lib.Note{
+			notes: []note.Note{
 				{
 					Title: "01.01.2025",
 					Date:  time.Date(2025, 01, 01, 0, 0, 0, 0, time.UTC),
@@ -251,7 +251,7 @@ func TestSort(t *testing.T) {
 		},
 		{
 			name: "sort is not case-sensitive",
-			notes: []lib.Note{
+			notes: []note.Note{
 				{
 					Title: "a",
 				},
@@ -267,7 +267,7 @@ func TestSort(t *testing.T) {
 		},
 		{
 			name: "does not change already sorted notes",
-			notes: []lib.Note{
+			notes: []note.Note{
 				{
 					Title: "01.02.2025",
 					Date:  time.Date(2025, 02, 01, 0, 0, 0, 0, time.UTC),
@@ -287,14 +287,14 @@ func TestSort(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result, didSort := lib.Sort(tc.notes)
+			result, didSort := note.Sort(tc.notes)
 			if didSort != tc.expectDidSort {
 				t.Errorf("expected sorted to be %v, got %v", tc.expectDidSort, didSort)
 			}
 
-			for i, note := range result {
-				if note.Title != tc.expected[i] {
-					t.Errorf("expected note at %d to be %v, got %v", i, tc.expected[i], note.Title)
+			for i, n := range result {
+				if n.Title != tc.expected[i] {
+					t.Errorf("expected note at %d to be %v, got %v", i, tc.expected[i], n.Title)
 					t.FailNow()
 				}
 			}
@@ -306,14 +306,14 @@ func TestSortNormalizesNewline(t *testing.T) {
 	input := "# B\n\nLine 1\n\n# A\n\nLine 2\n"
 	expected := "# A\n\nLine 2\n\n# B\n\nLine 1\n"
 
-	notes, err := lib.Parse(strings.NewReader(input))
+	notes, err := note.Parse(strings.NewReader(input))
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	notes, _ = lib.Sort(notes)
+	notes, _ = note.Sort(notes)
 
-	result := lib.ToString(notes)
+	result := note.ToString(notes)
 	if result != expected {
 		t.Errorf("expected %q, got %q", expected, result)
 	}
@@ -351,12 +351,12 @@ func TestToString(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			notes, err := lib.Parse(strings.NewReader(tc.input))
+			notes, err := note.Parse(strings.NewReader(tc.input))
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
 
-			result := lib.ToString(notes)
+			result := note.ToString(notes)
 			if result != tc.expected {
 				t.Errorf("expected %q, got %q", tc.expected, result)
 			}

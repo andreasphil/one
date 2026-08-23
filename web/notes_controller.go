@@ -4,14 +4,14 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/andreasphil/one/lib"
+	"github.com/andreasphil/one/lib/note"
 	"github.com/andreasphil/one/util"
 	"github.com/andreasphil/one/web/adapter"
 )
 
 func getNotes(notes adapter.NotesProvider) http.HandlerFunc {
 	type getNotesData struct {
-		Notes []lib.Note
+		Notes []note.Note
 	}
 
 	render := newRenderFunc[getNotesData]("get_notes.html")
@@ -34,8 +34,8 @@ func getNotes(notes adapter.NotesProvider) http.HandlerFunc {
 
 func getNote(notes adapter.NotesProvider, renderer adapter.MarkdownRenderer) http.HandlerFunc {
 	type getNoteData struct {
-		Notes []lib.Note
-		Note  lib.Note
+		Notes []note.Note
+		Note  note.Note
 		Html  template.HTML
 	}
 
@@ -45,22 +45,22 @@ func getNote(notes adapter.NotesProvider, renderer adapter.MarkdownRenderer) htt
 		notes := notes.Notes()
 		slug := r.PathValue("slug")
 
-		note, found := lib.GetRecursive(notes, slug)
+		n, found := note.GetRecursive(notes, slug)
 		if !found {
 			util.HttpErrorf(w, http.StatusNotFound, "note %v not found", slug)
 			return
 		}
 
-		html, err := renderer.Render(note.Content())
+		html, err := renderer.Render(n.Content())
 		if err != nil {
 			util.HttpErrorf(w, http.StatusUnprocessableEntity, "failed to render note to html: %v", err)
 			return
 		}
 
 		err = render(w, data[getNoteData]{
-			Title:      note.Title,
+			Title:      n.Title,
 			CurrentUrl: r.URL.Path,
-			Data:       getNoteData{Notes: notes, Note: note, Html: html},
+			Data:       getNoteData{Notes: notes, Note: n, Html: html},
 		})
 
 		if err != nil {

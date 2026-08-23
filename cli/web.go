@@ -8,14 +8,14 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/andreasphil/one/lib"
+	"github.com/andreasphil/one/lib/note"
 	"github.com/andreasphil/one/util"
 	"github.com/andreasphil/one/web"
 )
 
-type staticNotesProvider []lib.Note
+type staticNotesProvider []note.Note
 
-func (s staticNotesProvider) Notes() []lib.Note {
+func (s staticNotesProvider) Notes() []note.Note {
 	return s
 }
 
@@ -25,7 +25,7 @@ type webCmdInit struct {
 }
 
 func serve(args webCmdInit, stdout io.Writer, _ io.Writer) error {
-	notes, err := lib.ParseFile(args.input)
+	notes, err := note.ParseFile(args.input)
 	if err != nil {
 		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)
 	}

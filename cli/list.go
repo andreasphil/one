@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/andreasphil/one/lib"
+	"github.com/andreasphil/one/lib/note"
 	"github.com/andreasphil/one/util"
 )
 
@@ -13,7 +13,7 @@ type listCmdInit struct {
 }
 
 func list(args listCmdInit, stdout io.Writer, _ io.Writer) error {
-	notes, err := lib.ParseFile(args.input)
+	notes, err := note.ParseFile(args.input)
 	if err != nil {
 		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)
 	}
@@ -26,8 +26,8 @@ func list(args listCmdInit, stdout io.Writer, _ io.Writer) error {
 	return nil
 }
 
-func printTree(w io.Writer, notes []lib.Note, prefix string) {
-	for i, note := range notes {
+func printTree(w io.Writer, notes []note.Note, prefix string) {
+	for i, n := range notes {
 		last := i == len(notes)-1
 
 		connector := "├─ "
@@ -37,10 +37,10 @@ func printTree(w io.Writer, notes []lib.Note, prefix string) {
 			childPrefix = prefix + "   "
 		}
 
-		fmt.Fprintf(w, "%v%v%v\n", prefix, connector, note.Title)
+		fmt.Fprintf(w, "%v%v%v\n", prefix, connector, n.Title)
 
-		if len(note.Children) > 0 {
-			printTree(w, note.Children, childPrefix)
+		if len(n.Children) > 0 {
+			printTree(w, n.Children, childPrefix)
 		}
 	}
 }

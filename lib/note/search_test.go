@@ -1,26 +1,26 @@
-package lib_test
+package note_test
 
 import (
 	"strings"
 	"testing"
 
-	"github.com/andreasphil/one/lib"
+	"github.com/andreasphil/one/lib/note"
 	"github.com/google/go-cmp/cmp"
 )
 
-func searchResultTitles(notes []lib.Note) []string {
+func searchResultTitles(notes []note.Note) []string {
 	titles := make([]string, len(notes))
-	for i, note := range notes {
-		titles[i] = note.Title
+	for i, n := range notes {
+		titles[i] = n.Title
 	}
 
 	return titles
 }
 
-func parseForSearch(t *testing.T, input string) []lib.Note {
+func parseForSearch(t *testing.T, input string) []note.Note {
 	t.Helper()
 
-	notes, err := lib.Parse(strings.NewReader(input))
+	notes, err := note.Parse(strings.NewReader(input))
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -129,7 +129,7 @@ func TestSearchContainingString(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			notes := parseForSearch(t, searchFixture)
 
-			result := searchResultTitles(lib.SearchContainingString(notes, tc.query))
+			result := searchResultTitles(note.SearchContainingString(notes, tc.query))
 
 			if len(result) != len(tc.expected) {
 				t.Fatalf("expected %v matches %v, got %v matches %v",
@@ -163,7 +163,7 @@ Also about x.
 
 	notes := parseForSearch(t, input)
 
-	result := searchResultTitles(lib.SearchContainingString(notes, "x"))
+	result := searchResultTitles(note.SearchContainingString(notes, "x"))
 	expected := []string{
 		"01.01.2026", "Child 1", "Child 2", "02.01.2026",
 	}
@@ -206,7 +206,7 @@ Matching everything is fun.
 		t.Run(tc.name, func(t *testing.T) {
 			notes := parseForSearch(t, input)
 
-			result := searchResultTitles(lib.SearchContainingString(notes, tc.query))
+			result := searchResultTitles(note.SearchContainingString(notes, tc.query))
 
 			if !cmp.Equal(result, tc.expected) {
 				t.Errorf("expected %v, got %v", tc.expected, result)
@@ -217,14 +217,14 @@ Matching everything is fun.
 
 func TestSearchContainingStringHandlesEmptyInput(t *testing.T) {
 	t.Run("empty slice", func(t *testing.T) {
-		result := lib.SearchContainingString([]lib.Note{}, "any")
+		result := note.SearchContainingString([]note.Note{}, "any")
 		if len(result) != 0 {
 			t.Errorf("expected no matches, got %v", searchResultTitles(result))
 		}
 	})
 
 	t.Run("nil slice", func(t *testing.T) {
-		result := lib.SearchContainingString(nil, "any")
+		result := note.SearchContainingString(nil, "any")
 		if len(result) != 0 {
 			t.Errorf("expected no matches, got %v", searchResultTitles(result))
 		}
@@ -235,7 +235,7 @@ func TestSearchContainingStringDoesNotModifyInput(t *testing.T) {
 	notes := parseForSearch(t, searchFixture)
 	before := parseForSearch(t, searchFixture)
 
-	lib.SearchContainingString(notes, "milk")
+	note.SearchContainingString(notes, "milk")
 
 	if !cmp.Equal(searchResultTitles(notes), searchResultTitles(before)) {
 		t.Errorf("expected input to be unchanged, got %v", searchResultTitles(notes))

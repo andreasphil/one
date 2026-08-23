@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/andreasphil/one/lib"
+	"github.com/andreasphil/one/lib/note"
 	"github.com/andreasphil/one/util"
 )
 
@@ -17,7 +17,7 @@ func lint(args lintCmdInit, _ io.Writer, _ io.Writer) error {
 	hadWarnings := false
 
 	// Parses without errors
-	notes, err := lib.ParseFile(args.input)
+	notes, err := note.ParseFile(args.input)
 	if err != nil {
 		util.Warnf("failed to parse %v: %v", args.input, err)
 		return fmt.Errorf("linting failed")
@@ -26,7 +26,7 @@ func lint(args lintCmdInit, _ io.Writer, _ io.Writer) error {
 	util.Infof("parses without errors (%v notes)", len(notes))
 
 	// Is sorted
-	if _, didSort := lib.Sort(notes); didSort {
+	if _, didSort := note.Sort(notes); didSort {
 		util.Warnf("notes are not sorted")
 		hadWarnings = true
 	} else {
@@ -48,7 +48,7 @@ func lint(args lintCmdInit, _ io.Writer, _ io.Writer) error {
 	}
 
 	// Has duplicate slugs
-	if duplicates := lib.DuplicateSlugs(notes); len(duplicates) > 0 {
+	if duplicates := note.DuplicateSlugs(notes); len(duplicates) > 0 {
 		for _, slug := range duplicates {
 			util.Warnf("duplicate slug: %v", slug)
 		}
@@ -58,7 +58,7 @@ func lint(args lintCmdInit, _ io.Writer, _ io.Writer) error {
 	}
 
 	// Has empty titles
-	if count := lib.EmptyTitles(notes); count > 0 {
+	if count := note.EmptyTitles(notes); count > 0 {
 		util.Warnf("%v notes have empty titles (after cleanup)", count)
 		hadWarnings = true
 	} else {
@@ -66,7 +66,7 @@ func lint(args lintCmdInit, _ io.Writer, _ io.Writer) error {
 	}
 
 	// Has empty notes
-	if empty := lib.EmptyNotes(notes); len(empty) > 0 {
+	if empty := note.EmptyNotes(notes); len(empty) > 0 {
 		for _, title := range empty {
 			util.Warnf("empty note: %v", title)
 		}

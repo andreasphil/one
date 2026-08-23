@@ -1,11 +1,11 @@
-package lib_test
+package note_test
 
 import (
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/andreasphil/one/lib"
+	"github.com/andreasphil/one/lib/note"
 	"github.com/andreasphil/one/util"
 	"github.com/google/go-cmp/cmp"
 )
@@ -14,14 +14,14 @@ func TestChunkNotes(t *testing.T) {
 	type testcase struct {
 		name     string
 		input    string
-		expected []lib.Note
+		expected []note.Note
 	}
 
 	testcases := []testcase{
 		{
 			name:  "simple note",
 			input: "# Note 1\n\nLine 1\n\nLine 2\n",
-			expected: []lib.Note{
+			expected: []note.Note{
 				{
 					Title: "Note 1",
 					Raw:   "# Note 1\n\nLine 1\n\nLine 2\n",
@@ -31,7 +31,7 @@ func TestChunkNotes(t *testing.T) {
 		{
 			name:  "two notes",
 			input: "# Note 1\n\nLine 1\n\nLine 2\n\n# Note 2\n\nLine 3\n\nLine 4\n",
-			expected: []lib.Note{
+			expected: []note.Note{
 				{
 					Title: "Note 1",
 					Raw:   "# Note 1\n\nLine 1\n\nLine 2\n\n",
@@ -45,7 +45,7 @@ func TestChunkNotes(t *testing.T) {
 		{
 			name:  "simple note with sub headings",
 			input: "# Note 1\n\nLine 1\n\nLine 2\n\n## Child Note 1\n\nLine 3\n\nLine 4\n\n# Note 2\n\nLine 5\n\nLine 6\n",
-			expected: []lib.Note{
+			expected: []note.Note{
 				{
 					Title: "Note 1",
 					Raw:   "# Note 1\n\nLine 1\n\nLine 2\n\n## Child Note 1\n\nLine 3\n\nLine 4\n\n",
@@ -59,7 +59,7 @@ func TestChunkNotes(t *testing.T) {
 		{
 			name:  "daily note",
 			input: "# 01.01.2026\n\nLine 1\n\nLine 2\n",
-			expected: []lib.Note{
+			expected: []note.Note{
 				{
 					Title: "01.01.2026",
 					Raw:   "# 01.01.2026\n\nLine 1\n\nLine 2\n",
@@ -70,12 +70,12 @@ func TestChunkNotes(t *testing.T) {
 		{
 			name:  "note with one child note",
 			input: "# 01.01.2026\n\nLine 1\n\nLine 2\n\n## Child Note 1\n\nLine 3\n\nLine 4\n\n# 02.01.2026\n\nLine 5\n\nLine 6\n",
-			expected: []lib.Note{
+			expected: []note.Note{
 				{
 					Title: "01.01.2026",
 					Raw:   "# 01.01.2026\n\nLine 1\n\nLine 2\n\n",
 					Date:  time.Date(2026, time.January, 01, 0, 0, 0, 0, time.UTC),
-					Children: []lib.Note{
+					Children: []note.Note{
 						{
 							Title: "Child Note 1",
 							Raw:   "## Child Note 1\n\nLine 3\n\nLine 4\n\n",
@@ -93,12 +93,12 @@ func TestChunkNotes(t *testing.T) {
 		{
 			name:  "note with multiple child notes",
 			input: "# 01.01.2026\n\nLine 1\n\nLine 2\n\n## Child Note 1\n\nLine 3\n\nLine 4\n\n## Child Note 2\n\nLine 5\n\nLine 6\n\n# 02.01.2026\n\nLine 7\n\nLine 8\n",
-			expected: []lib.Note{
+			expected: []note.Note{
 				{
 					Title: "01.01.2026",
 					Raw:   "# 01.01.2026\n\nLine 1\n\nLine 2\n\n",
 					Date:  time.Date(2026, time.January, 01, 0, 0, 0, 0, time.UTC),
-					Children: []lib.Note{
+					Children: []note.Note{
 						{
 							Title: "Child Note 1",
 							Raw:   "## Child Note 1\n\nLine 3\n\nLine 4\n\n",
@@ -121,7 +121,7 @@ func TestChunkNotes(t *testing.T) {
 		{
 			name:  "note with fenced code block",
 			input: "# 01.01.2026\n\nLine 1\n\n```\n\n# Block comment\n\n```\n",
-			expected: []lib.Note{
+			expected: []note.Note{
 				{
 					Title: "01.01.2026",
 					Raw:   "# 01.01.2026\n\nLine 1\n\n```\n\n# Block comment\n\n```\n",
@@ -132,7 +132,7 @@ func TestChunkNotes(t *testing.T) {
 		{
 			name:  "level 1 heading in fenced code block",
 			input: "# Note 1\n\n```\n# Not a new note\n```\n",
-			expected: []lib.Note{
+			expected: []note.Note{
 				{
 					Title: "Note 1",
 					Raw:   "# Note 1\n\n```\n# Not a new note\n```\n",
@@ -142,7 +142,7 @@ func TestChunkNotes(t *testing.T) {
 		{
 			name:  "level 2 heading in fenced code block",
 			input: "# 01.01.2026\n\n```\n## Not a child note\n```\n",
-			expected: []lib.Note{
+			expected: []note.Note{
 				{
 					Title: "01.01.2026",
 					Raw:   "# 01.01.2026\n\n```\n## Not a child note\n```\n",
@@ -153,7 +153,7 @@ func TestChunkNotes(t *testing.T) {
 		{
 			name:  "fenced code block with info string",
 			input: "# Note 1\n\n```js\n# Not a new note\n```\n",
-			expected: []lib.Note{
+			expected: []note.Note{
 				{
 					Title: "Note 1",
 					Raw:   "# Note 1\n\n```js\n# Not a new note\n```\n",
@@ -163,7 +163,7 @@ func TestChunkNotes(t *testing.T) {
 		{
 			name:  "nested fenced code block",
 			input: "# Note 1\n\n````\n```\n# Not a new note\n```\n````\n",
-			expected: []lib.Note{
+			expected: []note.Note{
 				{
 					Title: "Note 1",
 					Raw:   "# Note 1\n\n````\n```\n# Not a new note\n```\n````\n",
@@ -173,7 +173,7 @@ func TestChunkNotes(t *testing.T) {
 		{
 			name:  "more than 3 backticks do not toggle a block",
 			input: "# Note 1\n\n````\n\n# Note 2\n",
-			expected: []lib.Note{
+			expected: []note.Note{
 				{
 					Title: "Note 1",
 					Raw:   "# Note 1\n\n````\n\n",
@@ -187,7 +187,7 @@ func TestChunkNotes(t *testing.T) {
 		{
 			name:  "no trailing newline",
 			input: "# Note 1",
-			expected: []lib.Note{
+			expected: []note.Note{
 				{
 					Title: "Note 1",
 					Raw:   "# Note 1\n",
@@ -202,7 +202,7 @@ func TestChunkNotes(t *testing.T) {
 
 	for _, i := range testcases {
 		t.Run(i.name, func(t *testing.T) {
-			result, err := lib.Parse(strings.NewReader(i.input))
+			result, err := note.Parse(strings.NewReader(i.input))
 
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
@@ -221,7 +221,7 @@ func TestChunkNotes(t *testing.T) {
 
 func TestRequireHeading(t *testing.T) {
 	input := "test\n\n# Note 1"
-	_, err := lib.Parse(strings.NewReader(input))
+	_, err := note.Parse(strings.NewReader(input))
 
 	if err == nil {
 		t.Errorf("expected to return error when heading is missing")
@@ -230,7 +230,7 @@ func TestRequireHeading(t *testing.T) {
 
 func TestRequireContent(t *testing.T) {
 	input := ""
-	result, err := lib.Parse(strings.NewReader(input))
+	result, err := note.Parse(strings.NewReader(input))
 
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -300,7 +300,7 @@ func TestExtractTags(t *testing.T) {
 
 	for _, i := range testcases {
 		t.Run(i.name, func(t *testing.T) {
-			result, err := lib.Parse(strings.NewReader(i.input))
+			result, err := note.Parse(strings.NewReader(i.input))
 
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
@@ -355,7 +355,7 @@ func TestExtractDate(t *testing.T) {
 
 	for _, i := range testcases {
 		t.Run(i.name, func(t *testing.T) {
-			result, err := lib.Parse(strings.NewReader(i.input))
+			result, err := note.Parse(strings.NewReader(i.input))
 
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
@@ -370,7 +370,7 @@ func TestExtractDate(t *testing.T) {
 
 func TestUnclosedFencedBlock(t *testing.T) {
 	input := "# Note 1\n\n```\ncode block"
-	_, err := lib.Parse(strings.NewReader(input))
+	_, err := note.Parse(strings.NewReader(input))
 
 	if err == nil {
 		t.Errorf("expected error for unclosed fenced code block")
@@ -419,7 +419,7 @@ func TestExtractIcon(t *testing.T) {
 
 	for _, i := range testcases {
 		t.Run(i.name, func(t *testing.T) {
-			result, err := lib.Parse(strings.NewReader(i.input))
+			result, err := note.Parse(strings.NewReader(i.input))
 
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
@@ -469,7 +469,7 @@ func TestGenerateTitle(t *testing.T) {
 
 	for _, i := range testcases {
 		t.Run(i.name, func(t *testing.T) {
-			result, err := lib.Parse(strings.NewReader(i.input))
+			result, err := note.Parse(strings.NewReader(i.input))
 
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
@@ -509,7 +509,7 @@ func TestGenerateChildTitle(t *testing.T) {
 
 	for _, i := range testcases {
 		t.Run(i.name, func(t *testing.T) {
-			result, err := lib.Parse(strings.NewReader(i.input))
+			result, err := note.Parse(strings.NewReader(i.input))
 
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)

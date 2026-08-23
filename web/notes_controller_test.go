@@ -7,23 +7,23 @@ import (
 	"testing"
 	"time"
 
-	"github.com/andreasphil/one/lib"
+	"github.com/andreasphil/one/lib/note"
 	"github.com/andreasphil/one/web"
 )
 
 // fakeNotesProvider satisfies adapter.NotesProvider without needing an
 // interface import - Go interface satisfaction is structural.
-type fakeNotesProvider []lib.Note
+type fakeNotesProvider []note.Note
 
-func (f fakeNotesProvider) Notes() []lib.Note { return f }
+func (f fakeNotesProvider) Notes() []note.Note { return f }
 
 // newTestServer parses markdown into notes and wires up a real web.Server
 // backed by those notes, exercising the actual router, handlers and
 // templates - not any internal function directly.
-func newTestServer(t *testing.T, markdown string) (http.Handler, []lib.Note) {
+func newTestServer(t *testing.T, markdown string) (http.Handler, []note.Note) {
 	t.Helper()
 
-	notes, err := lib.Parse(strings.NewReader(markdown))
+	notes, err := note.Parse(strings.NewReader(markdown))
 	if err != nil {
 		t.Fatalf("failed to parse test notes: %v", err)
 	}

@@ -1,49 +1,49 @@
-package lib_test
+package note_test
 
 import (
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/andreasphil/one/lib"
+	"github.com/andreasphil/one/lib/note"
 )
 
 func TestNewNote(t *testing.T) {
-	note := lib.NewNote("Test Title")
+	n := note.NewNote("Test Title")
 
-	if note.Title != "Test Title" {
-		t.Errorf("expected title 'Test Title', got %q", note.Title)
+	if n.Title != "Test Title" {
+		t.Errorf("expected title 'Test Title', got %q", n.Title)
 	}
 
-	if note.Tags.Len() != 0 {
-		t.Errorf("expected empty tags set, got %d tags", note.Tags.Len())
+	if n.Tags.Len() != 0 {
+		t.Errorf("expected empty tags set, got %d tags", n.Tags.Len())
 	}
 
-	if !note.Date.IsZero() {
-		t.Errorf("expected zero date, got %v", note.Date)
+	if !n.Date.IsZero() {
+		t.Errorf("expected zero date, got %v", n.Date)
 	}
 
-	if len(note.Children) != 0 {
-		t.Errorf("expected nil or empty children, got %d children", len(note.Children))
+	if len(n.Children) != 0 {
+		t.Errorf("expected nil or empty children, got %d children", len(n.Children))
 	}
 }
 
 func TestSlug(t *testing.T) {
 	type testcase struct {
 		name     string
-		note     lib.Note
+		note     note.Note
 		expected string
 	}
 
 	testcases := []testcase{
 		{
 			name:     "regular note without date",
-			note:     lib.Note{Title: "My Note"},
+			note:     note.Note{Title: "My Note"},
 			expected: "my-note",
 		},
 		{
 			name: "daily note",
-			note: lib.Note{
+			note: note.Note{
 				Title: "01.01.2026",
 				Date:  time.Date(2026, time.January, 1, 0, 0, 0, 0, time.UTC),
 			},
@@ -51,7 +51,7 @@ func TestSlug(t *testing.T) {
 		},
 		{
 			name: "note with date and non-date title",
-			note: lib.Note{
+			note: note.Note{
 				Title: "Meeting Notes",
 				Date:  time.Date(2026, time.January, 1, 0, 0, 0, 0, time.UTC),
 			},
@@ -59,32 +59,32 @@ func TestSlug(t *testing.T) {
 		},
 		{
 			name:     "special characters normalization",
-			note:     lib.Note{Title: "Hello! World? ? Test!"},
+			note:     note.Note{Title: "Hello! World? ? Test!"},
 			expected: "hello-world-test",
 		},
 		{
 			name:     "multiple consecutive special characters",
-			note:     lib.Note{Title: "test---note"},
+			note:     note.Note{Title: "test---note"},
 			expected: "test-note",
 		},
 		{
 			name:     "german umlauts",
-			note:     lib.Note{Title: "Äpfel Öl Über"},
+			note:     note.Note{Title: "Äpfel Öl Über"},
 			expected: "äpfel-öl-über",
 		},
 		{
 			name:     "leading and trailing special chars",
-			note:     lib.Note{Title: "---test---"},
+			note:     note.Note{Title: "---test---"},
 			expected: "test",
 		},
 		{
 			name:     "empty title",
-			note:     lib.Note{Title: ""},
+			note:     note.Note{Title: ""},
 			expected: "",
 		},
 		{
 			name:     "only special characters",
-			note:     lib.Note{Title: "!!!"},
+			note:     note.Note{Title: "!!!"},
 			expected: "",
 		},
 	}
@@ -141,8 +141,8 @@ func TestContent(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			note := lib.Note{Raw: tc.raw}
-			result := note.Content()
+			n := note.Note{Raw: tc.raw}
+			result := n.Content()
 			if result != tc.expected {
 				t.Errorf("expected %q, got %q", tc.expected, result)
 			}
@@ -205,8 +205,8 @@ func TestExcerpt(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			note := lib.Note{Raw: tc.raw}
-			result, shortened := note.Excerpt(40)
+			n := note.Note{Raw: tc.raw}
+			result, shortened := n.Excerpt(40)
 			if result != tc.expected {
 				t.Errorf("expected excerpt %q, got %q", tc.expected, result)
 			}
@@ -220,24 +220,24 @@ func TestExcerpt(t *testing.T) {
 func TestIsEmpty(t *testing.T) {
 	type testcase struct {
 		name     string
-		note     lib.Note
+		note     note.Note
 		expected bool
 	}
 
 	testcases := []testcase{
 		{
 			name:     "returns that note is empty",
-			note:     lib.Note{Raw: "# Title\n\n"},
+			note:     note.Note{Raw: "# Title\n\n"},
 			expected: true,
 		},
 		{
 			name:     "returns that note with title is empty",
-			note:     lib.Note{Raw: ""},
+			note:     note.Note{Raw: ""},
 			expected: true,
 		},
 		{
 			name:     "returns that note has content",
-			note:     lib.Note{Raw: "# Title\n\nContent"},
+			note:     note.Note{Raw: "# Title\n\nContent"},
 			expected: false,
 		},
 	}
@@ -255,14 +255,14 @@ func TestIsEmpty(t *testing.T) {
 func TestIsDailyNote(t *testing.T) {
 	type testcase struct {
 		name     string
-		note     lib.Note
+		note     note.Note
 		expected bool
 	}
 
 	testcases := []testcase{
 		{
 			name: "valid daily note",
-			note: lib.Note{
+			note: note.Note{
 				Title: "01.01.2026",
 				Date:  time.Date(2026, time.January, 1, 0, 0, 0, 0, time.UTC),
 			},
@@ -270,7 +270,7 @@ func TestIsDailyNote(t *testing.T) {
 		},
 		{
 			name: "date set but title doesn't match",
-			note: lib.Note{
+			note: note.Note{
 				Title: "Meeting Notes",
 				Date:  time.Date(2026, time.January, 1, 0, 0, 0, 0, time.UTC),
 			},
@@ -278,7 +278,7 @@ func TestIsDailyNote(t *testing.T) {
 		},
 		{
 			name: "title matches date format but no date set",
-			note: lib.Note{
+			note: note.Note{
 				Title: "01.01.2026",
 				Date:  time.Time{},
 			},
@@ -286,7 +286,7 @@ func TestIsDailyNote(t *testing.T) {
 		},
 		{
 			name: "neither date nor matching title",
-			note: lib.Note{
+			note: note.Note{
 				Title: "Regular Note",
 				Date:  time.Time{},
 			},
@@ -294,7 +294,7 @@ func TestIsDailyNote(t *testing.T) {
 		},
 		{
 			name: "child note with date from parent",
-			note: lib.Note{
+			note: note.Note{
 				Title: "Child Note",
 				Date:  time.Date(2026, time.January, 1, 0, 0, 0, 0, time.UTC),
 			},
@@ -334,7 +334,7 @@ func TestString(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			notes, err := lib.Parse(strings.NewReader(tc.input))
+			notes, err := note.Parse(strings.NewReader(tc.input))
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}

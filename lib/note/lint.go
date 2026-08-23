@@ -1,4 +1,4 @@
-package lib
+package note
 
 // DuplicateSlugs returns the slugs of any notes (including children) that share
 // their slug with another note. Slugs are returned in the order they first

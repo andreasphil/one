@@ -1,4 +1,4 @@
-package lib
+package note
 
 import (
 	"cmp"

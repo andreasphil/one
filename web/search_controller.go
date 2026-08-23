@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/andreasphil/one/lib"
+	"github.com/andreasphil/one/lib/note"
 	"github.com/andreasphil/one/util"
 	"github.com/andreasphil/one/web/adapter"
 )
@@ -19,7 +19,7 @@ type searchResult struct {
 
 func getSearch(notes adapter.NotesProvider, renderer adapter.MarkdownRenderer) http.HandlerFunc {
 	type getSearchData struct {
-		Notes   []lib.Note
+		Notes   []note.Note
 		Results []searchResult
 		Query   string
 	}
@@ -32,7 +32,7 @@ func getSearch(notes adapter.NotesProvider, renderer adapter.MarkdownRenderer) h
 		query := r.URL.Query().Get("query")
 
 		results := []searchResult{}
-		for _, result := range lib.SearchContainingString(notes, query) {
+		for _, result := range note.SearchContainingString(notes, query) {
 			html, err := renderer.Render(result.Content())
 			if err != nil {
 				util.HttpErrorf(w, http.StatusUnprocessableEntity, "failed to render note to html: %v", err)

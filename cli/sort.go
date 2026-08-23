@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/andreasphil/one/lib"
+	"github.com/andreasphil/one/lib/note"
 	"github.com/andreasphil/one/util"
 )
 
@@ -15,14 +15,14 @@ type sortCmdInit struct {
 }
 
 func sort(args sortCmdInit, _ io.Writer, _ io.Writer) error {
-	notes, err := lib.ParseFile(args.input)
+	notes, err := note.ParseFile(args.input)
 	if err != nil {
 		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)
 	}
 
 	util.Infof("parsed %v notes", len(notes))
 
-	notes, didSort := lib.Sort(notes)
+	notes, didSort := note.Sort(notes)
 	if !didSort {
 		util.Infof("notes already sorted")
 	} else if !args.check {
@@ -42,7 +42,7 @@ func sort(args sortCmdInit, _ io.Writer, _ io.Writer) error {
 		output = args.input
 	}
 
-	err = util.WriteTextFile(lib.ToString(notes), output, 0644)
+	err = util.WriteTextFile(note.ToString(notes), output, 0644)
 	if err != nil {
 		return fmt.Errorf("could not write to %v, %v", output, err)
 	}
