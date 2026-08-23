@@ -44,7 +44,7 @@ func getNote(provider NotesProvider, renderer MarkdownRenderer) http.HandlerFunc
 		notes := provider.Notes()
 		slug := r.PathValue("slug")
 
-		n, found := note.GetRecursive(notes, slug)
+		n, found := note.FindBySlug(notes, slug)
 		if !found {
 			util.HttpErrorf(w, http.StatusNotFound, "note %v not found", slug)
 			return

@@ -31,7 +31,7 @@ func getSearch(provider NotesProvider, renderer MarkdownRenderer) http.HandlerFu
 		query := r.URL.Query().Get("query")
 
 		results := []searchResult{}
-		for _, result := range note.SearchContainingString(notes, query) {
+		for _, result := range note.Containing(notes, query) {
 			html, err := renderer.Render(result.Content())
 			if err != nil {
 				util.HttpErrorf(w, http.StatusUnprocessableEntity, "failed to render note to html: %v", err)

@@ -24,10 +24,10 @@ func Walk(notes []Note, fn func(Note) bool) bool {
 	return true
 }
 
-// GetRecursive searches notes and their children for a note matching slug,
+// FindBySlug searches notes and their children for a note matching slug,
 // returning it along with true if found. If no note matches, it returns a
 // zero-value Note and false.
-func GetRecursive(notes []Note, slug string) (Note, bool) {
+func FindBySlug(notes []Note, slug string) (Note, bool) {
 	var found Note
 	ok := false
 

@@ -48,7 +48,7 @@ Standup at 9.
 Went to the store for milk.
 `
 
-func TestSearchContainingString(t *testing.T) {
+func TestContaining(t *testing.T) {
 	type testcase struct {
 		name     string
 		query    string
@@ -129,7 +129,7 @@ func TestSearchContainingString(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			notes := parseForSearch(t, searchFixture)
 
-			result := searchResultTitles(note.SearchContainingString(notes, tc.query))
+			result := searchResultTitles(note.Containing(notes, tc.query))
 
 			if len(result) != len(tc.expected) {
 				t.Fatalf("expected %v matches %v, got %v matches %v",
@@ -143,7 +143,7 @@ func TestSearchContainingString(t *testing.T) {
 	}
 }
 
-func TestSearchContainingStringVisitsChildrenDepthFirst(t *testing.T) {
+func TestContainingVisitsChildrenDepthFirst(t *testing.T) {
 	input := `# 01.01.2026
 
 Note about x.
@@ -163,7 +163,7 @@ Also about x.
 
 	notes := parseForSearch(t, input)
 
-	result := searchResultTitles(note.SearchContainingString(notes, "x"))
+	result := searchResultTitles(note.Containing(notes, "x"))
 	expected := []string{
 		"01.01.2026", "Child 1", "Child 2", "02.01.2026",
 	}
@@ -173,7 +173,7 @@ Also about x.
 	}
 }
 
-func TestSearchContainingStringTreatsQueryLiterally(t *testing.T) {
+func TestContainingTreatsQueryLiterally(t *testing.T) {
 	type testcase struct {
 		name     string
 		query    string
@@ -206,7 +206,7 @@ Matching everything is fun.
 		t.Run(tc.name, func(t *testing.T) {
 			notes := parseForSearch(t, input)
 
-			result := searchResultTitles(note.SearchContainingString(notes, tc.query))
+			result := searchResultTitles(note.Containing(notes, tc.query))
 
 			if !cmp.Equal(result, tc.expected) {
 				t.Errorf("expected %v, got %v", tc.expected, result)
@@ -215,27 +215,27 @@ Matching everything is fun.
 	}
 }
 
-func TestSearchContainingStringHandlesEmptyInput(t *testing.T) {
+func TestContainingHandlesEmptyInput(t *testing.T) {
 	t.Run("empty slice", func(t *testing.T) {
-		result := note.SearchContainingString([]note.Note{}, "any")
+		result := note.Containing([]note.Note{}, "any")
 		if len(result) != 0 {
 			t.Errorf("expected no matches, got %v", searchResultTitles(result))
 		}
 	})
 
 	t.Run("nil slice", func(t *testing.T) {
-		result := note.SearchContainingString(nil, "any")
+		result := note.Containing(nil, "any")
 		if len(result) != 0 {
 			t.Errorf("expected no matches, got %v", searchResultTitles(result))
 		}
 	})
 }
 
-func TestSearchContainingStringDoesNotModifyInput(t *testing.T) {
+func TestContainingDoesNotModifyInput(t *testing.T) {
 	notes := parseForSearch(t, searchFixture)
 	before := parseForSearch(t, searchFixture)
 
-	note.SearchContainingString(notes, "milk")
+	note.Containing(notes, "milk")
 
 	if !cmp.Equal(searchResultTitles(notes), searchResultTitles(before)) {
 		t.Errorf("expected input to be unchanged, got %v", searchResultTitles(notes))

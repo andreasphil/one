@@ -10,7 +10,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestGetRecursive(t *testing.T) {
+func TestFindBySlug(t *testing.T) {
 	type testcase struct {
 		name     string
 		notes    []note.Note
@@ -70,7 +70,7 @@ func TestGetRecursive(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result, ok := note.GetRecursive(tc.notes, tc.slug)
+			result, ok := note.FindBySlug(tc.notes, tc.slug)
 
 			if ok != tc.expectOk {
 				t.Errorf("expected ok=%v, got ok=%v", tc.expectOk, ok)

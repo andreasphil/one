@@ -65,14 +65,14 @@ func Parse(input io.Reader) ([]Note, error) {
 	var root *Note
 	var current *Note
 
-	var isFencedBlock bool = false
+	var inFencedBlock bool = false
 
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		shouldParseDetail := !isFencedBlock
+		shouldParse := !inFencedBlock
 
-		if shouldParseDetail {
+		if shouldParse {
 			// Level 1 heading = new note
 			if title, found := strings.CutPrefix(line, "# "); found {
 				notes = append(notes, New(cleanupTitle(title)))
@@ -111,7 +111,7 @@ func Parse(input io.Reader) ([]Note, error) {
 		}
 
 		if isFence(line) {
-			isFencedBlock = !isFencedBlock
+			inFencedBlock = !inFencedBlock
 		}
 
 		// Extract first emoji for icon
@@ -129,7 +129,7 @@ func Parse(input io.Reader) ([]Note, error) {
 		return nil, err
 	}
 
-	if isFencedBlock {
+	if inFencedBlock {
 		return nil, errors.New("invalid notes file content, fenced code block was not closed")
 	}
 
