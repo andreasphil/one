@@ -1,7 +1,7 @@
 @scope (.search-view) to (.prose > *) {
   :scope {
     padding: 4rem 2rem;
-    max-width: 50rem;
+    max-width: 60rem;
     margin-inline: auto;
   }
 
@@ -25,7 +25,6 @@
 
   .prose {
     --prose-max-width: auto;
-    --prose-font-size: inherit;
   }
 
   .search-results {
