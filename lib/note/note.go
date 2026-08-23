@@ -1,3 +1,4 @@
+// Package note parses, inspects and serializes the notes in a notes file.
 package note
 
 import (
@@ -16,12 +17,20 @@ var titleHeadingExp = regexp.MustCompile(`^#{1,2}\s+.+\n`)
 // whose title is a date in the format of DD.MM.YYYY) may have children,
 // which represent the level 2 headings within that daily note.
 type Note struct {
-	Title    string
-	Icon     string
-	Date     time.Time
-	Tags     util.Set[string]
+	// Title is the note's heading, with tags and emoji removed.
+	Title string
+	// Icon is the first emoji occurring in the note, if any.
+	Icon string
+	// Date is set for daily notes, and inherited by their children.
+	Date time.Time
+	// Tags are the tags occurring anywhere in the note, each including its
+	// leading "#".
+	Tags util.Set[string]
+	// Children are the notes formed by the level 2 headings of a daily note.
 	Children []Note
-	Raw      string
+	// Raw is the note's own markdown source, including its heading but
+	// excluding the source of any children.
+	Raw string
 }
 
 // New creates a new, empty Note with the given title.

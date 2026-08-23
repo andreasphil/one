@@ -31,10 +31,6 @@ func cleanupTitle(title string) string {
 	return strings.TrimSpace(title)
 }
 
-// isFence reports whether line opens or closes a fenced code block, which is
-// the case for exactly 3 backticks at the beginning of the line. Anything
-// following the backticks (an info string such as "```js") is ignored, except
-// for further backticks, which make the line a non-fence.
 func isFence(line string) bool {
 	rest, found := strings.CutPrefix(line, "```")
 	return found && !strings.HasPrefix(rest, "`")

@@ -1,3 +1,4 @@
+// Package service holds the implementations the web server depends on.
 package service
 
 import (
@@ -27,6 +28,7 @@ func NewMarkdown() Markdown {
 	return Markdown{renderer: md}
 }
 
+// Render converts the markdown in input to HTML.
 func (m Markdown) Render(input string) (template.HTML, error) {
 	out := bytes.Buffer{}
 	if err := m.renderer.Convert([]byte(input), &out); err != nil {

@@ -1,3 +1,4 @@
+// Package cli implements the commands of the one executable.
 package cli
 
 import (
@@ -6,7 +7,6 @@ import (
 	"io"
 )
 
-// usage prints top-level usage information, listing all available commands.
 func usage(w io.Writer) {
 	fmt.Fprint(w, `Usage: one <command> [flags]
 
@@ -21,6 +21,9 @@ Run 'one <command> --help' for the flags of a specific command.
 `)
 }
 
+// Run executes the command named by the first of args, with the rest passed to
+// that command as flags. Output meant for the user is written to stdout and
+// stderr. It returns an error if the command is unknown or if it failed.
 func Run(args []string, stdout io.Writer, stderr io.Writer) error {
 	if len(args) == 0 {
 		return fmt.Errorf("no command specified (run 'one help' for usage)")

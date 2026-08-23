@@ -1,3 +1,4 @@
+// Package web serves the notes over HTTP.
 package web
 
 import (
@@ -23,11 +24,16 @@ type MarkdownRenderer interface {
 	Render(input string) (template.HTML, error)
 }
 
+// ServerArgs configures a server.
 type ServerArgs struct {
-	Port  string
+	// Port is the TCP port to listen on.
+	Port string
+	// Notes supplies the notes the server renders.
 	Notes NotesProvider
 }
 
+// NewServer creates a server with the routes, templates and static files of
+// the notes UI. The returned server is not started.
 func NewServer(args ServerArgs) http.Server {
 	var markdownRenderer MarkdownRenderer = service.NewMarkdown()
 

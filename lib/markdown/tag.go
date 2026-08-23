@@ -1,3 +1,4 @@
+// Package markdown provides goldmark extensions for rendering notes.
 package markdown
 
 import (
@@ -35,11 +36,9 @@ var tagKind = ast.NewNodeKind("Tag")
 
 type tagNode struct {
 	ast.BaseInline
-	// Segment covers the tag text without the leading "#"
 	Segment text.Segment
 }
 
-// Value returns the tag text for the given source
 func (n *tagNode) Value(src []byte) []byte {
 	return n.Segment.Value(src)
 }

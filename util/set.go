@@ -1,3 +1,5 @@
+// Package util holds the logging, file and collection helpers shared by the
+// rest of the application.
 package util
 
 import (
