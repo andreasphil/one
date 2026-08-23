@@ -11,7 +11,7 @@ import (
 	"github.com/andreasphil/one/web"
 )
 
-// fakeNotesProvider satisfies adapter.NotesProvider without needing an
+// fakeNotesProvider satisfies web.NotesProvider without needing an
 // interface import - Go interface satisfaction is structural.
 type fakeNotesProvider []note.Note
 
