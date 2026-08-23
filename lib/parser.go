@@ -31,6 +31,15 @@ func cleanupTitle(title string) string {
 	return strings.TrimSpace(title)
 }
 
+// isFence reports whether line opens or closes a fenced code block, which is
+// the case for exactly 3 backticks at the beginning of the line. Anything
+// following the backticks (an info string such as "```js") is ignored, except
+// for further backticks, which make the line a non-fence.
+func isFence(line string) bool {
+	rest, found := strings.CutPrefix(line, "```")
+	return found && !strings.HasPrefix(rest, "`")
+}
+
 // Parse parses an input into a structured list of notes. The input value
 // follows an opinionated subset of markdown, with the following conventions:
 //
@@ -45,8 +54,11 @@ func cleanupTitle(title string) string {
 //     significance and no child notes will be created.
 //   - notes can be tagged. A tag starts with a "#", by letters, numbers, and
 //     underscores (word characters)
-//   - for code blocks, only fenced code blocks are supported. Creating code
-//     blocks by indentation is not supported.
+//   - for code blocks, only fenced code blocks are supported. A fence is
+//     exactly 3 backticks at the beginning of a line, optionally followed by an
+//     info string, which is ignored. Lines starting with 4 or more backticks
+//     are not fences, so they can be used for nesting inside a block. Tilde
+//     fences and code blocks by indentation are not supported.
 func Parse(input io.Reader) ([]Note, error) {
 	scanner := bufio.NewScanner(input)
 	var notes []Note
@@ -98,7 +110,7 @@ func Parse(input io.Reader) ([]Note, error) {
 			}
 		}
 
-		if _, found := strings.CutPrefix(line, "```"); found {
+		if isFence(line) {
 			isFencedBlock = !isFencedBlock
 		}
 

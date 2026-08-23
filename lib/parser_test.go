@@ -151,6 +151,40 @@ func TestChunkNotes(t *testing.T) {
 			},
 		},
 		{
+			name:  "fenced code block with info string",
+			input: "# Note 1\n\n```js\n# Not a new note\n```\n",
+			expected: []lib.Note{
+				{
+					Title: "Note 1",
+					Raw:   "# Note 1\n\n```js\n# Not a new note\n```\n",
+				},
+			},
+		},
+		{
+			name:  "nested fenced code block",
+			input: "# Note 1\n\n````\n```\n# Not a new note\n```\n````\n",
+			expected: []lib.Note{
+				{
+					Title: "Note 1",
+					Raw:   "# Note 1\n\n````\n```\n# Not a new note\n```\n````\n",
+				},
+			},
+		},
+		{
+			name:  "more than 3 backticks do not toggle a block",
+			input: "# Note 1\n\n````\n\n# Note 2\n",
+			expected: []lib.Note{
+				{
+					Title: "Note 1",
+					Raw:   "# Note 1\n\n````\n\n",
+				},
+				{
+					Title: "Note 2",
+					Raw:   "# Note 2\n",
+				},
+			},
+		},
+		{
 			name:  "no trailing newline",
 			input: "# Note 1",
 			expected: []lib.Note{
