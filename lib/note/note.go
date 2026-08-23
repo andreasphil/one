@@ -10,6 +10,7 @@ import (
 
 var dateTitleExp = regexp.MustCompile(`^\d{2}\.\d{2}\.\d{4}$`)
 var normalizeExp = regexp.MustCompile(`[^\wäöüß]+`)
+var titleHeadingExp = regexp.MustCompile(`^#{1,2}\s+.+\n`)
 
 // Note represents a single note parsed from a notes file. Daily notes (notes
 // whose title is a date in the format of DD.MM.YYYY) may have children,
@@ -58,8 +59,7 @@ func (n Note) Slug() string {
 // Content returns the note's raw content with the title heading removed and
 // surrounding whitespace trimmed.
 func (n Note) Content() string {
-	titleExp := regexp.MustCompile(`^#{1,2}\s+.+\n`)
-	content := titleExp.ReplaceAllString(n.Raw, "")
+	content := titleHeadingExp.ReplaceAllString(n.Raw, "")
 	return strings.TrimSpace(content)
 }
 
