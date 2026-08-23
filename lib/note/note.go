@@ -1,7 +1,6 @@
 package note
 
 import (
-	"math"
 	"regexp"
 	"strings"
 	"time"
@@ -73,20 +72,6 @@ func (n Note) IsEmpty() bool {
 // daily note format of DD.MM.YYYY.
 func (n Note) IsDailyNote() bool {
 	return !n.Date.IsZero() && dateTitleExp.MatchString(n.Title)
-}
-
-// Excerpt returns up to maxWords words from the note's content, with whitespace
-// normalized. The second return value reports whether the content was actually
-// longer than maxWords, i.e. whether the excerpt is a partial view of the
-// content.
-func (n Note) Excerpt(maxWords int) (string, bool) {
-	words := strings.Split(n.Content(), " ")
-	partial := strings.Join(words[0:int(math.Min(float64(len(words)), float64(maxWords)))], " ")
-
-	whitespaceExp := regexp.MustCompile(`\s+`)
-	partial = whitespaceExp.ReplaceAllString(partial, " ")
-
-	return partial, len(words) >= maxWords
 }
 
 // String returns the note's raw markdown source, including that of any
