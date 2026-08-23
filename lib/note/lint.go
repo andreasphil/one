@@ -27,9 +27,9 @@ func DuplicateSlugs(notes []Note) []string {
 	return duplicates
 }
 
-// EmptyTitles returns the number of notes (including children) that have an
-// empty title.
-func EmptyTitles(notes []Note) int {
+// CountEmptyTitles returns the number of notes (including children) that have
+// an empty title.
+func CountEmptyTitles(notes []Note) int {
 	count := 0
 
 	Walk(notes, func(note Note) bool {
@@ -42,15 +42,15 @@ func EmptyTitles(notes []Note) int {
 	return count
 }
 
-// EmptyNotes returns the titles of any notes (including children) that have no
-// content. Notes with children are never considered empty, even if their own
-// content is empty, since they still hold information through their children.
-func EmptyNotes(notes []Note) []string {
-	var empty []string
+// EmptyNotes returns any notes (including children) that have no content.
+// Notes with children are never considered empty, even if their own content is
+// empty, since they still hold information through their children.
+func EmptyNotes(notes []Note) []Note {
+	var empty []Note
 
 	Walk(notes, func(note Note) bool {
 		if len(note.Children) == 0 && note.IsEmpty() {
-			empty = append(empty, note.Title)
+			empty = append(empty, note)
 		}
 		return true
 	})

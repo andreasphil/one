@@ -88,7 +88,7 @@ func TestDuplicateSlugs(t *testing.T) {
 	}
 }
 
-func TestEmptyTitles(t *testing.T) {
+func TestCountEmptyTitles(t *testing.T) {
 	type testcase struct {
 		name     string
 		notes    []note.Note
@@ -139,7 +139,7 @@ func TestEmptyTitles(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := note.EmptyTitles(tc.notes)
+			result := note.CountEmptyTitles(tc.notes)
 			if result != tc.expected {
 				t.Errorf("expected %v, got %v", tc.expected, result)
 			}
@@ -163,7 +163,7 @@ func TestEmptyNotes(t *testing.T) {
 			expected: nil,
 		},
 		{
-			name: "returns titles of notes without content at the root level",
+			name: "returns notes without content at the root level",
 			notes: []note.Note{
 				{Title: "Root 1", Raw: "# Root 1\n\n"},
 				{Title: "Root 2", Raw: "# Root 2\n\nContent"},
@@ -171,7 +171,7 @@ func TestEmptyNotes(t *testing.T) {
 			expected: []string{"Root 1"},
 		},
 		{
-			name: "returns titles of notes without content in nested children",
+			name: "returns notes without content in nested children",
 			notes: []note.Note{
 				{
 					Title: "Root 1",
@@ -206,9 +206,13 @@ func TestEmptyNotes(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := note.EmptyNotes(tc.notes)
-			if !cmp.Equal(result, tc.expected) {
-				t.Errorf("expected %v, got %v", tc.expected, result)
+			var titles []string
+			for _, n := range note.EmptyNotes(tc.notes) {
+				titles = append(titles, n.Title)
+			}
+
+			if !cmp.Equal(titles, tc.expected) {
+				t.Errorf("expected %v, got %v", tc.expected, titles)
 			}
 		})
 	}

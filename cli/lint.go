@@ -58,7 +58,7 @@ func lint(args lintCmdInit, _ io.Writer, _ io.Writer) error {
 	}
 
 	// Has empty titles
-	if count := note.EmptyTitles(notes); count > 0 {
+	if count := note.CountEmptyTitles(notes); count > 0 {
 		util.Warnf("%v notes have empty titles (after cleanup)", count)
 		hadWarnings = true
 	} else {
@@ -67,8 +67,8 @@ func lint(args lintCmdInit, _ io.Writer, _ io.Writer) error {
 
 	// Has empty notes
 	if empty := note.EmptyNotes(notes); len(empty) > 0 {
-		for _, title := range empty {
-			util.Warnf("empty note: %v", title)
+		for _, n := range empty {
+			util.Warnf("empty note: %v", n.Title)
 		}
 		hadWarnings = true
 	} else {
