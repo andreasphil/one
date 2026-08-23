@@ -11,7 +11,7 @@ import (
 )
 
 //go:embed static
-var static embed.FS
+var staticFS embed.FS
 
 // NotesProvider supplies the notes the server renders.
 type NotesProvider interface {
@@ -41,7 +41,7 @@ func NewServer(args ServerArgs) http.Server {
 
 	router.HandleFunc("GET /tags/{tag}/{$}", getTag())
 
-	router.Handle("/static/", http.FileServerFS(static))
+	router.Handle("/static/", http.FileServerFS(staticFS))
 
 	return http.Server{
 		Addr:    fmt.Sprintf(":%v", args.Port),

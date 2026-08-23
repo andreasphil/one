@@ -47,6 +47,6 @@ func sort(args sortArgs, _ io.Writer, _ io.Writer) error {
 		return fmt.Errorf("could not write to %v, %v", output, err)
 	}
 
-	util.Okf("sorted")
+	util.Successf("sorted")
 	return nil
 }

@@ -38,9 +38,9 @@ func Errorf(format string, v ...any) {
 	log.Printf(style(red, "✗")+" "+format, v...)
 }
 
-// Okf logs a success message, formatted according to format, and prefixed with
-// a green checkmark.
-func Okf(format string, v ...any) {
+// Successf logs a success message, formatted according to format, and prefixed
+// with a green checkmark.
+func Successf(format string, v ...any) {
 	log.Printf(style(green, "✓")+" "+format, v...)
 }
 

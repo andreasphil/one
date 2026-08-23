@@ -31,21 +31,21 @@ func getSearch(provider NotesProvider, renderer MarkdownRenderer) http.HandlerFu
 		query := r.URL.Query().Get("query")
 
 		results := []searchResult{}
-		for _, result := range note.Containing(notes, query) {
-			html, err := renderer.Render(result.Content())
+		for _, match := range note.Containing(notes, query) {
+			html, err := renderer.Render(match.Content())
 			if err != nil {
 				util.HttpErrorf(w, http.StatusUnprocessableEntity, "failed to render note to html: %v", err)
 				return
 			}
 
 			var date time.Time
-			if !result.IsDailyNote() {
-				date = result.Date
+			if !match.IsDailyNote() {
+				date = match.Date
 			}
 
 			results = append(results, searchResult{
-				Title: result.Title,
-				Slug:  result.Slug(),
+				Title: match.Title,
+				Slug:  match.Slug(),
 				Date:  date,
 				Html:  html,
 			})

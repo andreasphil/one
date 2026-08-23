@@ -16,8 +16,6 @@ type data[T any] struct {
 	Data       T
 }
 
-type nilPage data[struct{}]
-
 type renderFunc[T any] func(http.ResponseWriter, data[T]) error
 
 func newRenderFunc[T any](name string) renderFunc[T] {

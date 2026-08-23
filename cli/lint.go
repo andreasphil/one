@@ -79,6 +79,6 @@ func lint(args lintArgs, _ io.Writer, _ io.Writer) error {
 		return fmt.Errorf("lint found issues")
 	}
 
-	util.Okf("no issues found")
+	util.Successf("no issues found")
 	return nil
 }

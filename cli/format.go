@@ -73,6 +73,6 @@ func format(args formatArgs, _ io.Writer, _ io.Writer) error {
 		return fmt.Errorf("could not write to %v, %v", output, err)
 	}
 
-	util.Okf("formatted")
+	util.Successf("formatted")
 	return nil
 }
