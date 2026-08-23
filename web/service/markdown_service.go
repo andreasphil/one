@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"html/template"
 
+	"github.com/andreasphil/one/lib/markdown"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
 )
@@ -16,6 +17,8 @@ func NewMarkdownService() MarkdownService {
 	markdown := goldmark.New(goldmark.WithExtensions(
 		extension.GFM,
 		extension.Typographer,
+
+		&markdown.Tag{Prefix: "/tags/"},
 	))
 
 	return MarkdownService{renderer: markdown}

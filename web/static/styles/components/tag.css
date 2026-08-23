@@ -27,4 +27,8 @@
     outline: var(--outline);
     outline-offset: var(--outline-outset);
   }
+
+  .prose & {
+    padding-block: 0;
+  }
 }
