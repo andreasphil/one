@@ -216,7 +216,7 @@ func TestSort(t *testing.T) {
 			expectDidSort: true,
 		},
 		{
-			name: "sorts knowledge base notes alphabetically (ascending)",
+			name: "sorts undated notes alphabetically (ascending)",
 			notes: []note.Note{
 				{
 					Title: "B",
@@ -232,7 +232,7 @@ func TestSort(t *testing.T) {
 			expectDidSort: true,
 		},
 		{
-			name: "groups all daily notes before knowledge base notes",
+			name: "groups all daily notes before undated notes",
 			notes: []note.Note{
 				{
 					Title: "01.01.2025",

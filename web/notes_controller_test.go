@@ -96,7 +96,7 @@ func TestGetNotesWithNoNotesShowsZeroCount(t *testing.T) {
 	assertContainsAll(t, rec.Body.String(), "0 Notes")
 }
 
-func TestGetNoteRendersKnowledgeBaseNote(t *testing.T) {
+func TestGetNoteRendersUndatedNote(t *testing.T) {
 	handler, notes := newTestServer(t, "# My Guide #golang\n\nSome helpful content.\n")
 	slug := notes[0].Slug()
 
@@ -111,8 +111,8 @@ func TestGetNoteRendersKnowledgeBaseNote(t *testing.T) {
 	assertContainsAll(t, body,
 		"<title>My Guide | One</title>",
 		"Some helpful content.",
-		"Knowledge Base",
-		"golang", // tag rendered without its leading "#"
+		"Knowledge Base", // the UI label for a note without a date
+		"golang",         // tag rendered without its leading "#"
 	)
 
 	if n := strings.Count(body, `class="tag"`); n != 1 {

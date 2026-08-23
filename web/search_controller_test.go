@@ -6,10 +6,10 @@ import (
 	"testing"
 )
 
-// searchNotes contains a knowledge base note, a second knowledge base note, and
-// a daily note with one child note. "milk" occurs in two notes, "Books" only in
-// a knowledge base note, "Standup" only in the daily note itself, and "store"
-// only in its child.
+// searchNotes contains an undated note, a second undated note, and a daily
+// note with one child note. "milk" occurs in two notes, "Books" only in an
+// undated note, "Standup" only in the daily note itself, and "store" only in
+// its child.
 const searchNotes = `# Groceries
 
 Buy **milk** and eggs.
@@ -161,7 +161,7 @@ func TestGetSearchOmitsDateOfDailyNote(t *testing.T) {
 	}
 }
 
-func TestGetSearchOmitsDateOfKnowledgeBaseNote(t *testing.T) {
+func TestGetSearchOmitsDateOfUndatedNote(t *testing.T) {
 	handler, _ := newTestServer(t, searchNotes)
 
 	rec := get(t, handler, "/search/?query=Books")

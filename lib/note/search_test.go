@@ -28,7 +28,7 @@ func parseForSearch(t *testing.T, input string) []note.Note {
 	return notes
 }
 
-// Contains a knowledge base note, a second knowledge base note, and a daily
+// Contains an undated note, a second undated note, and a daily
 // note with one child note. "milk" and "groceries" each occur in more than one
 // note, "Standup" only in the daily note itself, and "store" only in its child.
 const searchFixture = `# Groceries
