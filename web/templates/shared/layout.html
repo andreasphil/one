@@ -5,9 +5,30 @@
 
 {{ define "page" }}
   <div class="layout">
-    <aside>
+    <aside id="sidebar">
       {{ template "sidebar" . }}
     </aside>
+
+    <script>
+      {
+        const sidebar = document.getElementById("sidebar");
+        const key = "sidebar-scroll";
+
+        if (sidebar.scrollHeight > sidebar.clientHeight) {
+          const saved = sessionStorage.getItem(key);
+
+          if (saved !== null) {
+            sidebar.scrollTop = Number(saved);
+          } else {
+            sidebar.querySelector("[aria-current]")?.scrollIntoView({ block: "center" });
+          }
+
+          addEventListener("pagehide", () => {
+            sessionStorage.setItem(key, sidebar.scrollTop);
+          });
+        }
+      }
+    </script>
 
     <main>
       {{ template "content" . }}
