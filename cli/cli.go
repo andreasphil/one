@@ -14,6 +14,7 @@ func usage(w io.Writer) {
 
  Commands:
    list, ls      List notes and their structure
+   tags          List tags
    sort          Sort notes
    lint          Check notes for issues
    format, fmt   Format notes
@@ -46,6 +47,13 @@ func Run(args []string, stdout io.Writer, stderr io.Writer) error {
 		listFlags.Parse(params)
 
 		return list(listArgs{input: *listInput}, stdout, stderr)
+
+	case "tags":
+		tagsFlags := flag.NewFlagSet("tag", flag.ExitOnError)
+		tagsInput := tagsFlags.String("input", "one.md", "file to read")
+		tagsFlags.Parse(params)
+
+		return tags(tagsArgs{input: *tagsInput}, stdout, stderr)
 
 	case "sort":
 		sortFlags := flag.NewFlagSet("sort", flag.ExitOnError)

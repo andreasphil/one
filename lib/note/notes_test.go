@@ -8,6 +8,7 @@ import (
 	"github.com/andreasphil/one/lib/note"
 	"github.com/andreasphil/one/util"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 func TestFindBySlug(t *testing.T) {
@@ -359,6 +360,89 @@ func TestString(t *testing.T) {
 			result := note.String(notes)
 			if result != tc.expected {
 				t.Errorf("expected %q, got %q", tc.expected, result)
+			}
+		})
+	}
+}
+
+func TestTags(t *testing.T) {
+	type testcase struct {
+		name     string
+		notes    []note.Note
+		expected []note.Tag
+	}
+
+	testcases := []testcase{
+		{
+			name:     "returns nothing for no notes",
+			notes:    []note.Note{},
+			expected: []note.Tag{},
+		},
+		{
+			name: "returns nothing for notes without tags",
+			notes: []note.Note{
+				{Title: "A"},
+				{Title: "B", Tags: util.NewSet[note.Tag]()},
+			},
+			expected: []note.Tag{},
+		},
+		{
+			name: "returns tags sorted alphabetically",
+			notes: []note.Note{
+				{Title: "A", Tags: util.NewSetFrom([]note.Tag{"#foo", "#baz"})},
+				{Title: "B", Tags: util.NewSetFrom([]note.Tag{"#bar"})},
+			},
+			expected: []note.Tag{"#bar", "#baz", "#foo"},
+		},
+		{
+			name: "sorts without regard to case",
+			notes: []note.Note{
+				{Title: "A", Tags: util.NewSetFrom([]note.Tag{"#Beta", "#alpha", "#Gamma"})},
+			},
+			expected: []note.Tag{"#alpha", "#Beta", "#Gamma"},
+		},
+		{
+			name: "returns each tag only once",
+			notes: []note.Note{
+				{Title: "A", Tags: util.NewSetFrom([]note.Tag{"#foo", "#bar"})},
+				{Title: "B", Tags: util.NewSetFrom([]note.Tag{"#foo"})},
+			},
+			expected: []note.Tag{"#bar", "#foo"},
+		},
+		{
+			name: "keeps tags that differ only in case apart",
+			notes: []note.Note{
+				{Title: "A", Tags: util.NewSetFrom([]note.Tag{"#Foo", "#foo"})},
+			},
+			expected: []note.Tag{"#Foo", "#foo"},
+		},
+		{
+			name: "includes tags of children",
+			notes: []note.Note{
+				{
+					Title: "A",
+					Tags:  util.NewSetFrom([]note.Tag{"#foo"}),
+					Children: []note.Note{
+						{Title: "B", Tags: util.NewSetFrom([]note.Tag{"#bar"})},
+						{
+							Title: "C",
+							Children: []note.Note{
+								{Title: "D", Tags: util.NewSetFrom([]note.Tag{"#baz"})},
+							},
+						},
+					},
+				},
+			},
+			expected: []note.Tag{"#bar", "#baz", "#foo"},
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := note.Tags(tc.notes)
+
+			if diff := cmp.Diff(tc.expected, got, cmpopts.EquateEmpty()); diff != "" {
+				t.Errorf("unexpected tags (-want +got):\n%v", diff)
 			}
 		})
 	}

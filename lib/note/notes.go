@@ -4,6 +4,8 @@ import (
 	"cmp"
 	"slices"
 	"strings"
+
+	"github.com/andreasphil/one/util"
 )
 
 // Walk recursively visits every note and its children, in depth-first,
@@ -77,4 +79,25 @@ func String(notes []Note) string {
 	}
 
 	return strings.Join(rawNotes, "\n\n") + "\n"
+}
+
+// Tags returns the unique tags occurring in notes and their children, sorted
+// alphabetically (ascending, case insensitive).
+func Tags(notes []Note) []Tag {
+	tags := util.NewSet[Tag]()
+
+	Walk(notes, func(note Note) bool {
+		tags.Add(note.Tags.Values()...)
+		return true
+	})
+
+	values := tags.Values()
+	slices.SortFunc(values, func(a Tag, b Tag) int {
+		return cmp.Or(
+			cmp.Compare(strings.ToLower(string(a)), strings.ToLower(string(b))),
+			cmp.Compare(a, b),
+		)
+	})
+
+	return values
 }
