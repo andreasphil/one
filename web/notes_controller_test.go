@@ -131,7 +131,7 @@ func TestGetNoteRendersDailyNoteWithChild(t *testing.T) {
 	}
 
 	body := rec.Body.String()
-	wantDate := time.Date(2026, 2, 1, 0, 0, 0, 0, time.UTC).Format("Monday, 2. January 2006")
+	wantDate := time.Date(2026, 2, 1, 0, 0, 0, 0, time.UTC).Format("Mon, 2. Jan 2006")
 
 	assertContainsAll(t, body,
 		wantDate,

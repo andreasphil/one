@@ -31,7 +31,7 @@
     <aside>
       <nav>
         {{- if not .Data.Note.Date.IsZero -}}
-          {{ $noteDate := .Data.Note.Date.Format "Monday, 2. January 2006" }}
+          {{ $noteDate := .Data.Note.Date.Format "Mon, 2. Jan 2006" }}
           {{ if .Data.Note.IsDailyNote }}
             <span class="color-variant">
               {{ template "calendar.svg" }}
