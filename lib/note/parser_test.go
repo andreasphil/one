@@ -245,58 +245,58 @@ func TestParseExtractsTags(t *testing.T) {
 	type testcase struct {
 		name     string
 		input    string
-		expected util.Set[string]
+		expected util.Set[note.Tag]
 	}
 
 	testcases := []testcase{
 		{
 			name:     "no tags",
 			input:    "# Note 1\n\nLine 1\n",
-			expected: util.NewSet[string](),
+			expected: util.NewSet[note.Tag](),
 		},
 		{
 			name:     "tag in title",
 			input:    "# Note 1 #tag\n",
-			expected: util.NewSetFrom([]string{"#tag"}),
+			expected: util.NewSetFrom([]note.Tag{"#tag"}),
 		},
 		{
 			name:     "tag in body",
 			input:    "# Note 1\n\nLine 1 #tag\n",
-			expected: util.NewSetFrom([]string{"#tag"}),
+			expected: util.NewSetFrom([]note.Tag{"#tag"}),
 		},
 		{
 			name:     "multiple tags",
 			input:    "# Note 1 #tag_1\n\nLine 1 #tag_2\n",
-			expected: util.NewSetFrom([]string{"#tag_1", "#tag_2"}),
+			expected: util.NewSetFrom([]note.Tag{"#tag_1", "#tag_2"}),
 		},
 		{
 			name:     "multiple tags in one line",
 			input:    "# Note 1\n\nLine #tag_1 1 #tag_2\n",
-			expected: util.NewSetFrom([]string{"#tag_1", "#tag_2"}),
+			expected: util.NewSetFrom([]note.Tag{"#tag_1", "#tag_2"}),
 		},
 		{
 			name:     "duplicate tags",
 			input:    "# Note 1\n\nLine 1 #tag_1\n\nLine 2 #tag_1",
-			expected: util.NewSetFrom([]string{"#tag_1"}),
+			expected: util.NewSetFrom([]note.Tag{"#tag_1"}),
 		},
 		{
 			name:     "tags in fenced code block",
 			input:    "# Note 1\n\n```\n#tag_in_code\n```\n",
-			expected: util.NewSet[string](),
+			expected: util.NewSet[note.Tag](),
 		},
 		{
 			name:     "at the start of a line",
 			input:    "# Note 1\n\n#tag_1 Line 1",
-			expected: util.NewSetFrom([]string{"#tag_1"}),
+			expected: util.NewSetFrom([]note.Tag{"#tag_1"}),
 		},
 		{
 			name:     "anchors in links",
 			input:    "# Note 1\n\n[A link](https://example.com/#not_a_tag)",
-			expected: util.NewSet[string](),
+			expected: util.NewSet[note.Tag](),
 		},
 	}
 
-	exportSetInternals := cmp.AllowUnexported(util.NewSet[string]())
+	exportSetInternals := cmp.AllowUnexported(util.NewSet[note.Tag]())
 
 	for _, i := range testcases {
 		t.Run(i.name, func(t *testing.T) {

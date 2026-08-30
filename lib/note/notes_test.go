@@ -81,7 +81,7 @@ func TestFindBySlug(t *testing.T) {
 					t.Errorf("expected slug %q, got %q", tc.slug, result.Slug())
 				}
 			} else {
-				exportSetInternals := cmp.AllowUnexported(util.NewSet[string]())
+				exportSetInternals := cmp.AllowUnexported(util.NewSet[note.Tag]())
 				if !cmp.Equal(result, note.Note{}, exportSetInternals) {
 					t.Errorf("expected empty Note{}, got %+v", result)
 				}

@@ -13,6 +13,8 @@ var dateTitleExp = regexp.MustCompile(`^\d{2}\.\d{2}\.\d{4}$`)
 var normalizeExp = regexp.MustCompile(`[^\wäöüß]+`)
 var titleHeadingExp = regexp.MustCompile(`^#{1,2}\s+.+\n`)
 
+type Tag string
+
 // Note represents a single note parsed from a notes file. Daily notes (notes
 // whose title is a date in the format of DD.MM.YYYY) may have children,
 // which represent the level 2 headings within that daily note.
@@ -25,7 +27,7 @@ type Note struct {
 	Date time.Time
 	// Tags are the tags occurring anywhere in the note, each including its
 	// leading "#".
-	Tags util.Set[string]
+	Tags util.Set[Tag]
 	// Children are the notes formed by the level 2 headings of a daily note.
 	Children []Note
 	// Raw is the note's own markdown source, including its heading but
@@ -37,7 +39,7 @@ type Note struct {
 func New(title string) Note {
 	return Note{
 		Title: title,
-		Tags:  util.NewSet[string](),
+		Tags:  util.NewSet[Tag](),
 	}
 }
 

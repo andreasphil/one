@@ -95,7 +95,7 @@ func Parse(input io.Reader) ([]Note, error) {
 			// Parse tags
 			tags := tagsExp.FindAllString(line, -1)
 			for _, tag := range tags {
-				current.Tags.Add(strings.TrimSpace(tag))
+				current.Tags.Add(Tag(strings.TrimSpace(tag)))
 			}
 
 			// Parse date, only in note name for now
