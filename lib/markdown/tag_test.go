@@ -5,13 +5,13 @@ import (
 	"testing"
 
 	"github.com/andreasphil/one/lib/markdown"
-	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/v2/parser"
+	"github.com/yuin/goldmark/v2/renderer/html"
 )
 
 func TestTagExtension(t *testing.T) {
-	md := goldmark.New(
-		goldmark.WithExtensions(&markdown.Tag{Prefix: "/tags/"}),
-	)
+	p := parser.New(parser.WithExtensions(markdown.TagParser))
+	r := html.New(html.WithExtensions(markdown.NewTagHTMLRenderer("/tags/")))
 
 	type testcase struct {
 		name     string
@@ -35,7 +35,8 @@ func TestTagExtension(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			var buf bytes.Buffer
 
-			if err := md.Convert([]byte(tc.in), &buf); err != nil {
+			src := []byte(tc.in)
+			if err := r.Render(&buf, src, p.Parse(src)); err != nil {
 				t.Fatal(err)
 			}
 

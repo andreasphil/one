@@ -6,32 +6,41 @@ import (
 	"html/template"
 
 	"github.com/andreasphil/one/lib/markdown"
-	"github.com/yuin/goldmark"
-	"github.com/yuin/goldmark/extension"
+	"github.com/yuin/goldmark/v2/extension"
+	"github.com/yuin/goldmark/v2/parser"
+	"github.com/yuin/goldmark/v2/renderer/html"
 )
 
 // Markdown renders the markdown source of a note as HTML, with GFM,
 // typographer and #tag support enabled.
 type Markdown struct {
-	renderer goldmark.Markdown
+	parser   parser.Parser
+	renderer html.Renderer
 }
 
 // NewMarkdown creates a Markdown renderer.
 func NewMarkdown() Markdown {
-	md := goldmark.New(goldmark.WithExtensions(
-		extension.GFM,
-		extension.Typographer,
+	p := parser.New(parser.WithExtensions(
+		extension.GFMParser,
+		extension.TypographerParser,
 
-		&markdown.Tag{Prefix: "/tags/"},
+		markdown.TagParser,
 	))
 
-	return Markdown{renderer: md}
+	r := html.New(html.WithExtensions(
+		extension.GFMHTMLRenderer,
+
+		markdown.NewTagHTMLRenderer("/tags/"),
+	))
+
+	return Markdown{parser: p, renderer: r}
 }
 
 // Render converts the markdown in input to HTML.
 func (m Markdown) Render(input string) (template.HTML, error) {
+	src := []byte(input)
 	out := bytes.Buffer{}
-	if err := m.renderer.Convert([]byte(input), &out); err != nil {
+	if err := m.renderer.Render(&out, src, m.parser.Parse(src)); err != nil {
 		return "", err
 	}
 

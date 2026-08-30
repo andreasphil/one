@@ -3,70 +3,65 @@ package markdown
 
 import (
 	"fmt"
+	"io"
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/yuin/goldmark"
-	"github.com/yuin/goldmark/ast"
-	"github.com/yuin/goldmark/parser"
-	"github.com/yuin/goldmark/renderer"
-	"github.com/yuin/goldmark/text"
-	"github.com/yuin/goldmark/util"
+	"github.com/yuin/goldmark/v2/ast"
+	"github.com/yuin/goldmark/v2/parser"
+	"github.com/yuin/goldmark/v2/renderer"
+	"github.com/yuin/goldmark/v2/renderer/html"
+	"github.com/yuin/goldmark/v2/text"
+	"github.com/yuin/goldmark/v2/util"
 )
-
-// Tag is a goldmark extension that turns hashtags such as "#example" into
-// links. A tag starts with "#" preceded by whitespace or the start of a line,
-// followed by one or more letters, digits, or underscores. It renders as an
-// anchor with the class "tag", e.g. `<a class="tag" href="/tags/example">#example</a>`.
-type Tag struct {
-	// Prefix is prepended to the tag to build the href, e.g. "/tags/"
-	Prefix string
-}
-
-// Extend registers the tag parser and renderer on m. It implements
-// goldmark.Extender, so a Tag can be passed to goldmark.WithExtensions.
-func (e *Tag) Extend(m goldmark.Markdown) {
-	m.Parser().AddOptions(parser.WithInlineParsers(util.Prioritized(newTagParser(), 999)))
-	m.Renderer().AddOptions(renderer.WithNodeRenderers(util.Prioritized(newTagRenderer(e.Prefix), 999)))
-}
 
 // Node ---------------------------------------------------
 
-var tagKind = ast.NewNodeKind("Tag")
+var KindTag = ast.NewNodeKind("Tag")
 
 type tagNode struct {
 	ast.BaseInline
-	Segment text.Segment
+	Value text.SingleLineValue
 }
 
-func (n *tagNode) Value(src []byte) []byte {
-	return n.Segment.Value(src)
+func newTagNode(value text.SingleLineValue) *tagNode {
+	n := &tagNode{Value: value}
+	n.Init(n)
+	return n
 }
 
 func (n *tagNode) Kind() ast.NodeKind {
-	return tagKind
+	return KindTag
 }
 
-func (n *tagNode) Dump(src []byte, level int) {
-	ast.DumpHelper(n, src, level, map[string]string{
-		"Value": fmt.Sprintf(`"%s"`, n.Value(src)),
-	}, nil)
+func (n *tagNode) Dump(_ []byte) *ast.NodeDump {
+	return ast.NewNodeDump(n, map[string]any{"Value": n.Value})
 }
 
 // Parser -------------------------------------------------
 
-type tagParser struct{}
-
-func newTagParser() parser.InlineParser {
-	return &tagParser{}
+func NewTagParser() parser.Extension {
+	return &tagParserExtension{}
 }
+
+var TagParser = NewTagParser()
+
+type tagParserExtension struct{}
+
+func (e *tagParserExtension) ParserOptions(_ *parser.Config) []parser.Option {
+	return []parser.Option{
+		parser.WithInlineParsers(util.Prioritized[parser.InlineParser](&tagParser{}, 999)),
+	}
+}
+
+type tagParser struct{}
 
 func (p *tagParser) Trigger() []byte {
 	return []byte{'#'}
 }
 
 func (p *tagParser) Parse(parent ast.Node, block text.Reader, context parser.Context) ast.Node {
-	before := block.PrecendingCharacter()
+	before := block.PrecedingCharacter()
 	if !unicode.IsSpace(before) {
 		return nil
 	}
@@ -86,9 +81,8 @@ func (p *tagParser) Parse(parent ast.Node, block text.Reader, context parser.Con
 		return nil
 	}
 
-	node := &tagNode{
-		Segment: text.NewSegment(segment.Start+1, segment.Start+i),
-	}
+	value := text.NewSegment(segment.Start+1, segment.Start+i)
+	node := newTagNode(text.NewSingleLineValueFromSegment(value, block.Decoder()))
 
 	block.Advance(i)
 	return node
@@ -100,19 +94,25 @@ func isTagRune(r rune) bool {
 
 // Renderer -----------------------------------------------
 
-type tagRenderer struct {
-	Prefix string
+func NewTagHTMLRenderer(prefix string) html.Extension {
+	return &tagHTMLRendererExtension{prefix: prefix}
 }
 
-func newTagRenderer(prefix string) renderer.NodeRenderer {
-	return &tagRenderer{Prefix: prefix}
+type tagHTMLRendererExtension struct {
+	prefix string
 }
 
-func (r *tagRenderer) RegisterFuncs(reg renderer.NodeRendererFuncRegisterer) {
-	reg.Register(tagKind, r.render)
+func (e *tagHTMLRendererExtension) RendererOptions(_ *html.Config) []html.Option {
+	return []html.Option{
+		html.WithNodeRenderers(map[ast.NodeKind]html.NodeRenderer{
+			KindTag: html.NodeRendererFunc(e.render),
+		}),
+	}
 }
 
-func (r *tagRenderer) render(w util.BufWriter, src []byte, node ast.Node, entering bool) (ast.WalkStatus, error) {
+func (e *tagHTMLRendererExtension) render(
+	w io.Writer, src []byte, node ast.Node, entering bool, rc renderer.Context,
+) (ast.WalkStatus, error) {
 	if !entering {
 		return ast.WalkContinue, nil
 	}
@@ -122,14 +122,14 @@ func (r *tagRenderer) render(w util.BufWriter, src []byte, node ast.Node, enteri
 		return ast.WalkStop, fmt.Errorf("expected tag node, got %v", node)
 	}
 
-	value := n.Value(src)
+	bw := w.(util.BufWriter)
 
-	_, _ = w.WriteString(`<a class="tag" href="`)
-	_, _ = w.WriteString(r.Prefix)
-	_, _ = w.Write(util.URLEscape(value, false))
-	_, _ = w.WriteString(`">#`)
-	_, _ = w.Write(util.EscapeHTML(value))
-	_, _ = w.WriteString("</a>")
+	_, _ = bw.WriteString(`<a class="tag" href="`)
+	_, _ = bw.WriteString(e.prefix)
+	_, _ = n.Value.WriteTo(html.ContextLinkURLWriter(rc), src)
+	_, _ = bw.WriteString(`">#`)
+	_, _ = n.Value.WriteTo(html.ContextTextWriter(rc), src)
+	_, _ = bw.WriteString("</a>")
 
 	return ast.WalkSkipChildren, nil
 }
