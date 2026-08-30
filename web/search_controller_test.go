@@ -85,7 +85,7 @@ func TestGetSearchListsMatchingNotes(t *testing.T) {
 	}
 }
 
-func TestGetSearchRendersResultContentAsHtml(t *testing.T) {
+func TestGetSearchRendersResultContentAsHTML(t *testing.T) {
 	handler, _ := newTestServer(t, searchNotes)
 
 	rec := get(t, handler, "/search/?query=eggs")

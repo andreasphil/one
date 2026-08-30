@@ -64,9 +64,9 @@ func Successf(w io.Writer, format string, v ...any) {
 	logf(w, style(green, "✓"), format, v...)
 }
 
-// HttpErrorf writes an error message, formatted according to format, to errw,
+// HTTPErrorf writes an error message, formatted according to format, to errw,
 // and sends it as an HTTP error response with the given status code.
-func HttpErrorf(errw io.Writer, w http.ResponseWriter, status int, format string, v ...any) {
+func HTTPErrorf(errw io.Writer, w http.ResponseWriter, status int, format string, v ...any) {
 	message := fmt.Sprintf(format, v...)
 	Errorf(errw, "%v %v", status, message)
 	http.Error(w, message, status)

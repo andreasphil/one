@@ -12,7 +12,7 @@ var templatesFS embed.FS
 
 type data[T any] struct {
 	Title      string
-	CurrentUrl string
+	CurrentURL string
 	Data       T
 }
 

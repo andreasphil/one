@@ -21,12 +21,12 @@ func getNotes(errw io.Writer, provider NotesProvider) http.HandlerFunc {
 
 		err := render(w, data[getNotesData]{
 			Title:      "Notes",
-			CurrentUrl: r.URL.Path,
+			CurrentURL: r.URL.Path,
 			Data:       getNotesData{Notes: notes},
 		})
 
 		if err != nil {
-			util.HttpErrorf(errw, w, http.StatusInternalServerError, "failed to render page template: %v", err)
+			util.HTTPErrorf(errw, w, http.StatusInternalServerError, "failed to render page template: %v", err)
 			return
 		}
 	}
@@ -36,7 +36,7 @@ func getNote(errw io.Writer, provider NotesProvider, renderer MarkdownRenderer) 
 	type getNoteData struct {
 		Notes []note.Note
 		Note  note.Note
-		Html  template.HTML
+		HTML  template.HTML
 	}
 
 	render := newRenderFunc[getNoteData]("get_note.html")
@@ -47,24 +47,24 @@ func getNote(errw io.Writer, provider NotesProvider, renderer MarkdownRenderer) 
 
 		n, found := note.FindBySlug(notes, slug)
 		if !found {
-			util.HttpErrorf(errw, w, http.StatusNotFound, "note %v not found", slug)
+			util.HTTPErrorf(errw, w, http.StatusNotFound, "note %v not found", slug)
 			return
 		}
 
 		html, err := renderer.Render(n.Content())
 		if err != nil {
-			util.HttpErrorf(errw, w, http.StatusUnprocessableEntity, "failed to render note to html: %v", err)
+			util.HTTPErrorf(errw, w, http.StatusUnprocessableEntity, "failed to render note to html: %v", err)
 			return
 		}
 
 		err = render(w, data[getNoteData]{
 			Title:      n.Title,
-			CurrentUrl: r.URL.Path,
-			Data:       getNoteData{Notes: notes, Note: n, Html: html},
+			CurrentURL: r.URL.Path,
+			Data:       getNoteData{Notes: notes, Note: n, HTML: html},
 		})
 
 		if err != nil {
-			util.HttpErrorf(errw, w, http.StatusInternalServerError, "failed to render page template: %v", err)
+			util.HTTPErrorf(errw, w, http.StatusInternalServerError, "failed to render page template: %v", err)
 			return
 		}
 	}

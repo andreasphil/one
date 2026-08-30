@@ -14,7 +14,7 @@ type searchResult struct {
 	Title string
 	Slug  string
 	Date  time.Time
-	Html  template.HTML
+	HTML  template.HTML
 }
 
 func getSearch(errw io.Writer, provider NotesProvider, renderer MarkdownRenderer) http.HandlerFunc {
@@ -35,7 +35,7 @@ func getSearch(errw io.Writer, provider NotesProvider, renderer MarkdownRenderer
 		for _, match := range note.Containing(notes, query) {
 			html, err := renderer.Render(match.Content())
 			if err != nil {
-				util.HttpErrorf(errw, w, http.StatusUnprocessableEntity, "failed to render note to html: %v", err)
+				util.HTTPErrorf(errw, w, http.StatusUnprocessableEntity, "failed to render note to html: %v", err)
 				return
 			}
 
@@ -48,18 +48,18 @@ func getSearch(errw io.Writer, provider NotesProvider, renderer MarkdownRenderer
 				Title: match.Title,
 				Slug:  match.Slug(),
 				Date:  date,
-				Html:  html,
+				HTML:  html,
 			})
 		}
 
 		err := render(w, data[getSearchData]{
 			Title:      "Search",
-			CurrentUrl: r.URL.Path,
+			CurrentURL: r.URL.Path,
 			Data:       getSearchData{Notes: notes, Results: results, Query: query},
 		})
 
 		if err != nil {
-			util.HttpErrorf(errw, w, http.StatusInternalServerError, "failed to render page template: %v", err)
+			util.HTTPErrorf(errw, w, http.StatusInternalServerError, "failed to render page template: %v", err)
 			return
 		}
 	}
