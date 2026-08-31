@@ -23,12 +23,14 @@ func NewMarkdown() Markdown {
 	p := parser.New(parser.WithExtensions(
 		extension.GFMParser,
 		extension.TypographerParser,
+		extension.DefinitionListParser,
 
 		markdown.TagParser,
 	))
 
 	r := html.New(html.WithExtensions(
 		extension.GFMHTMLRenderer,
+		extension.DefinitionListHTMLRenderer,
 
 		markdown.NewTagHTMLRenderer("/tags/"),
 	))

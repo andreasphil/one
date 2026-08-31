@@ -37,12 +37,6 @@
   .prose {
     --prose-font-size: clamp(14px, 0.417vw + 8px, 16px);
   }
-
-  em,
-  blockquote {
-    font-family: var(--font-family-display);
-    font-style: italic;
-  }
 }
 
 :root {
