@@ -8,37 +8,25 @@ import (
 )
 
 func getNotes(provider NotesProvider) handler {
-	type getNotesData struct {
-		Notes []note.Note
-	}
-
-	render := newRenderFunc[getNotesData]("get_notes.html")
+	render := newRenderFunc[struct{}](provider, "get_notes.html")
 
 	return func(w http.ResponseWriter, r *http.Request) error {
-		notes := provider.Notes()
-
-		return render(w, data[getNotesData]{
-			Title:      "Notes",
-			CurrentURL: r.URL.Path,
-			Data:       getNotesData{Notes: notes},
-		})
+		return render(w, r, data[struct{}]{Title: "Notes"})
 	}
 }
 
 func getNote(provider NotesProvider, renderer MarkdownRenderer) handler {
 	type getNoteData struct {
-		Notes []note.Note
-		Note  note.Note
-		HTML  template.HTML
+		Note note.Note
+		HTML template.HTML
 	}
 
-	render := newRenderFunc[getNoteData]("get_note.html")
+	render := newRenderFunc[getNoteData](provider, "get_note.html")
 
 	return func(w http.ResponseWriter, r *http.Request) error {
-		notes := provider.Notes()
 		slug := r.PathValue("slug")
 
-		n, found := note.FindBySlug(notes, slug)
+		n, found := note.FindBySlug(provider.Notes(), slug)
 		if !found {
 			return httpStatusErrorf(http.StatusNotFound, "note %v not found", slug)
 		}
@@ -48,10 +36,9 @@ func getNote(provider NotesProvider, renderer MarkdownRenderer) handler {
 			return httpStatusErrorf(http.StatusUnprocessableEntity, "failed to render note to html: %v", err)
 		}
 
-		return render(w, data[getNoteData]{
-			Title:      n.Title,
-			CurrentURL: r.URL.Path,
-			Data:       getNoteData{Notes: notes, Note: n, HTML: html},
+		return render(w, r, data[getNoteData]{
+			Title: n.Title,
+			Data:  getNoteData{Note: n, HTML: html},
 		})
 	}
 }

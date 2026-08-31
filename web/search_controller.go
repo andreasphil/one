@@ -17,20 +17,17 @@ type searchResult struct {
 
 func getSearch(provider NotesProvider, renderer MarkdownRenderer) handler {
 	type getSearchData struct {
-		Notes   []note.Note
 		Results []searchResult
 		Query   string
 	}
 
-	render := newRenderFunc[getSearchData]("get_search.html")
+	render := newRenderFunc[getSearchData](provider, "get_search.html")
 
 	return func(w http.ResponseWriter, r *http.Request) error {
-		notes := provider.Notes()
-
 		query := r.URL.Query().Get("query")
 
 		results := []searchResult{}
-		for _, match := range note.Containing(notes, query) {
+		for _, match := range note.Containing(provider.Notes(), query) {
 			html, err := renderer.Render(match.Content())
 			if err != nil {
 				return httpStatusErrorf(http.StatusUnprocessableEntity, "failed to render note to html: %v", err)
@@ -49,10 +46,9 @@ func getSearch(provider NotesProvider, renderer MarkdownRenderer) handler {
 			})
 		}
 
-		return render(w, data[getSearchData]{
-			Title:      "Search",
-			CurrentURL: r.URL.Path,
-			Data:       getSearchData{Notes: notes, Results: results, Query: query},
+		return render(w, r, data[getSearchData]{
+			Title: "Search",
+			Data:  getSearchData{Results: results, Query: query},
 		})
 	}
 }

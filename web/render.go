@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+
+	"github.com/andreasphil/one/lib/note"
 )
 
 //go:embed templates
@@ -13,12 +15,13 @@ var templatesFS embed.FS
 type data[T any] struct {
 	Title      string
 	CurrentURL string
+	Notes      []note.Note
 	Data       T
 }
 
-type renderFunc[T any] func(http.ResponseWriter, data[T]) error
+type renderFunc[T any] func(http.ResponseWriter, *http.Request, data[T]) error
 
-func newRenderFunc[T any](name string) renderFunc[T] {
+func newRenderFunc[T any](provider NotesProvider, name string) renderFunc[T] {
 	helpers := template.FuncMap{
 		// "hasPrefix": strings.HasPrefix,
 
@@ -56,7 +59,10 @@ func newRenderFunc[T any](name string) renderFunc[T] {
 
 	template.Must(t.ParseFS(templatesFS, fmt.Sprintf("templates/%v", name)))
 
-	return func(w http.ResponseWriter, data data[T]) error {
+	return func(w http.ResponseWriter, r *http.Request, data data[T]) error {
+		data.CurrentURL = r.URL.Path
+		data.Notes = provider.Notes()
+
 		if err := t.ExecuteTemplate(w, name, data); err != nil {
 			return fmt.Errorf("failed to render page template: %w", err)
 		}
