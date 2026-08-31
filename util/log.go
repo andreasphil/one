@@ -3,7 +3,6 @@ package util
 import (
 	"fmt"
 	"io"
-	"net/http"
 	"strings"
 	"unicode/utf8"
 )
@@ -62,12 +61,4 @@ func Errorf(w io.Writer, format string, v ...any) {
 // prefixed with a green checkmark.
 func Successf(w io.Writer, format string, v ...any) {
 	logf(w, style(green, "✓"), format, v...)
-}
-
-// HTTPErrorf writes an error message, formatted according to format, to errw,
-// and sends it as an HTTP error response with the given status code.
-func HTTPErrorf(errw io.Writer, w http.ResponseWriter, status int, format string, v ...any) {
-	message := fmt.Sprintf(format, v...)
-	Errorf(errw, "%v %v", status, message)
-	http.Error(w, message, status)
 }

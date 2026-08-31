@@ -57,6 +57,10 @@ func newRenderFunc[T any](name string) renderFunc[T] {
 	template.Must(t.ParseFS(templatesFS, fmt.Sprintf("templates/%v", name)))
 
 	return func(w http.ResponseWriter, data data[T]) error {
-		return t.ExecuteTemplate(w, name, data)
+		if err := t.ExecuteTemplate(w, name, data); err != nil {
+			return fmt.Errorf("failed to render page template: %w", err)
+		}
+
+		return nil
 	}
 }

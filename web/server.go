@@ -48,12 +48,12 @@ func NewServer(args ServerArgs) http.Server {
 	router := http.NewServeMux()
 
 	router.Handle("/{$}", http.RedirectHandler("/notes/", http.StatusTemporaryRedirect))
-	router.HandleFunc("GET /notes/{$}", getNotes(errw, args.Notes))
-	router.HandleFunc("GET /notes/{slug}/{$}", getNote(errw, args.Notes, markdownRenderer))
+	router.HandleFunc("GET /notes/{$}", handle(errw, getNotes(args.Notes)))
+	router.HandleFunc("GET /notes/{slug}/{$}", handle(errw, getNote(args.Notes, markdownRenderer)))
 
-	router.HandleFunc("GET /search/{$}", getSearch(errw, args.Notes, markdownRenderer))
+	router.HandleFunc("GET /search/{$}", handle(errw, getSearch(args.Notes, markdownRenderer)))
 
-	router.HandleFunc("GET /tags/{tag}/{$}", getTag())
+	router.HandleFunc("GET /tags/{tag}/{$}", handle(errw, getTag()))
 
 	router.Handle("/static/", http.FileServerFS(staticFS))
 

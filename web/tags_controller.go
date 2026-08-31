@@ -5,8 +5,8 @@ import (
 	"net/url"
 )
 
-func getTag() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func getTag() handler {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		tag := r.PathValue("tag")
 
 		target := url.URL{
@@ -15,5 +15,7 @@ func getTag() http.HandlerFunc {
 		}
 
 		http.Redirect(w, r, target.String(), http.StatusTemporaryRedirect)
+
+		return nil
 	}
 }

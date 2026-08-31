@@ -2,12 +2,10 @@ package web
 
 import (
 	"html/template"
-	"io"
 	"net/http"
 	"time"
 
 	"github.com/andreasphil/one/lib/note"
-	"github.com/andreasphil/one/util"
 )
 
 type searchResult struct {
@@ -17,7 +15,7 @@ type searchResult struct {
 	HTML  template.HTML
 }
 
-func getSearch(errw io.Writer, provider NotesProvider, renderer MarkdownRenderer) http.HandlerFunc {
+func getSearch(provider NotesProvider, renderer MarkdownRenderer) handler {
 	type getSearchData struct {
 		Notes   []note.Note
 		Results []searchResult
@@ -26,7 +24,7 @@ func getSearch(errw io.Writer, provider NotesProvider, renderer MarkdownRenderer
 
 	render := newRenderFunc[getSearchData]("get_search.html")
 
-	return func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) error {
 		notes := provider.Notes()
 
 		query := r.URL.Query().Get("query")
@@ -35,8 +33,7 @@ func getSearch(errw io.Writer, provider NotesProvider, renderer MarkdownRenderer
 		for _, match := range note.Containing(notes, query) {
 			html, err := renderer.Render(match.Content())
 			if err != nil {
-				util.HTTPErrorf(errw, w, http.StatusUnprocessableEntity, "failed to render note to html: %v", err)
-				return
+				return httpStatusErrorf(http.StatusUnprocessableEntity, "failed to render note to html: %v", err)
 			}
 
 			var date time.Time
@@ -52,15 +49,10 @@ func getSearch(errw io.Writer, provider NotesProvider, renderer MarkdownRenderer
 			})
 		}
 
-		err := render(w, data[getSearchData]{
+		return render(w, data[getSearchData]{
 			Title:      "Search",
 			CurrentURL: r.URL.Path,
 			Data:       getSearchData{Notes: notes, Results: results, Query: query},
 		})
-
-		if err != nil {
-			util.HTTPErrorf(errw, w, http.StatusInternalServerError, "failed to render page template: %v", err)
-			return
-		}
 	}
 }
