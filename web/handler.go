@@ -30,6 +30,8 @@ type handler func(w http.ResponseWriter, r *http.Request) error
 
 func handle(errw io.Writer, h handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		util.Infof(errw, "%v %v %v", r.Method, r.URL.EscapedPath(), util.FormatNestedMap(r.URL.Query()))
+
 		err := h(w, r)
 		if err == nil {
 			return
@@ -40,7 +42,7 @@ func handle(errw io.Writer, h handler) http.HandlerFunc {
 			status = statusErr.status
 		}
 
-		util.Errorf(errw, "%v %v", status, err.Error())
+		util.Errorf(errw, "[%v] %v", status, err.Error())
 		http.Error(w, fmt.Sprintf("%v", err.Error()), status)
 	}
 }
