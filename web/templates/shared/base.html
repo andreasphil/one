@@ -14,10 +14,15 @@
     <link rel="stylesheet" href="/static/styles/styles.css" />
 
     <!-- App scripts -->
-    <script src="/static/scripts/app.js" module></script>
+    <script src="/static/scripts/app.js" type="module"></script>
   </head>
 
   <body>
     {{ template "page" . }}
+
+
+    <command-bar id="cmd"></command-bar>
+
+    {{ template "client.html" . }}
   </body>
 </html>

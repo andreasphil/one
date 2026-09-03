@@ -3,6 +3,12 @@
 
   <ul>
     <li>
+      <button variant="muted" commandfor="cmd" command="--open">
+        {{ template "command.svg" }}
+        Goto anything
+      </button>
+    </li>
+    <li>
       <a
         href="/search/"
         class="color-variant"
@@ -15,9 +21,7 @@
   </ul>
 
   <ul>
-    <li class="caps font-size-small color-primary font-weight-medium">
-      {{ len .Notes }} Notes
-    </li>
+    <li class="caps font-size-small color-primary font-weight-medium">{{ len .Notes }} Notes</li>
     {{ range .Notes }}
       <li>
         {{ template "note_link.html" (dict "Note" . "CurrentURL" $.CurrentURL) }}

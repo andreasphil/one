@@ -26,6 +26,11 @@
     --font-size: 14px;
     --outer-spacing-y: 0;
     --tint: 325;
+
+    aside nav button {
+      justify-content: start;
+      width: 100%;
+    }
   }
 
   .prose {

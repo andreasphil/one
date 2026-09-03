@@ -7,16 +7,19 @@ import (
 	"net/http"
 
 	"github.com/andreasphil/one/lib/note"
+	"github.com/andreasphil/one/web/mapper"
 )
 
 //go:embed templates
 var templatesFS embed.FS
 
 type data[T any] struct {
-	Title      string
 	CurrentURL string
+	NotesMeta  []mapper.NoteMeta
 	Notes      []note.Note
-	Data       T
+
+	Title string
+	Data  T
 }
 
 type renderFunc[T any] func(http.ResponseWriter, *http.Request, data[T]) error
@@ -60,8 +63,11 @@ func newRenderFunc[T any](provider NotesProvider, name string) renderFunc[T] {
 	template.Must(t.ParseFS(templatesFS, fmt.Sprintf("templates/%v", name)))
 
 	return func(w http.ResponseWriter, r *http.Request, data data[T]) error {
+		notes := provider.Notes()
+
 		data.CurrentURL = r.URL.Path
-		data.Notes = provider.Notes()
+		data.NotesMeta = mapper.ToNoteMeta(notes)
+		data.Notes = notes
 
 		if err := t.ExecuteTemplate(w, name, data); err != nil {
 			return fmt.Errorf("failed to render page template: %w", err)
