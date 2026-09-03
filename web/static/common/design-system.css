@@ -1063,7 +1063,8 @@ table {
   width: 100%;
 
   & th, & td {
-    border: var(--border-width) solid var(--c-border);
+    border: 0px solid var(--c-border);
+    border-width: var(--border-width) 0;
     text-align: left;
     padding: .6125rem .75rem;
   }
@@ -1139,7 +1140,7 @@ ul[role="tablist"] {
     border: var(--border-width-large) dashed transparent;
     flex-direction: column;
     align-items: center;
-    gap: .5rem;
+    gap: .25rem;
     padding: 1rem;
     display: none;
 

@@ -16,12 +16,6 @@
     display: block;
     overflow-x: auto;
     padding-bottom: 1px;
-
-    th,
-    td {
-      border-left-width: 0;
-      border-right-width: 0;
-    }
   }
   /* --- end todo --- */
 
