@@ -20,15 +20,38 @@ const icons = iconTemplates.entries().reduce((all, [, i]) => {
   return all.set(name, i.content.firstElementChild);
 }, new Map());
 
+function navigationAction(url) {
+  return () => {
+    navigation.navigate(url);
+  };
+}
+
 const notes = JSON.parse(document.getElementById("clientState.NotesMeta").textContent).map((i) => ({
-  id: i.Slug,
+  id: `note:open:${i.Slug}`,
   name: i.Title,
   groupName: "Notes",
   icon: icons.get("StickyNote").cloneNode(true),
-  action: () => {
-    navigation.navigate(`/notes/${i.Slug}/`);
-  },
+  action: navigationAction(`/notes/${i.Slug}/`),
 }));
 
 CommandBar.define();
-CommandBar.instance.registerCommand(...notes);
+
+CommandBar.instance.registerCommand(
+  ...notes,
+  {
+    id: "open:search",
+    name: "Search",
+    chord: "gs",
+    groupName: "Open",
+    icon: icons.get("Search").cloneNode(true),
+    action: navigationAction("/search/"),
+  },
+  {
+    id: "open:today",
+    name: "Today",
+    chord: "gt",
+    groupName: "Open",
+    icon: icons.get("Calendar"),
+    action: navigationAction(`/notes/${new Date().toISOString().substring(0, 10)}/`),
+  },
+);
