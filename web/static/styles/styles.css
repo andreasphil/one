@@ -14,6 +14,7 @@
   /* --- TODO: fix in design system --- */
   table {
     display: block;
+    line-height: normal;
     overflow-x: auto;
     padding-bottom: 1px;
   }
