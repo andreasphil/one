@@ -39,26 +39,22 @@ func logf(w io.Writer, marker string, format string, v ...any) {
 	fmt.Fprintf(w, " "+marker+" "+format+"\n", v...)
 }
 
-// Infof writes an informational message to w, formatted according to format,
-// and prefixed with a gray arrow.
+// Infof writes an informational message to w, formatted according to format.
 func Infof(w io.Writer, format string, v ...any) {
 	logf(w, style(gray, "→"), format, v...)
 }
 
-// Warnf writes a warning message to w, formatted according to format, and
-// prefixed with a yellow triangle.
+// Warnf writes a warning message to w, formatted according to format.
 func Warnf(w io.Writer, format string, v ...any) {
 	logf(w, style(yellow, "△"), format, v...)
 }
 
-// Errorf writes an error message to w, formatted according to format, and
-// prefixed with a red cross.
+// Errorf writes an error message to w, formatted according to format.
 func Errorf(w io.Writer, format string, v ...any) {
 	logf(w, style(red, "✗"), format, v...)
 }
 
-// Successf writes a success message to w, formatted according to format, and
-// prefixed with a green checkmark.
+// Successf writes a success message to w, formatted according to format.
 func Successf(w io.Writer, format string, v ...any) {
 	logf(w, style(green, "✓"), format, v...)
 }
