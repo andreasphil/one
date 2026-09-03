@@ -44,23 +44,4 @@
       }
     }
   }
-
-  dl {
-    dt {
-      font-weight: var(--font-weight-medium);
-      margin-top: var(--outer-spacing-y);
-    }
-
-    dd {
-      --outer-spacing-y: 0.375rem;
-      margin: 0;
-      padding-left: 1rem;
-    }
-  }
-
-  em,
-  blockquote {
-    font-family: var(--font-family-display);
-    font-style: italic;
-  }
 }
