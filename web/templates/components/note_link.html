@@ -4,7 +4,6 @@
   title="{{ .Note.Title }}"
   {{ if eq .CurrentURL $noteURL }}aria-current="page"{{ end }}
 >
-  {{ template "sticky-note.svg" }}
   <span class="clamp">
     {{ if .Note.IsDailyNote }}
       {{ .Note.Date.Format "Mon," }}
