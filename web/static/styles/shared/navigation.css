@@ -1,4 +1,5 @@
 .navigation {
+  font-variant-numeric: tabular-nums;
   padding: 4rem 2rem;
 
   li ul {

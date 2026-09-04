@@ -150,7 +150,7 @@ func TestGetSearchShowsDateOfChildNotes(t *testing.T) {
 
 	assertContainsAll(t, rec.Body.String(),
 		`<a href="/notes/2026-02-01-groceries-run/">Groceries run</a>`,
-		"(on 01.02.2026)",
+		"(01.02.2026)",
 	)
 }
 

@@ -38,6 +38,10 @@
     --disabled-opacity: 1;
     --prose-font-size: clamp(14px, 0.417vw + 8px, 16px);
 
+    h1 {
+      font-variant-numeric: tabular-nums;
+    }
+
     dl {
       dt {
         font-weight: var(--font-weight-medium);

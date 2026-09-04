@@ -5,9 +5,11 @@
   {{ if eq .CurrentURL $noteURL }}aria-current="page"{{ end }}
 >
   <span class="clamp">
-    {{ if .Note.IsDailyNote }}
-      {{ .Note.Date.Format "Mon," }}
-    {{ end }}
     {{ .Note.Title }}
+    {{ if .Note.IsDailyNote }}
+      <span class="color-variant">
+        {{ .Note.Date.Format "Mon" }}
+      </span>
+    {{ end }}
   </span>
 </a>
