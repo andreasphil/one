@@ -29,7 +29,7 @@
       border-bottom-width: 0px;
       border-right-width: var(--border-width);
       overflow: auto;
-      width: 18rem;
+      width: 17rem;
     }
   }
 }
