@@ -117,6 +117,14 @@ func TestGetSearchKeepsQueryInSearchBox(t *testing.T) {
 	assertContainsAll(t, rec.Body.String(), `value="milk"`)
 }
 
+func TestGetSearchShowsQueryInTitle(t *testing.T) {
+	handler, _ := newTestServer(t, searchNotes)
+
+	rec := get(t, handler, "/search/?query=milk")
+
+	assertContainsAll(t, rec.Body.String(), `<title>Search for &#34;milk&#34; | One</title>`)
+}
+
 func TestGetSearchEscapesQuery(t *testing.T) {
 	handler, _ := newTestServer(t, searchNotes)
 

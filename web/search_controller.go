@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"time"
@@ -46,8 +47,13 @@ func getSearch(provider NotesProvider, renderer MarkdownRenderer) handler {
 			})
 		}
 
+		title := "Search"
+		if query != "" {
+			title += fmt.Sprintf(` for "%v"`, query)
+		}
+
 		return render(w, r, data[getSearchData]{
-			Title: "Search",
+			Title: title,
 			Data:  getSearchData{Results: results, Query: query},
 		})
 	}
