@@ -20,9 +20,9 @@ func TestTagExtension(t *testing.T) {
 	}
 
 	tests := []testcase{
-		{"simple", "#world", `<p><a class="tag" href="/tags/world">#world</a></p>`},
-		{"underscore", "#my_tag", `<p><a class="tag" href="/tags/my_tag">#my_tag</a></p>`},
-		{"unicode", "#grüße", `<p><a class="tag" href="/tags/gr%C3%BC%C3%9Fe">#grüße</a></p>`},
+		{"simple", "#world", `<p><a class="tag" href="/tags/world/">#world</a></p>`},
+		{"underscore", "#my_tag", `<p><a class="tag" href="/tags/my_tag/">#my_tag</a></p>`},
+		{"unicode", "#grüße", `<p><a class="tag" href="/tags/gr%C3%BC%C3%9Fe/">#grüße</a></p>`},
 		{"mid-word", "foo#bar", `<p>foo#bar</p>`},
 		{"url anchor", "/page#anchor", `<p>/page#anchor</p>`},
 		{"code span", "`#code`", "<p><code>#code</code></p>"},
