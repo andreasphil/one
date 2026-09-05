@@ -1,18 +1,22 @@
 [tools]
-air = "1.67.4"
 go = "1.27.0"
 "go:golang.org/x/tools/gopls" = "0.23.0"
 node = "26"
 pnpm = "11"
+watchexec = "2.7.1"
 
 [env]
 GOTOOLCHAIN = "local"
 
 [tasks.dev]
+run = "mise watch -rc -- web"
+
+[tasks.web]
 usage = """
   arg "<file>" default="one.md"
 """
-run = "air -- web --input ${usage_file}"
+run = "go run . web --input ${usage_file}"
+sources = ["**/*.{go,html,css,js}"]
 
 [tasks.fmt]
 run = ["go fmt", "pnpm prettier -cw web/"]
