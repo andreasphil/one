@@ -3,6 +3,7 @@ package util
 import (
 	"fmt"
 	"io"
+	"os"
 	"strings"
 	"unicode/utf8"
 )
@@ -39,9 +40,17 @@ func logf(w io.Writer, marker string, format string, v ...any) {
 	fmt.Fprintf(w, " "+marker+" "+format+"\n", v...)
 }
 
+// Debugf writes a debug message to w if the ONE_DEBUG environment variable is
+// set. Formatted according to format.
+func Debugf(w io.Writer, format string, v ...any) {
+	if _, ok := os.LookupEnv("ONE_DEBUG"); ok {
+		logf(w, style(gray, "-"), format, v...)
+	}
+}
+
 // Infof writes an informational message to w, formatted according to format.
 func Infof(w io.Writer, format string, v ...any) {
-	logf(w, style(gray, "→"), format, v...)
+	logf(w, style(blue, "→"), format, v...)
 }
 
 // Warnf writes a warning message to w, formatted according to format.

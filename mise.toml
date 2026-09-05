@@ -6,6 +6,7 @@ watchexec = "2.7.1"
 
 [env]
 GOTOOLCHAIN = "local"
+ONE_DEBUG = 1
 
 [tasks.dev]
 run = "mise watch -rc -- web"
