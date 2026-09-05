@@ -2,7 +2,6 @@
 go = "1.27.0"
 node = "26.8.1"
 pnpm = "12.2.1"
-"go:golang.org/x/tools/gopls" = "0.23.0"
 watchexec = "2.7.1"
 
 [env]
