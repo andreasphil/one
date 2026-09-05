@@ -5,14 +5,12 @@
 }
 
 .tag {
-  align-items: center;
   border-radius: var(--border-radius-small);
   border: var(--border-width) solid var(--c-border);
   color: var(--c-fg-variant);
-  display: inline-flex;
+  display: inline-block;
   font-family: var(--font-family-mono);
   font-size: var(--font-size-mono);
-  gap: 0.75ch;
   padding: 0.1rem 0.375rem;
   text-decoration: none;
   transition-property: color, border-color, background-color;

@@ -67,10 +67,7 @@
           <div has-fallback>
             <div class="tags">
               {{- range .Data.Note.Tags.Values -}}
-                <a class="tag" href="/tags/{{ .Name }}/">
-                  {{ template "tag.svg" }}
-                  {{ .Name }}
-                </a>
+                <a class="tag" href="/tags/{{ .Name }}/">{{ .Name }}</a>
               {{- end -}}
             </div>
 
