@@ -34,10 +34,20 @@ const notes = JSON.parse(document.getElementById("clientState.NotesMeta").textCo
   action: navigationAction(`/notes/${i.Slug}/`),
 }));
 
+const tags = JSON.parse(document.getElementById("clientState.Tags").textContent).map((i) => ({
+  id: `tag:open:${i}`,
+  name: i,
+  alias: [`#${i}`],
+  groupName: "Tags",
+  icon: icons.get("Tag").cloneNode(true),
+  action: navigationAction(`/tags/${i}/`),
+}));
+
 CommandBar.define();
 
 CommandBar.instance.registerCommand(
   ...notes,
+  ...tags,
   {
     id: "open:search",
     name: "Search",

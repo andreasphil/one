@@ -17,6 +17,7 @@ type data[T any] struct {
 	CurrentURL string
 	NotesMeta  []mapper.NoteMeta
 	Notes      []note.Note
+	Tags       []string
 
 	Title string
 	Data  T
@@ -68,6 +69,7 @@ func newRenderFunc[T any](provider NotesProvider, name string) renderFunc[T] {
 		data.CurrentURL = r.URL.Path
 		data.NotesMeta = mapper.ToNoteMeta(notes)
 		data.Notes = notes
+		data.Tags = mapper.ToTags(notes)
 
 		if err := t.ExecuteTemplate(w, name, data); err != nil {
 			return fmt.Errorf("failed to render page template: %w", err)
