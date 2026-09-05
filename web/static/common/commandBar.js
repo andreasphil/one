@@ -689,10 +689,14 @@ var CommandBar = class CommandBar extends HTMLElement {
 			this.#state.setKey("open", true);
 		} else {
 			this.#dialog?.close();
-			this.#state.setKey("focusedResult", 0);
-			this.#state.setKey("open", false);
-			this.#state.setKey("query", "");
+			this.#onDialogClose();
 		}
+	}
+	#onDialogClose() {
+		if (!this.#state.get().open) return;
+		this.#state.setKey("focusedResult", 0);
+		this.#state.setKey("open", false);
+		this.#state.setKey("query", "");
 	}
 	/** @param {KeyboardEvent} event */
 	#onToggleShortcut(event) {
@@ -736,6 +740,10 @@ var CommandBar = class CommandBar extends HTMLElement {
 	/** @param {KeyboardEvent} event */
 	#onQueryChange(event) {
 		if (!(event.target instanceof HTMLInputElement)) return;
+		if (!this.#state.get().open) {
+			event.target.value = this.#state.get().query;
+			return;
+		}
 		this.#state.setKey("query", event.target.value);
 	}
 	#moveFocusDown() {
@@ -745,8 +753,10 @@ var CommandBar = class CommandBar extends HTMLElement {
 		this.#state.setKey("focusedResult", Math.min(commandCount - 1, next));
 	}
 	#moveFocusUp() {
+		const commandCount = this.#results.get().length;
+		if (commandCount === 0) return;
 		const next = this.#state.get().focusedResult - 1;
-		this.#state.setKey("focusedResult", Math.max(next, 0));
+		this.#state.setKey("focusedResult", next < 0 ? commandCount - 1 : next);
 	}
 	#runFocusedCommand() {
 		const focused = this.#results.get().at(this.#state.get().focusedResult);
@@ -770,7 +780,7 @@ var CommandBar = class CommandBar extends HTMLElement {
 	* @param {string} state.query
 	* @param {string} state.searchLabel
 	*/
-	#template = (state) => b`<dialog>
+	#template = (state) => b`<dialog @close="${() => this.#onDialogClose()}">
       <style>
         @scope {
           :scope {
@@ -797,6 +807,9 @@ var CommandBar = class CommandBar extends HTMLElement {
           }
 
           ul {
+            display: flex;
+            flex-direction: column;
+            gap: 0.125rem;
             list-style-type: none;
             margin: 0.75rem 0 0 0;
             padding: 0;
