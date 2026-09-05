@@ -38,7 +38,7 @@ type ServerArgs struct {
 // NewServer creates a server with the routes, templates and static files of
 // the notes UI. The returned server is not started.
 func NewServer(args ServerArgs) http.Server {
-	var markdownRenderer MarkdownRenderer = service.NewMarkdown(func(target string) string {
+	var markdownRenderer MarkdownRenderer = service.NewMarkdown(func(target string) (string, bool) {
 		return note.ResolveSlug(args.Notes.Notes(), target)
 	})
 

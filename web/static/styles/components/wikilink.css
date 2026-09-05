@@ -1,0 +1,10 @@
+.wikilink {
+  &:after {
+    content: " ↗";
+  }
+
+  &.unresolved {
+    color: oklch(from var(--primary) l c 16);
+    cursor: not-allowed;
+  }
+}

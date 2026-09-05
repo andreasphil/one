@@ -159,7 +159,8 @@ func TestGetNoteResolvesWikiLinks(t *testing.T) {
 	assertContainsAll(t, rec.Body.String(),
 		`<a class="wikilink" href="/notes/2026-02-01-child-a/">Child A</a>`,
 		`<a class="wikilink" href="/notes/2026-02-01/">01.02.2026</a>`,
-		`<a class="wikilink" href="/notes/nope/">nope</a>`, // unresolved, linked anyway
+		// a note that doesn't exist is still linked, but marked as unresolved
+		`<a class="wikilink unresolved" href="/notes/nope/">nope</a>`,
 	)
 }
 

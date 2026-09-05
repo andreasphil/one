@@ -81,13 +81,17 @@ func (p *wikiLinkParser) Parse(parent ast.Node, block text.Reader, context parse
 
 // Renderer -----------------------------------------------
 
-func NewWikiLinkHTMLRenderer(prefix string, resolve func(target string) string) html.Extension {
+// NewWikiLinkHTMLRenderer creates a renderer for wiki links. resolve maps the
+// target of a link to the slug of the note it points to, and reports whether
+// that note exists. Links to notes that do not exist are rendered as links
+// too, with an additional "unresolved" class.
+func NewWikiLinkHTMLRenderer(prefix string, resolve func(target string) (string, bool)) html.Extension {
 	return &wikiLinkHTMLRendererExtension{prefix: prefix, resolve: resolve}
 }
 
 type wikiLinkHTMLRendererExtension struct {
 	prefix  string
-	resolve func(target string) string
+	resolve func(target string) (string, bool)
 }
 
 func (e *wikiLinkHTMLRendererExtension) RendererOptions(_ *html.Config) []html.Option {
@@ -111,10 +115,16 @@ func (e *wikiLinkHTMLRendererExtension) render(
 	}
 
 	bw := w.(util.BufWriter)
+	slug, resolved := e.resolve(n.Value.Value(src))
 
-	_, _ = bw.WriteString(`<a class="wikilink" href="`)
+	_, _ = bw.WriteString(`<a class="wikilink`)
+	if !resolved {
+		_, _ = bw.WriteString(" unresolved")
+	}
+
+	_, _ = bw.WriteString(`" href="`)
 	_, _ = bw.WriteString(e.prefix)
-	_, _ = html.ContextLinkURLWriter(rc).WriteString(e.resolve(n.Value.Value(src)))
+	_, _ = html.ContextLinkURLWriter(rc).WriteString(slug)
 	_, _ = bw.WriteString(`/">`)
 	_, _ = n.Value.WriteTo(html.ContextTextWriter(rc), src)
 	_, _ = bw.WriteString("</a>")

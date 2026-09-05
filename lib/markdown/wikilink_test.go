@@ -13,17 +13,17 @@ import (
 func TestWikiLinkExtension(t *testing.T) {
 	// Stands in for the note lookup the web server passes in, falling back to
 	// the plain slug for notes that don't exist.
-	resolve := func(target string) string {
+	resolve := func(target string) (string, bool) {
 		slugs := map[string]string{
 			"Rehearsal":  "2026-06-27-rehearsal",
 			"01.02.2026": "2026-02-01",
 		}
 
 		if slug, found := slugs[target]; found {
-			return slug
+			return slug, true
 		}
 
-		return note.Slug(target)
+		return note.Slug(target), false
 	}
 
 	p := parser.New(parser.WithExtensions(markdown.WikiLinkParser))
@@ -36,12 +36,12 @@ func TestWikiLinkExtension(t *testing.T) {
 	}
 
 	tests := []testcase{
-		{"simple", "[[a thing]]", `<p><a class="wikilink" href="/notes/a-thing/">a thing</a></p>`},
-		{"title case", "[[A Thing]]", `<p><a class="wikilink" href="/notes/a-thing/">A Thing</a></p>`},
-		{"unicode", "[[Äpfel]]", `<p><a class="wikilink" href="/notes/%C3%A4pfel/">Äpfel</a></p>`},
-		{"punctuation", "[[Hello! World?]]", `<p><a class="wikilink" href="/notes/hello-world/">Hello! World?</a></p>`},
-		{"surrounded by text", "see [[a thing]] here", `<p>see <a class="wikilink" href="/notes/a-thing/">a thing</a> here</p>`},
-		{"two links", "[[a]] and [[b]]", `<p><a class="wikilink" href="/notes/a/">a</a> and <a class="wikilink" href="/notes/b/">b</a></p>`},
+		{"simple", "[[a thing]]", `<p><a class="wikilink unresolved" href="/notes/a-thing/">a thing</a></p>`},
+		{"title case", "[[A Thing]]", `<p><a class="wikilink unresolved" href="/notes/a-thing/">A Thing</a></p>`},
+		{"unicode", "[[Äpfel]]", `<p><a class="wikilink unresolved" href="/notes/%C3%A4pfel/">Äpfel</a></p>`},
+		{"punctuation", "[[Hello! World?]]", `<p><a class="wikilink unresolved" href="/notes/hello-world/">Hello! World?</a></p>`},
+		{"surrounded by text", "see [[Rehearsal]] here", `<p>see <a class="wikilink" href="/notes/2026-06-27-rehearsal/">Rehearsal</a> here</p>`},
+		{"two links", "[[Rehearsal]] and [[b]]", `<p><a class="wikilink" href="/notes/2026-06-27-rehearsal/">Rehearsal</a> and <a class="wikilink unresolved" href="/notes/b/">b</a></p>`},
 		{"resolved child note", "[[Rehearsal]]", `<p><a class="wikilink" href="/notes/2026-06-27-rehearsal/">Rehearsal</a></p>`},
 		{"resolved daily note", "[[01.02.2026]]", `<p><a class="wikilink" href="/notes/2026-02-01/">01.02.2026</a></p>`},
 		{"empty", "[[]]", `<p>[[]]</p>`},

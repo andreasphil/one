@@ -190,10 +190,11 @@ func TestWalk(t *testing.T) {
 
 func TestResolveSlug(t *testing.T) {
 	type testcase struct {
-		name     string
-		notes    []note.Note
-		target   string
-		expected string
+		name        string
+		notes       []note.Note
+		target      string
+		expected    string
+		expectFound bool
 	}
 
 	notes := []note.Note{
@@ -225,60 +226,73 @@ func TestResolveSlug(t *testing.T) {
 
 	testcases := []testcase{
 		{
-			name:     "note at root level",
-			notes:    notes,
-			target:   "Root 1",
-			expected: "root-1",
+			name:        "note at root level",
+			notes:       notes,
+			target:      "Root 1",
+			expected:    "root-1",
+			expectFound: true,
 		},
 		{
-			name:     "note in children",
-			notes:    notes,
-			target:   "Child 1",
-			expected: "child-1",
+			name:        "note in children",
+			notes:       notes,
+			target:      "Child 1",
+			expected:    "child-1",
+			expectFound: true,
 		},
 		{
-			name:     "ignores case",
-			notes:    notes,
-			target:   "root 1",
-			expected: "root-1",
+			name:        "ignores case",
+			notes:       notes,
+			target:      "root 1",
+			expected:    "root-1",
+			expectFound: true,
 		},
 		{
-			name:     "ignores punctuation",
-			notes:    notes,
-			target:   "Root 1!",
-			expected: "root-1",
+			name:        "ignores punctuation",
+			notes:       notes,
+			target:      "Root 1!",
+			expected:    "root-1",
+			expectFound: true,
 		},
 		{
-			name:     "daily note resolves to its date",
-			notes:    notes,
-			target:   "01.02.2026",
-			expected: "2026-02-01",
+			name:        "daily note resolves to its date",
+			notes:       notes,
+			target:      "01.02.2026",
+			expected:    "2026-02-01",
+			expectFound: true,
 		},
 		{
-			name:     "child note of the first matching day wins",
-			notes:    notes,
-			target:   "Rehearsal",
-			expected: "2026-02-01-rehearsal",
+			name:        "child note of the first matching day wins",
+			notes:       notes,
+			target:      "Rehearsal",
+			expected:    "2026-02-01-rehearsal",
+			expectFound: true,
 		},
 		{
-			name:     "no match falls back to the slugified target",
-			notes:    notes,
-			target:   "Some Other Note",
-			expected: "some-other-note",
+			name:        "no match falls back to the slugified target",
+			notes:       notes,
+			target:      "Some Other Note",
+			expected:    "some-other-note",
+			expectFound: false,
 		},
 		{
-			name:     "empty slice",
-			notes:    []note.Note{},
-			target:   "Root 1",
-			expected: "root-1",
+			name:        "empty slice",
+			notes:       []note.Note{},
+			target:      "Root 1",
+			expected:    "root-1",
+			expectFound: false,
 		},
 	}
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := note.ResolveSlug(tc.notes, tc.target)
+			result, found := note.ResolveSlug(tc.notes, tc.target)
+
 			if result != tc.expected {
 				t.Errorf("expected %q, got %q", tc.expected, result)
+			}
+
+			if found != tc.expectFound {
+				t.Errorf("expected found=%v, got found=%v", tc.expectFound, found)
 			}
 		})
 	}

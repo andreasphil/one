@@ -19,8 +19,9 @@ type Markdown struct {
 }
 
 // NewMarkdown creates a Markdown renderer. resolveNote maps the target of a
-// wiki link to the slug of the note it links to.
-func NewMarkdown(resolveNote func(target string) string) Markdown {
+// wiki link to the slug of the note it links to, and reports whether that note
+// exists.
+func NewMarkdown(resolveNote func(target string) (string, bool)) Markdown {
 	p := parser.New(parser.WithExtensions(
 		extension.GFMParser,
 		extension.TypographerParser,
