@@ -12,20 +12,22 @@ import (
 )
 
 // Markdown renders the markdown source of a note as HTML, with GFM,
-// typographer and #tag support enabled.
+// typographer, #tag and [[wiki link]] support enabled.
 type Markdown struct {
 	parser   parser.Parser
 	renderer html.Renderer
 }
 
-// NewMarkdown creates a Markdown renderer.
-func NewMarkdown() Markdown {
+// NewMarkdown creates a Markdown renderer. resolveNote maps the target of a
+// wiki link to the slug of the note it links to.
+func NewMarkdown(resolveNote func(target string) string) Markdown {
 	p := parser.New(parser.WithExtensions(
 		extension.GFMParser,
 		extension.TypographerParser,
 		extension.DefinitionListParser,
 
 		markdown.TagParser,
+		markdown.WikiLinkParser,
 	))
 
 	r := html.New(html.WithExtensions(
@@ -33,6 +35,7 @@ func NewMarkdown() Markdown {
 		extension.DefinitionListHTMLRenderer,
 
 		markdown.NewTagHTMLRenderer("/tags/"),
+		markdown.NewWikiLinkHTMLRenderer("/notes/", resolveNote),
 	))
 
 	return Markdown{parser: p, renderer: r}

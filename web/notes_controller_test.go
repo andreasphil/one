@@ -146,6 +146,23 @@ func TestGetNoteRendersDailyNoteWithChild(t *testing.T) {
 	}
 }
 
+func TestGetNoteResolvesWikiLinks(t *testing.T) {
+	handler, _ := newTestServer(t,
+		"# 01.02.2026\n\nSee [[Child A]], [[01.02.2026]] and [[nope]].\n\n## Child A\n\nChild content.\n")
+
+	rec := get(t, handler, "/notes/2026-02-01/")
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d", rec.Code)
+	}
+
+	assertContainsAll(t, rec.Body.String(),
+		`<a class="wikilink" href="/notes/2026-02-01-child-a/">Child A</a>`,
+		`<a class="wikilink" href="/notes/2026-02-01/">01.02.2026</a>`,
+		`<a class="wikilink" href="/notes/nope/">nope</a>`, // unresolved, linked anyway
+	)
+}
+
 func TestGetNoteChildLinksBackToParentDate(t *testing.T) {
 	handler, notes := newTestServer(t, "# 01.02.2026\n\nDaily content.\n\n## Child A\n\nChild content.\n")
 	child := notes[0].Children[0]

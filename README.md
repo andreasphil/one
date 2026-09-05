@@ -9,7 +9,7 @@
 - 🌿 All your notes live in a single, plain-text markdown file
 - 🍱 Automatic organization of daily and nested notes
 - 🌍 Browse your notes with a minimal, keyboard-friendly web UI
-- 🏷️ Organize freely with `#tags` and emoji icons
+- 🔖 Organize freely with `#tags`, `[[wiki links]]` and emoji icons
 - ✨ CLI tools to list, sort, lint, and format your notes file
 
 ## Usage
@@ -28,7 +28,9 @@ Level 2 headings inside a daily note become their own child notes, so you can
 group different things from the same day. The first emoji found in a note (like
 the one above) is used as its icon.
 
-Discussed the roadmap for #project-x.
+Discussed the roadmap for #project-x, see [[Some other note]] for the details.
+Wiki links point at the note with that title, including daily notes like
+[[01.08.2026]] and child notes like [[Groceries]].
 
 ## Groceries
 

@@ -43,6 +43,13 @@ func New(title string) Note {
 	}
 }
 
+// Slug converts input into a lowercase, URL-friendly identifier.
+func Slug(input string) string {
+	slug := strings.ToLower(input)
+	slug = normalizeExp.ReplaceAllString(slug, "-")
+	return strings.Trim(slug, "-")
+}
+
 // Slug returns a unique, URL-friendly identifier for the note, derived from
 // its date (if any) and title.
 func (n Note) Slug() string {
@@ -53,15 +60,11 @@ func (n Note) Slug() string {
 	}
 
 	if !n.IsDailyNote() {
-		normalized := strings.ToLower(n.Title)
-		normalized = normalizeExp.ReplaceAllString(normalized, "-")
-		normalized = strings.Trim(normalized, "-")
-
 		if slug.Len() > 0 {
 			slug.WriteString("-")
 		}
 
-		slug.WriteString(normalized)
+		slug.WriteString(Slug(n.Title))
 	}
 
 	return slug.String()

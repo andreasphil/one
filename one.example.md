@@ -24,6 +24,8 @@ Rizzo volunteered to do the grocery run, which mostly means:
 - [ ] Something that isn't cheese, for the others
 - [ ] Bork-proof oven mitts for the Swedish Chef
 
+Cross-checked against [[Rizzo's Snack Inventory]], which explains the cheese.
+
 # 🐸
 
 Just wanted to write this down before I forget: the lights, the music, the
@@ -68,6 +70,8 @@ echo "Beaker???"
 Results: subject (Beaker) grew approximately 40% in height before returning to
 normal size after eleven minutes. Beaker has requested hazard pay in the form
 of extra bandages.
+
+The summer special demo is written up separately in [[Muppet Labs Update]].
 
 # 21.01.2026
 
@@ -242,7 +246,7 @@ respect for the jokes that didn't make it.*
 
 These have been officially retired after multiple tomato-related incidents:
 
-- The chicken-crossing-the-road bit (see: 15.03.2026 standup)
+- The chicken-crossing-the-road bit (retired in [[15.03.2026]])
 - Anything involving a rubber chicken *and* a real chicken in the same room
 - The one about the moth in the theater (too real, hit too close to home)
 
@@ -594,8 +598,8 @@ next_scheduled_change: "after the holiday special"
 Ran the full benefit program start to finish:
 
 - Opening number: solid
-- Fozzie's set: mixed results, see joke archive for what's retired
-- Electric Mayhem closer: ran long (again), see tour itinerary for a pattern
+- Fozzie's set: mixed results, see [[Fozzie Bear: Joke of the Day Archive]]
+- Electric Mayhem closer: ran long again, see [[Electric Mayhem Tour Itinerary]]
 
 # Muppet Labs Safety Disclaimer Template
 

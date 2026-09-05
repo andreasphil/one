@@ -188,6 +188,102 @@ func TestWalk(t *testing.T) {
 	})
 }
 
+func TestResolveSlug(t *testing.T) {
+	type testcase struct {
+		name     string
+		notes    []note.Note
+		target   string
+		expected string
+	}
+
+	notes := []note.Note{
+		{
+			Title: "01.02.2026",
+			Date:  time.Date(2026, time.February, 1, 0, 0, 0, 0, time.UTC),
+			Children: []note.Note{
+				{
+					Title: "Rehearsal",
+					Date:  time.Date(2026, time.February, 1, 0, 0, 0, 0, time.UTC),
+				},
+			},
+		},
+		{
+			Title: "31.01.2026",
+			Date:  time.Date(2026, time.January, 31, 0, 0, 0, 0, time.UTC),
+			Children: []note.Note{
+				{
+					Title: "Rehearsal",
+					Date:  time.Date(2026, time.January, 31, 0, 0, 0, 0, time.UTC),
+				},
+			},
+		},
+		{
+			Title:    "Root 1",
+			Children: []note.Note{{Title: "Child 1"}},
+		},
+	}
+
+	testcases := []testcase{
+		{
+			name:     "note at root level",
+			notes:    notes,
+			target:   "Root 1",
+			expected: "root-1",
+		},
+		{
+			name:     "note in children",
+			notes:    notes,
+			target:   "Child 1",
+			expected: "child-1",
+		},
+		{
+			name:     "ignores case",
+			notes:    notes,
+			target:   "root 1",
+			expected: "root-1",
+		},
+		{
+			name:     "ignores punctuation",
+			notes:    notes,
+			target:   "Root 1!",
+			expected: "root-1",
+		},
+		{
+			name:     "daily note resolves to its date",
+			notes:    notes,
+			target:   "01.02.2026",
+			expected: "2026-02-01",
+		},
+		{
+			name:     "child note of the first matching day wins",
+			notes:    notes,
+			target:   "Rehearsal",
+			expected: "2026-02-01-rehearsal",
+		},
+		{
+			name:     "no match falls back to the slugified target",
+			notes:    notes,
+			target:   "Some Other Note",
+			expected: "some-other-note",
+		},
+		{
+			name:     "empty slice",
+			notes:    []note.Note{},
+			target:   "Root 1",
+			expected: "root-1",
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := note.ResolveSlug(tc.notes, tc.target)
+			if result != tc.expected {
+				t.Errorf("expected %q, got %q", tc.expected, result)
+			}
+		})
+	}
+}
+
 func TestSort(t *testing.T) {
 	type testcase struct {
 		name          string

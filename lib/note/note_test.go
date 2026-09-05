@@ -57,41 +57,66 @@ func TestSlug(t *testing.T) {
 			},
 			expected: "2026-01-01-meeting-notes",
 		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := tc.note.Slug()
+			if result != tc.expected {
+				t.Errorf("expected %q, got %q", tc.expected, result)
+			}
+		})
+	}
+}
+
+func TestSlugFunc(t *testing.T) {
+	type testcase struct {
+		name     string
+		input    string
+		expected string
+	}
+
+	testcases := []testcase{
+		{
+			name:     "simple title",
+			input:    "My Note",
+			expected: "my-note",
+		},
 		{
 			name:     "special characters normalization",
-			note:     note.Note{Title: "Hello! World? ? Test!"},
+			input:    "Hello! World? ? Test!",
 			expected: "hello-world-test",
 		},
 		{
 			name:     "multiple consecutive special characters",
-			note:     note.Note{Title: "test---note"},
+			input:    "test---note",
 			expected: "test-note",
 		},
 		{
 			name:     "german umlauts",
-			note:     note.Note{Title: "Äpfel Öl Über"},
+			input:    "Äpfel Öl Über",
 			expected: "äpfel-öl-über",
 		},
 		{
 			name:     "leading and trailing special chars",
-			note:     note.Note{Title: "---test---"},
+			input:    "---test---",
 			expected: "test",
 		},
 		{
-			name:     "empty title",
-			note:     note.Note{Title: ""},
+			name:     "empty input",
+			input:    "",
 			expected: "",
 		},
 		{
 			name:     "only special characters",
-			note:     note.Note{Title: "!!!"},
+			input:    "!!!",
 			expected: "",
 		},
 	}
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := tc.note.Slug()
+			result := note.Slug(tc.input)
 			if result != tc.expected {
 				t.Errorf("expected %q, got %q", tc.expected, result)
 			}
