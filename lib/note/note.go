@@ -13,7 +13,24 @@ var dateTitleExp = regexp.MustCompile(`^\d{2}\.\d{2}\.\d{4}$`)
 var normalizeExp = regexp.MustCompile(`[^\wäöüß]+`)
 var titleHeadingExp = regexp.MustCompile(`^#{1,2}\s+.+\n`)
 
+// Tag is a label attached to a note. Its value includes the leading "#".
 type Tag string
+
+// NewTag returns the Tag with the given name. The name may be given with or
+// without a leading "#".
+func NewTag(name string) Tag {
+	return Tag("#" + strings.TrimPrefix(name, "#"))
+}
+
+// Name returns the tag without its leading "#".
+func (t Tag) Name() string {
+	return strings.TrimPrefix(string(t), "#")
+}
+
+// String returns the tag including its leading "#".
+func (t Tag) String() string {
+	return string(t)
+}
 
 // Note represents a single note parsed from a notes file. Daily notes (notes
 // whose title is a date in the format of DD.MM.YYYY) may have children,
@@ -25,8 +42,7 @@ type Note struct {
 	Icon string
 	// Date is set for daily notes, and inherited by their children.
 	Date time.Time
-	// Tags are the tags occurring anywhere in the note, each including its
-	// leading "#".
+	// Tags are the tags occurring anywhere in the note.
 	Tags util.Set[Tag]
 	// Children are the notes formed by the level 2 headings of a daily note.
 	Children []Note

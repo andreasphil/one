@@ -127,7 +127,7 @@ func (e *tagHTMLRendererExtension) render(
 	_, _ = bw.WriteString(`<a class="tag" href="`)
 	_, _ = bw.WriteString(e.prefix)
 	_, _ = n.Value.WriteTo(html.ContextLinkURLWriter(rc), src)
-	_, _ = bw.WriteString(`/">#`)
+	_, _ = bw.WriteString(`/">`)
 	_, _ = n.Value.WriteTo(html.ContextTextWriter(rc), src)
 	_, _ = bw.WriteString("</a>")
 

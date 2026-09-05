@@ -22,7 +22,7 @@ func last[T ~[]I, I any](slice T) *I {
 	return &slice[len(slice)-1]
 }
 
-var tagsExp = regexp.MustCompile(`(^|\s)#\w+`)
+var tagsExp = regexp.MustCompile(`(?:^|\s)#(\w+)`)
 var dateExp = regexp.MustCompile(`^# (\d{2}\.\d{2}\.\d{4})`)
 
 func cleanupTitle(title string) string {
@@ -93,9 +93,9 @@ func Parse(input io.Reader) ([]Note, error) {
 			}
 
 			// Parse tags
-			tags := tagsExp.FindAllString(line, -1)
+			tags := tagsExp.FindAllStringSubmatch(line, -1)
 			for _, tag := range tags {
-				current.Tags.Add(Tag(strings.TrimSpace(tag)))
+				current.Tags.Add(NewTag(tag[1]))
 			}
 
 			// Parse date, only in note name for now

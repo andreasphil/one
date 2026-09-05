@@ -8,6 +8,24 @@ import (
 	"github.com/andreasphil/one/lib/note"
 )
 
+func TestTag(t *testing.T) {
+	for _, name := range []string{"kermit", "#kermit"} {
+		tag := note.NewTag(name)
+
+		if tag != note.Tag("#kermit") {
+			t.Errorf("expected #kermit from %q, got %v", name, tag)
+		}
+
+		if tag.Name() != "kermit" {
+			t.Errorf("expected kermit, got %q", tag.Name())
+		}
+
+		if tag.String() != "#kermit" {
+			t.Errorf("expected #kermit, got %q", tag.String())
+		}
+	}
+}
+
 func TestNew(t *testing.T) {
 	n := note.New("Test Title")
 

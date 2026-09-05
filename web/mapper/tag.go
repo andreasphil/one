@@ -1,10 +1,6 @@
 package mapper
 
-import (
-	"strings"
-
-	"github.com/andreasphil/one/lib/note"
-)
+import "github.com/andreasphil/one/lib/note"
 
 // ToTags returns the names of the unique tags occurring in notes and their
 // children, without the leading "#", sorted alphabetically (ascending, case
@@ -15,7 +11,7 @@ func ToTags(n []note.Note) []string {
 	m := make([]string, 0, len(tags))
 
 	for _, tag := range tags {
-		m = append(m, strings.TrimPrefix(string(tag), "#"))
+		m = append(m, tag.Name())
 	}
 
 	return m
