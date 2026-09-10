@@ -4,8 +4,8 @@ package mapper
 
 import "github.com/andreasphil/one/lib/note"
 
-// NoteMeta describes a note with the minimum of information needed for
-// listing and linking to it.
+// NoteMeta describes a note with the minimum of information needed for listing
+// and linking to it. Should mirror Note in static/scripts/lib/types.ts.
 type NoteMeta struct {
 	Title string
 	Slug  string
@@ -17,8 +17,8 @@ func NewNoteMeta(n note.Note) NoteMeta {
 }
 
 // ToNoteMeta flattens notes and their children into one NoteMeta each, in
-// depth-first, pre-order. The result is never nil, so that it serializes to
-// an empty JSON array rather than to null.
+// depth-first, pre-order. The result is never nil, so that it serializes to an
+// empty JSON array rather than to null.
 func ToNoteMeta(n []note.Note) []NoteMeta {
 	m := make([]NoteMeta, 0, len(n))
 

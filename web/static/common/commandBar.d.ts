@@ -26,7 +26,7 @@ export type Command = {
      * Icon of the command. Should be a string (which will be
      * inserted as text content) or an HTML element (which will be inserted as-is).
      */
-    icon?: string | HTMLElement;
+    icon?: string | Element;
     /**
      * Callback to run when the command is invoked.
      */
@@ -48,7 +48,7 @@ export type KeyboardShortcut = Partial<Pick<KeyboardEvent, "key" | "metaKey" | "
  *   characters in the search field, the associated command will be shown prominently and
  *   highlighted.
  * @property {string} [groupName] An additional label displayed before the name.
- * @property {string | HTMLElement} [icon] Icon of the command. Should be a string (which will be
+ * @property {string | Element} [icon] Icon of the command. Should be a string (which will be
  *   inserted as text content) or an HTML element (which will be inserted as-is).
  * @property {() => void} action Callback to run when the command is invoked.
  * @property {number} [weight] Used for sorting. Items with a higher weight will always appear

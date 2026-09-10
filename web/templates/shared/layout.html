@@ -8,27 +8,7 @@
     <aside id="sidebar">
       {{ template "sidebar" . }}
     </aside>
-
-    <script>
-      {
-        const sidebar = document.getElementById("sidebar");
-        const key = "sidebar-scroll";
-
-        if (sidebar.scrollHeight > sidebar.clientHeight) {
-          const saved = sessionStorage.getItem(key);
-
-          if (saved !== null) {
-            sidebar.scrollTop = Number(saved);
-          } else {
-            sidebar.querySelector("[aria-current]")?.scrollIntoView({ block: "center" });
-          }
-
-          addEventListener("pagehide", () => {
-            sessionStorage.setItem(key, sidebar.scrollTop);
-          });
-        }
-      }
-    </script>
+    <script src="/static/scripts/features/blocking/sidebarScroll.js"></script>
 
     <main>
       {{ template "content" . }}
