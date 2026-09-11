@@ -193,6 +193,127 @@ func TestContent(t *testing.T) {
 	}
 }
 
+func TestExcerpt(t *testing.T) {
+	type testcase struct {
+		name     string
+		raw      string
+		expected string
+	}
+
+	testcases := []testcase{
+		{
+			name:     "empty note",
+			raw:      "# Title\n",
+			expected: "",
+		},
+		{
+			name:     "plain content",
+			raw:      "# Title\n\nJust some plain text",
+			expected: "Just some plain text",
+		},
+		{
+			name:     "emphasis and strong",
+			raw:      "# Title\n\nSome *emphasized* and **strong** and _underscored_ and __double__ words",
+			expected: "Some emphasized and strong and underscored and double words",
+		},
+		{
+			name:     "inline code and strikethrough",
+			raw:      "# Title\n\nRun `go test` and ~~forget~~ it",
+			expected: "Run go test and forget it",
+		},
+		{
+			name:     "links and images",
+			raw:      "# Title\n\nSee [the docs](https://example.com) and ![a picture](pic.png) here",
+			expected: "See the docs and a picture here",
+		},
+		{
+			name:     "autolinks",
+			raw:      "# Title\n\nFound at <https://example.com/page> today",
+			expected: "Found at https://example.com/page today",
+		},
+		{
+			name:     "headings, quotes and lists",
+			raw:      "# Title\n\n## Section\n\n> A quote\n\n- First item\n* Second item\n+ Third item\n1. Fourth item",
+			expected: "Section A quote First item Second item Third item Fourth item",
+		},
+		{
+			name:     "nested list markers and checkboxes",
+			raw:      "# Title\n\n- Outer\n  - Inner\n- [ ] Open\n- [x] Done",
+			expected: "Outer Inner Open Done",
+		},
+		{
+			name:     "callout with empty quote lines",
+			raw:      "# Title\n\n> [!NOTE]\n>\n> Not responsible for singed eyebrows.\n>\n> Especially Beaker.",
+			expected: "[!NOTE] Not responsible for singed eyebrows. Especially Beaker.",
+		},
+		{
+			name:     "snake case preserved across lines",
+			raw:      "# Title\n\nprevious_password: BorkBorkBork1\nnext_scheduled_change: soon",
+			expected: "previous_password: BorkBorkBork1 next_scheduled_change: soon",
+		},
+		{
+			name:     "underscore emphasis next to snake case",
+			raw:      "# Title\n\nThe _old_ value of previous_password is gone",
+			expected: "The old value of previous_password is gone",
+		},
+		{
+			name:     "hashtag preserved at start of line",
+			raw:      "# Title\n\nSome content\n#tech 💻",
+			expected: "Some content #tech 💻",
+		},
+		{
+			name:     "wiki links",
+			raw:      "# Title\n\nSee [[Reading list]] and [[01.02.2026]] for more",
+			expected: "See Reading list and 01.02.2026 for more",
+		},
+		{
+			name:     "unclosed wiki link left alone",
+			raw:      "# Title\n\nSee [[unclosed here",
+			expected: "See [[unclosed here",
+		},
+		{
+			name:     "table",
+			raw:      "# Title\n\n| Fruit | Color |\n| --- | --- |\n| Apple | Green |\n| Plum | Purple |",
+			expected: "Fruit Color Apple Green Plum Purple",
+		},
+		{
+			name:     "table with alignment and no outer pipes",
+			raw:      "# Title\n\nFruit | Color\n:--- | ---:\nApple | Green",
+			expected: "Fruit Color Apple Green",
+		},
+		{
+			name:     "code fences and horizontal rules",
+			raw:      "# Title\n\nBefore\n\n```go\nfmt.Println()\n```\n\n---\n\nAfter",
+			expected: "Before fmt.Println() After",
+		},
+		{
+			name:     "line breaks and whitespace normalized",
+			raw:      "# Title\n\nOne\n\n\nTwo\t\tthree   four\n",
+			expected: "One Two three four",
+		},
+		{
+			name:     "truncated to 30 words",
+			raw:      "# Title\n\n" + strings.Repeat("word ", 50),
+			expected: strings.TrimSpace(strings.Repeat("word ", 30)) + "...",
+		},
+		{
+			name:     "exactly 30 words kept",
+			raw:      "# Title\n\n" + strings.Repeat("word ", 30),
+			expected: strings.TrimSpace(strings.Repeat("word ", 30)),
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			n := note.Note{Raw: tc.raw}
+			result := n.Excerpt()
+			if result != tc.expected {
+				t.Errorf("expected %q, got %q", tc.expected, result)
+			}
+		})
+	}
+}
+
 func TestIsEmpty(t *testing.T) {
 	type testcase struct {
 		name     string
