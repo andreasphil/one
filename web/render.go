@@ -27,16 +27,6 @@ type renderFunc[T any] func(http.ResponseWriter, *http.Request, data[T]) error
 
 func newRenderFunc[T any](provider NotesProvider, name string) renderFunc[T] {
 	helpers := template.FuncMap{
-		// "hasPrefix": strings.HasPrefix,
-
-		// "withQuery": func(path string, query string) template.URL {
-		// 	if query == "" {
-		// 		return template.URL(path)
-		// 	}
-		// 	u := url.URL{Path: path, RawQuery: query}
-		// 	return template.URL(u.String())
-		// },
-
 		"dict": func(values ...any) (map[string]any, error) {
 			if len(values)%2 != 0 {
 				return nil, fmt.Errorf("dict: odd number of arguments")
