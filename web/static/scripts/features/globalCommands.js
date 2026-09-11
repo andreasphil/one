@@ -39,6 +39,14 @@ export function init() {
       action: newNavigationAction("/search/"),
     },
     {
+      id: "open:notes",
+      name: "Notes",
+      chord: "gn",
+      groupName: "Open",
+      icon: icon("StickyNote"),
+      action: newNavigationAction("/notes/")
+    },
+    {
       id: "open:today",
       name: "Today",
       chord: "gt",

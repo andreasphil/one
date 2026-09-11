@@ -10,6 +10,16 @@
     </li>
     <li>
       <a
+        href="/notes/"
+        class="color-variant"
+        {{ if eq .CurrentURL "/notes/" }}aria-current="page"{{ end }}
+      >
+        {{ template "sticky-note.svg" }}
+        Notes
+      </a>
+    </li>
+    <li>
+      <a
         href="/search/"
         class="color-variant"
         {{ if eq .CurrentURL "/search/" }}aria-current="page"{{ end }}
