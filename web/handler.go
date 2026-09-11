@@ -42,7 +42,13 @@ func handle(errw io.Writer, h handler) http.HandlerFunc {
 			status = statusErr.status
 		}
 
-		util.Errorf(errw, "[%v] %v", status, err.Error())
-		http.Error(w, fmt.Sprintf("%v", err.Error()), status)
+		util.Errorf(errw, "[%v] %v", status, err)
+
+		msg := err.Error()
+		if status >= 500 {
+			msg = http.StatusText(status)
+		}
+
+		http.Error(w, msg, status)
 	}
 }
