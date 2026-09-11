@@ -48,8 +48,8 @@ func isFence(line string) bool {
 //   - level 2 headings in daily notes will be added to the children of that
 //     note. In notes without a date, the level 2 heading has no special
 //     significance and no child notes will be created.
-//   - notes can be tagged. A tag starts with a "#", by letters, numbers, and
-//     underscores (word characters)
+//   - notes can be tagged. A tag starts with a "#", followed by letters,
+//     numbers, and underscores (word characters)
 //   - for code blocks, only fenced code blocks are supported. A fence is
 //     exactly 3 backticks at the beginning of a line, optionally followed by an
 //     info string, which is ignored. Lines starting with 4 or more backticks

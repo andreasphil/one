@@ -79,8 +79,8 @@ func Slug(input string) string {
 	return strings.Trim(slug, "-")
 }
 
-// Slug returns a unique, URL-friendly identifier for the note, derived from
-// its date (if any) and title.
+// Slug returns a URL-friendly identifier for the note, derived from its date
+// (if any) and title. Slugs are not necessarily unique, see DuplicateSlugs.
 func (n Note) Slug() string {
 	slug := strings.Builder{}
 

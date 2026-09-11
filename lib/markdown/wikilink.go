@@ -15,6 +15,7 @@ import (
 
 // Node ---------------------------------------------------
 
+// KindWikiLink is the kind of the nodes that wiki links are parsed into.
 var KindWikiLink = ast.NewNodeKind("WikiLink")
 
 type wikiLinkNode struct {
@@ -38,10 +39,15 @@ func (n *wikiLinkNode) Dump(_ []byte) *ast.NodeDump {
 
 // Parser -------------------------------------------------
 
+// NewWikiLinkParser creates a parser for wiki links, i.e. a link target
+// enclosed in double square brackets. Links that are empty or not closed on
+// the same line are not wiki links.
 func NewWikiLinkParser() parser.Extension {
 	return &wikiLinkParserExtension{}
 }
 
+// WikiLinkParser is a ready to use wiki link parser. Parsing wiki links has no
+// options, so the same instance can be shared by all parsers.
 var WikiLinkParser = NewWikiLinkParser()
 
 type wikiLinkParserExtension struct{}
