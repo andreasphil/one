@@ -1,6 +1,7 @@
 package web
 
 import (
+	"bytes"
 	"embed"
 	"fmt"
 	"html/template"
@@ -61,10 +62,12 @@ func newRenderFunc[T any](provider NotesProvider, name string) renderFunc[T] {
 		data.Notes = notes
 		data.Tags = mapper.ToTags(notes)
 
-		if err := t.ExecuteTemplate(w, name, data); err != nil {
+		var buf bytes.Buffer
+		if err := t.ExecuteTemplate(&buf, name, data); err != nil {
 			return fmt.Errorf("failed to render page template: %w", err)
 		}
+		_, err := buf.WriteTo(w)
 
-		return nil
+		return err
 	}
 }
