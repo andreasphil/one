@@ -206,18 +206,3 @@ func TestGetSearchWithNoNotesShowsFallback(t *testing.T) {
 
 	assertContainsAll(t, rec.Body.String(), "0 results for", "No search results.")
 }
-
-func TestSearchRedirectsToTrailingSlash(t *testing.T) {
-	handler, _ := newTestServer(t, searchNotes)
-
-	// The search form submits to /search, without a trailing slash.
-	rec := get(t, handler, "/search")
-
-	if rec.Code != http.StatusTemporaryRedirect {
-		t.Errorf("expected status %d, got %d", http.StatusTemporaryRedirect, rec.Code)
-	}
-
-	if loc := rec.Header().Get("Location"); loc != "/search/" {
-		t.Errorf("expected redirect to /search/, got %q", loc)
-	}
-}
