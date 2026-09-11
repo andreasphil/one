@@ -53,7 +53,7 @@ Run `one web --input <file>` to browse a notes file like this one in the browser
 
 > [!NOTE]
 > 
-> If you want to format notes, [oxlint](https://oxc.rs/docs/guide/usage/linter) has to be in your `PATH`.
+> If you want to format notes, [oxfmt](https://oxc.rs/docs/guide/usage/formatter) has to be in your `PATH`.
 
 ## Development
 
