@@ -15,7 +15,7 @@ func getNotes(provider NotesProvider) handler {
 	}
 }
 
-func getNote(provider NotesProvider, renderer MarkdownRenderer) handler {
+func getNote(provider NotesProvider, renderer markdownRenderer) handler {
 	type getNoteData struct {
 		Note note.Note
 		HTML template.HTML
@@ -31,7 +31,7 @@ func getNote(provider NotesProvider, renderer MarkdownRenderer) handler {
 			return httpStatusErrorf(http.StatusNotFound, "note %v not found", slug)
 		}
 
-		html, err := renderer.Render(n.Content())
+		html, err := renderer.render(n.Content())
 		if err != nil {
 			return httpStatusErrorf(http.StatusUnprocessableEntity, "failed to render note to html: %v", err)
 		}

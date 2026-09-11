@@ -1,5 +1,4 @@
-// Package service holds the implementations the web server depends on.
-package service
+package web
 
 import (
 	"bytes"
@@ -11,17 +10,12 @@ import (
 	"github.com/yuin/goldmark/v2/renderer/html"
 )
 
-// Markdown renders the markdown source of a note as HTML, with GFM,
-// typographer, #tag and [[wiki link]] support enabled.
-type Markdown struct {
+type markdownRenderer struct {
 	parser   parser.Parser
 	renderer html.Renderer
 }
 
-// NewMarkdown creates a Markdown renderer. resolveNote maps the target of a
-// wiki link to the slug of the note it links to, and reports whether that note
-// exists.
-func NewMarkdown(resolveNote func(target string) (string, bool)) Markdown {
+func newMarkdownRenderer(resolveNote func(target string) (string, bool)) markdownRenderer {
 	p := parser.New(parser.WithExtensions(
 		extension.GFMParser,
 		extension.TypographerParser,
@@ -39,11 +33,10 @@ func NewMarkdown(resolveNote func(target string) (string, bool)) Markdown {
 		markdown.NewWikiLinkHTMLRenderer("/notes/", resolveNote),
 	))
 
-	return Markdown{parser: p, renderer: r}
+	return markdownRenderer{parser: p, renderer: r}
 }
 
-// Render converts the markdown in input to HTML.
-func (m Markdown) Render(input string) (template.HTML, error) {
+func (m markdownRenderer) render(input string) (template.HTML, error) {
 	src := []byte(input)
 	out := bytes.Buffer{}
 	if err := m.renderer.Render(&out, src, m.parser.Parse(src)); err != nil {

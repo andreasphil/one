@@ -3,12 +3,10 @@ package web
 
 import (
 	"embed"
-	"html/template"
 	"io"
 	"net/http"
 
 	"github.com/andreasphil/one/lib/note"
-	"github.com/andreasphil/one/web/service"
 )
 
 //go:embed static
@@ -19,12 +17,7 @@ type NotesProvider interface {
 	Notes() []note.Note
 }
 
-// MarkdownRenderer converts the markdown source of a note into HTML.
-type MarkdownRenderer interface {
-	Render(input string) (template.HTML, error)
-}
-
-// RouterArgs configures a handler.
+// RouterArgs configures the router.
 type RouterArgs struct {
 	// Notes supplies the notes the web interface renders.
 	Notes NotesProvider
@@ -35,7 +28,7 @@ type RouterArgs struct {
 // NewRouter creates a handler with the routes, templates and static files of
 // the notes UI.
 func NewRouter(args RouterArgs) http.Handler {
-	var markdownRenderer MarkdownRenderer = service.NewMarkdown(func(target string) (string, bool) {
+	markdownRenderer := newMarkdownRenderer(func(target string) (string, bool) {
 		return note.ResolveSlug(args.Notes.Notes(), target)
 	})
 

@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/andreasphil/one/lib/note"
-	"github.com/andreasphil/one/web/mapper"
 )
 
 //go:embed templates
@@ -16,7 +15,7 @@ var templatesFS embed.FS
 
 type data[T any] struct {
 	CurrentURL string
-	NotesMeta  []mapper.NoteMeta
+	NotesMeta  []noteMeta
 	Notes      []note.Note
 	Tags       []string
 
@@ -58,9 +57,9 @@ func newRenderFunc[T any](provider NotesProvider, name string) renderFunc[T] {
 		notes := provider.Notes()
 
 		data.CurrentURL = r.URL.Path
-		data.NotesMeta = mapper.ToNoteMeta(notes)
+		data.NotesMeta = mapToNoteMeta(notes)
 		data.Notes = notes
-		data.Tags = mapper.ToTags(notes)
+		data.Tags = mapToTags(notes)
 
 		var buf bytes.Buffer
 		if err := t.ExecuteTemplate(&buf, name, data); err != nil {

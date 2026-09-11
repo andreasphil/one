@@ -1,4 +1,4 @@
-/** Client-side types for note metadata, should mirror NoteMeta in mapper/note_meta.go. */
+/** Client-side types for note metadata, should mirror noteMeta in mapper.go. */
 export type NoteMeta = {
   Title: string;
   Slug: string;
