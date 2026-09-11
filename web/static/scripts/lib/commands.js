@@ -1,6 +1,6 @@
-import { CommandBar } from "../../common/commandBar.js";
+import { CommandBar } from "@andreasphil/command-bar";
 
-/** @typedef {import("../../common/commandBar.js").Command} Command */
+/** @typedef {import("@andreasphil/command-bar").Command} Command */
 
 /** @param {string} url */
 export function newNavigationAction(url) {

@@ -1,7 +1,7 @@
 @layer base, components, utils;
 
-@import "/static/common/design-system.css" layer(base);
-@import "/static/common/design-system-utils.css" layer(utils);
+@import "/static/common/design-system/design-system.css" layer(base);
+@import "/static/common/design-system/design-system-utils.css" layer(utils);
 
 @import "./components/tag.css" layer(components);
 @import "./components/wikilink.css" layer(components);
