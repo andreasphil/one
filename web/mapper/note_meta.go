@@ -5,7 +5,7 @@ package mapper
 import "github.com/andreasphil/one/lib/note"
 
 // NoteMeta describes a note with the minimum of information needed for listing
-// and linking to it. Should mirror Note in static/scripts/lib/types.ts.
+// and linking to it. Should mirror NoteMeta in static/scripts/lib/types.ts.
 type NoteMeta struct {
 	Title string
 	Slug  string
