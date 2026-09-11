@@ -11,16 +11,11 @@ import (
 	"github.com/andreasphil/one/web"
 )
 
-// fakeNotesProvider satisfies web.NotesProvider without needing an
-// interface import - Go interface satisfaction is structural.
 type fakeNotesProvider []note.Note
 
 func (f fakeNotesProvider) Notes() []note.Note { return f }
 
-// newTestServer parses markdown into notes and wires up a real web.Server
-// backed by those notes, exercising the actual router, handlers and
-// templates - not any internal function directly.
-func newTestServer(t *testing.T, markdown string) (http.Handler, []note.Note) {
+func newTestRouter(t *testing.T, markdown string) (http.Handler, []note.Note) {
 	t.Helper()
 
 	notes, err := note.Parse(strings.NewReader(markdown))
@@ -28,8 +23,8 @@ func newTestServer(t *testing.T, markdown string) (http.Handler, []note.Note) {
 		t.Fatalf("failed to parse test notes: %v", err)
 	}
 
-	server := web.NewServer(web.ServerArgs{Notes: fakeNotesProvider(notes), Port: "0"})
-	return server.Handler, notes
+	router := web.NewRouter(web.RouterArgs{Notes: fakeNotesProvider(notes)})
+	return router, notes
 }
 
 func get(t *testing.T, handler http.Handler, path string) *httptest.ResponseRecorder {
@@ -52,9 +47,9 @@ func assertContainsAll(t *testing.T, body string, want ...string) {
 }
 
 func TestRootRedirectsToNotesList(t *testing.T) {
-	handler, _ := newTestServer(t, "")
+	router, _ := newTestRouter(t, "")
 
-	rec := get(t, handler, "/")
+	rec := get(t, router, "/")
 
 	if rec.Code != http.StatusTemporaryRedirect {
 		t.Errorf("expected status %d, got %d", http.StatusTemporaryRedirect, rec.Code)
@@ -66,9 +61,9 @@ func TestRootRedirectsToNotesList(t *testing.T) {
 }
 
 func TestGetNotesListsAllNotes(t *testing.T) {
-	handler, _ := newTestServer(t, "# First note\n\nHello.\n\n# Second note #tag\n\nWorld.\n")
+	router, _ := newTestRouter(t, "# First note\n\nHello.\n\n# Second note #tag\n\nWorld.\n")
 
-	rec := get(t, handler, "/notes/")
+	rec := get(t, router, "/notes/")
 
 	if rec.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d", rec.Code)
@@ -85,9 +80,9 @@ func TestGetNotesListsAllNotes(t *testing.T) {
 }
 
 func TestGetNotesWithNoNotesShowsZeroCount(t *testing.T) {
-	handler, _ := newTestServer(t, "")
+	router, _ := newTestRouter(t, "")
 
-	rec := get(t, handler, "/notes/")
+	rec := get(t, router, "/notes/")
 
 	if rec.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d", rec.Code)
@@ -97,10 +92,10 @@ func TestGetNotesWithNoNotesShowsZeroCount(t *testing.T) {
 }
 
 func TestGetNoteRendersUndatedNote(t *testing.T) {
-	handler, notes := newTestServer(t, "# My Guide #golang\n\nSome helpful content.\n")
+	router, notes := newTestRouter(t, "# My Guide #golang\n\nSome helpful content.\n")
 	slug := notes[0].Slug()
 
-	rec := get(t, handler, "/notes/"+slug+"/")
+	rec := get(t, router, "/notes/"+slug+"/")
 
 	if rec.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d", rec.Code)
@@ -111,8 +106,8 @@ func TestGetNoteRendersUndatedNote(t *testing.T) {
 	assertContainsAll(t, body,
 		"<title>My Guide | One</title>",
 		"Some helpful content.",
-		"Knowledge Base", // the UI label for a note without a date
-		"golang",         // tag rendered without its leading "#"
+		"Knowledge Base",
+		"golang",
 	)
 
 	if n := strings.Count(body, `class="tag"`); n != 1 {
@@ -121,10 +116,10 @@ func TestGetNoteRendersUndatedNote(t *testing.T) {
 }
 
 func TestGetNoteRendersDailyNoteWithChild(t *testing.T) {
-	handler, notes := newTestServer(t, "# 01.02.2026\n\nDaily content.\n\n## Child A\n\nChild content.\n")
+	router, notes := newTestRouter(t, "# 01.02.2026\n\nDaily content.\n\n## Child A\n\nChild content.\n")
 	root := notes[0]
 
-	rec := get(t, handler, "/notes/"+root.Slug()+"/")
+	rec := get(t, router, "/notes/"+root.Slug()+"/")
 
 	if rec.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d", rec.Code)
@@ -140,17 +135,16 @@ func TestGetNoteRendersDailyNoteWithChild(t *testing.T) {
 		"Child A",
 	)
 
-	// The daily note's own page shows its date as plain text, not a link.
 	if strings.Contains(body, `href="/notes/2026-02-01"`) {
 		t.Errorf("did not expect date to be a link on the daily note's own page, got:\n%s", body)
 	}
 }
 
 func TestGetNoteResolvesWikiLinks(t *testing.T) {
-	handler, _ := newTestServer(t,
+	router, _ := newTestRouter(t,
 		"# 01.02.2026\n\nSee [[Child A]], [[01.02.2026]] and [[nope]].\n\n## Child A\n\nChild content.\n")
 
-	rec := get(t, handler, "/notes/2026-02-01/")
+	rec := get(t, router, "/notes/2026-02-01/")
 
 	if rec.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d", rec.Code)
@@ -159,16 +153,15 @@ func TestGetNoteResolvesWikiLinks(t *testing.T) {
 	assertContainsAll(t, rec.Body.String(),
 		`<a class="wikilink" href="/notes/2026-02-01-child-a/">Child A</a>`,
 		`<a class="wikilink" href="/notes/2026-02-01/">01.02.2026</a>`,
-		// a note that doesn't exist is still linked, but marked as unresolved
 		`<a class="wikilink unresolved" href="/notes/nope/">nope</a>`,
 	)
 }
 
 func TestGetNoteChildLinksBackToParentDate(t *testing.T) {
-	handler, notes := newTestServer(t, "# 01.02.2026\n\nDaily content.\n\n## Child A\n\nChild content.\n")
+	router, notes := newTestRouter(t, "# 01.02.2026\n\nDaily content.\n\n## Child A\n\nChild content.\n")
 	child := notes[0].Children[0]
 
-	rec := get(t, handler, "/notes/"+child.Slug()+"/")
+	rec := get(t, router, "/notes/"+child.Slug()+"/")
 
 	if rec.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d", rec.Code)
@@ -178,33 +171,33 @@ func TestGetNoteChildLinksBackToParentDate(t *testing.T) {
 
 	assertContainsAll(t, body,
 		"Child content.",
-		`href="/notes/2026-02-01/"`, // links back to the parent day
+		`href="/notes/2026-02-01/"`,
 	)
 }
 
 func TestGetNoteWithoutContentShowsFallback(t *testing.T) {
-	handler, notes := newTestServer(t, "# Empty Note\n")
+	router, notes := newTestRouter(t, "# Empty Note\n")
 	slug := notes[0].Slug()
 
-	rec := get(t, handler, "/notes/"+slug+"/")
+	rec := get(t, router, "/notes/"+slug+"/")
 
 	assertContainsAll(t, rec.Body.String(), "This note has no text.")
 }
 
 func TestGetNoteWithoutTagsShowsFallback(t *testing.T) {
-	handler, notes := newTestServer(t, "# Untagged Note\n\nSome content.\n")
+	router, notes := newTestRouter(t, "# Untagged Note\n\nSome content.\n")
 	slug := notes[0].Slug()
 
-	rec := get(t, handler, "/notes/"+slug+"/")
+	rec := get(t, router, "/notes/"+slug+"/")
 
 	assertContainsAll(t, rec.Body.String(), "This note has no tags.")
 }
 
 func TestGetNoteWithIconShowsGlow(t *testing.T) {
-	handler, notes := newTestServer(t, "# \U0001F389 Party Planning\n\nLet's celebrate.\n")
+	router, notes := newTestRouter(t, "# \U0001F389 Party Planning\n\nLet's celebrate.\n")
 	slug := notes[0].Slug()
 
-	rec := get(t, handler, "/notes/"+slug+"/")
+	rec := get(t, router, "/notes/"+slug+"/")
 
 	assertContainsAll(t, rec.Body.String(),
 		"<title>Party Planning | One</title>",
@@ -213,9 +206,9 @@ func TestGetNoteWithIconShowsGlow(t *testing.T) {
 }
 
 func TestGetNoteNotFoundReturns404(t *testing.T) {
-	handler, _ := newTestServer(t, "# Only Note\n\nContent.\n")
+	router, _ := newTestRouter(t, "# Only Note\n\nContent.\n")
 
-	rec := get(t, handler, "/notes/does-not-exist/")
+	rec := get(t, router, "/notes/does-not-exist/")
 
 	if rec.Code != http.StatusNotFound {
 		t.Errorf("expected status 404, got %d", rec.Code)
@@ -225,9 +218,9 @@ func TestGetNoteNotFoundReturns404(t *testing.T) {
 }
 
 func TestGetNoteMarksActiveNoteInNavigation(t *testing.T) {
-	handler, notes := newTestServer(t, "# First note\n\nHello.\n\n# Second note\n\nWorld.\n")
+	router, notes := newTestRouter(t, "# First note\n\nHello.\n\n# Second note\n\nWorld.\n")
 
-	rec := get(t, handler, "/notes/"+notes[0].Slug()+"/")
+	rec := get(t, router, "/notes/"+notes[0].Slug()+"/")
 
 	if n := strings.Count(rec.Body.String(), `aria-current="page"`); n != 1 {
 		t.Errorf("expected exactly 1 active nav entry, got %d, body:\n%s", n, rec.Body.String())
@@ -235,9 +228,9 @@ func TestGetNoteMarksActiveNoteInNavigation(t *testing.T) {
 }
 
 func TestStaticAssetsAreServed(t *testing.T) {
-	handler, _ := newTestServer(t, "")
+	router, _ := newTestRouter(t, "")
 
-	rec := get(t, handler, "/static/styles/styles.css")
+	rec := get(t, router, "/static/styles/styles.css")
 
 	if rec.Code != http.StatusOK {
 		t.Errorf("expected status 200, got %d", rec.Code)

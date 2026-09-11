@@ -5,16 +5,15 @@ import (
 	"testing"
 )
 
-// tagNotes contains a note tagged with #groceries.
 const tagNotes = `# Groceries #groceries
 
 Buy milk and eggs.
 `
 
 func TestGetTagRedirectsToSearch(t *testing.T) {
-	handler, _ := newTestServer(t, tagNotes)
+	router, _ := newTestRouter(t, tagNotes)
 
-	rec := get(t, handler, "/tags/groceries/")
+	rec := get(t, router, "/tags/groceries/")
 
 	if rec.Code != http.StatusTemporaryRedirect {
 		t.Fatalf("expected status %d, got %d", http.StatusTemporaryRedirect, rec.Code)
@@ -26,9 +25,9 @@ func TestGetTagRedirectsToSearch(t *testing.T) {
 }
 
 func TestGetTagRedirectsToTrailingSlash(t *testing.T) {
-	handler, _ := newTestServer(t, tagNotes)
+	router, _ := newTestRouter(t, tagNotes)
 
-	rec := get(t, handler, "/tags/groceries")
+	rec := get(t, router, "/tags/groceries")
 
 	if rec.Code != http.StatusTemporaryRedirect {
 		t.Fatalf("expected status %d, got %d", http.StatusTemporaryRedirect, rec.Code)
@@ -40,9 +39,9 @@ func TestGetTagRedirectsToTrailingSlash(t *testing.T) {
 }
 
 func TestGetNoteLinksTagsToTagRoute(t *testing.T) {
-	handler, _ := newTestServer(t, tagNotes)
+	router, _ := newTestRouter(t, tagNotes)
 
-	rec := get(t, handler, "/notes/groceries/")
+	rec := get(t, router, "/notes/groceries/")
 
 	if rec.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d", rec.Code)

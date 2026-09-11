@@ -3,7 +3,6 @@ package web
 
 import (
 	"embed"
-	"fmt"
 	"html/template"
 	"io"
 	"net/http"
@@ -15,7 +14,7 @@ import (
 //go:embed static
 var staticFS embed.FS
 
-// NotesProvider supplies the notes the server renders.
+// NotesProvider supplies the notes the web interface renders.
 type NotesProvider interface {
 	Notes() []note.Note
 }
@@ -25,19 +24,17 @@ type MarkdownRenderer interface {
 	Render(input string) (template.HTML, error)
 }
 
-// ServerArgs configures a server.
-type ServerArgs struct {
-	// Port is the TCP port to listen on.
-	Port string
-	// Notes supplies the notes the server renders.
+// RouterArgs configures a handler.
+type RouterArgs struct {
+	// Notes supplies the notes the web interface renders.
 	Notes NotesProvider
 	// Errors is where request errors are logged. Defaults to io.Discard.
 	Errors io.Writer
 }
 
-// NewServer creates a server with the routes, templates and static files of
-// the notes UI. The returned server is not started.
-func NewServer(args ServerArgs) http.Server {
+// NewRouter creates a handler with the routes, templates and static files of
+// the notes UI.
+func NewRouter(args RouterArgs) http.Handler {
 	var markdownRenderer MarkdownRenderer = service.NewMarkdown(func(target string) (string, bool) {
 		return note.ResolveSlug(args.Notes.Notes(), target)
 	})
@@ -59,8 +56,5 @@ func NewServer(args ServerArgs) http.Server {
 
 	router.Handle("/static/", http.FileServerFS(staticFS))
 
-	return http.Server{
-		Addr:    fmt.Sprintf(":%v", args.Port),
-		Handler: router,
-	}
+	return router
 }

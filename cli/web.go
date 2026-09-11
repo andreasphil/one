@@ -35,11 +35,15 @@ func serve(args webArgs, _ io.Writer, stderr io.Writer) error {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
-	server := web.NewServer(web.ServerArgs{
-		Port:   args.port,
+	router := web.NewRouter(web.RouterArgs{
 		Notes:  staticNotesProvider(notes),
 		Errors: stderr,
 	})
+
+	server := &http.Server{
+		Addr:    fmt.Sprintf("localhost:%v", args.port),
+		Handler: router,
+	}
 
 	errChan := make(chan error, 1)
 

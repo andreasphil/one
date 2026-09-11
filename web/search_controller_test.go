@@ -6,10 +6,6 @@ import (
 	"testing"
 )
 
-// searchNotes contains an undated note, a second undated note, and a daily
-// note with one child note. "milk" occurs in two notes, "Books" only in an
-// undated note, "Standup" only in the daily note itself, and "store" only in
-// its child.
 const searchNotes = `# Groceries
 
 Buy **milk** and eggs.
@@ -28,9 +24,9 @@ Went to the store for milk.
 `
 
 func TestGetSearchWithoutQueryShowsOnlySearchBox(t *testing.T) {
-	handler, _ := newTestServer(t, searchNotes)
+	router, _ := newTestRouter(t, searchNotes)
 
-	rec := get(t, handler, "/search/")
+	rec := get(t, router, "/search/")
 
 	if rec.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d", rec.Code)
@@ -41,11 +37,10 @@ func TestGetSearchWithoutQueryShowsOnlySearchBox(t *testing.T) {
 	assertContainsAll(t, body,
 		"<title>Search | One</title>",
 		`id="searchbox"`,
-		`value=""`, // the search box starts out empty
-		"3 Notes",  // the navigation still lists all notes
+		`value=""`,
+		"3 Notes",
 	)
 
-	// Without a query there is neither a result count nor an empty state.
 	for _, unwanted := range []string{"result for", "results for", "No search results."} {
 		if strings.Contains(body, unwanted) {
 			t.Errorf("did not expect body to contain %q, got:\n%s", unwanted, body)
@@ -54,9 +49,9 @@ func TestGetSearchWithoutQueryShowsOnlySearchBox(t *testing.T) {
 }
 
 func TestGetSearchMarksSearchActiveInNavigation(t *testing.T) {
-	handler, _ := newTestServer(t, searchNotes)
+	router, _ := newTestRouter(t, searchNotes)
 
-	rec := get(t, handler, "/search/")
+	rec := get(t, router, "/search/")
 
 	if n := strings.Count(rec.Body.String(), `aria-current="page"`); n != 1 {
 		t.Errorf("expected exactly 1 active nav entry, got %d, body:\n%s", n, rec.Body.String())
@@ -64,9 +59,9 @@ func TestGetSearchMarksSearchActiveInNavigation(t *testing.T) {
 }
 
 func TestGetSearchListsMatchingNotes(t *testing.T) {
-	handler, _ := newTestServer(t, searchNotes)
+	router, _ := newTestRouter(t, searchNotes)
 
-	rec := get(t, handler, "/search/?query=milk")
+	rec := get(t, router, "/search/?query=milk")
 
 	if rec.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d", rec.Code)
@@ -86,9 +81,9 @@ func TestGetSearchListsMatchingNotes(t *testing.T) {
 }
 
 func TestGetSearchRendersResultContentAsHTML(t *testing.T) {
-	handler, _ := newTestServer(t, searchNotes)
+	router, _ := newTestRouter(t, searchNotes)
 
-	rec := get(t, handler, "/search/?query=eggs")
+	rec := get(t, router, "/search/?query=eggs")
 
 	assertContainsAll(t, rec.Body.String(),
 		"<p>Buy <strong>milk</strong> and eggs.</p>",
@@ -96,9 +91,9 @@ func TestGetSearchRendersResultContentAsHTML(t *testing.T) {
 }
 
 func TestGetSearchCountIsSingularForOneResult(t *testing.T) {
-	handler, _ := newTestServer(t, searchNotes)
+	router, _ := newTestRouter(t, searchNotes)
 
-	rec := get(t, handler, "/search/?query=Books")
+	rec := get(t, router, "/search/?query=Books")
 
 	body := rec.Body.String()
 
@@ -110,25 +105,25 @@ func TestGetSearchCountIsSingularForOneResult(t *testing.T) {
 }
 
 func TestGetSearchKeepsQueryInSearchBox(t *testing.T) {
-	handler, _ := newTestServer(t, searchNotes)
+	router, _ := newTestRouter(t, searchNotes)
 
-	rec := get(t, handler, "/search/?query=milk")
+	rec := get(t, router, "/search/?query=milk")
 
 	assertContainsAll(t, rec.Body.String(), `value="milk"`)
 }
 
 func TestGetSearchShowsQueryInTitle(t *testing.T) {
-	handler, _ := newTestServer(t, searchNotes)
+	router, _ := newTestRouter(t, searchNotes)
 
-	rec := get(t, handler, "/search/?query=milk")
+	rec := get(t, router, "/search/?query=milk")
 
 	assertContainsAll(t, rec.Body.String(), `<title>Search for &#34;milk&#34; | One</title>`)
 }
 
 func TestGetSearchEscapesQuery(t *testing.T) {
-	handler, _ := newTestServer(t, searchNotes)
+	router, _ := newTestRouter(t, searchNotes)
 
-	rec := get(t, handler, "/search/?query=%3Cscript%3Ealert(1)%3C%2Fscript%3E")
+	rec := get(t, router, "/search/?query=%3Cscript%3Ealert(1)%3C%2Fscript%3E")
 
 	if rec.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d", rec.Code)
@@ -144,9 +139,9 @@ func TestGetSearchEscapesQuery(t *testing.T) {
 }
 
 func TestGetSearchShowsDateOfChildNotes(t *testing.T) {
-	handler, _ := newTestServer(t, searchNotes)
+	router, _ := newTestRouter(t, searchNotes)
 
-	rec := get(t, handler, "/search/?query=store")
+	rec := get(t, router, "/search/?query=store")
 
 	assertContainsAll(t, rec.Body.String(),
 		`<a href="/notes/2026-02-01-groceries-run/">Groceries run</a>`,
@@ -155,24 +150,23 @@ func TestGetSearchShowsDateOfChildNotes(t *testing.T) {
 }
 
 func TestGetSearchOmitsDateOfDailyNote(t *testing.T) {
-	handler, _ := newTestServer(t, searchNotes)
+	router, _ := newTestRouter(t, searchNotes)
 
-	rec := get(t, handler, "/search/?query=Standup")
+	rec := get(t, router, "/search/?query=Standup")
 
 	body := rec.Body.String()
 
 	assertContainsAll(t, body, `<a href="/notes/2026-02-01/">01.02.2026</a>`)
 
-	// The daily note already has its date as its title, so it is not repeated.
 	if strings.Contains(body, "(on 01.02.2026)") {
 		t.Errorf("did not expect the date of the daily note to be repeated, got:\n%s", body)
 	}
 }
 
 func TestGetSearchOmitsDateOfUndatedNote(t *testing.T) {
-	handler, _ := newTestServer(t, searchNotes)
+	router, _ := newTestRouter(t, searchNotes)
 
-	rec := get(t, handler, "/search/?query=Books")
+	rec := get(t, router, "/search/?query=Books")
 
 	if body := rec.Body.String(); strings.Contains(body, "(on ") {
 		t.Errorf("did not expect a date for a note without one, got:\n%s", body)
@@ -180,9 +174,9 @@ func TestGetSearchOmitsDateOfUndatedNote(t *testing.T) {
 }
 
 func TestGetSearchWithoutResultsShowsFallback(t *testing.T) {
-	handler, _ := newTestServer(t, searchNotes)
+	router, _ := newTestRouter(t, searchNotes)
 
-	rec := get(t, handler, "/search/?query=nonexistent")
+	rec := get(t, router, "/search/?query=nonexistent")
 
 	if rec.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d", rec.Code)
@@ -196,9 +190,9 @@ func TestGetSearchWithoutResultsShowsFallback(t *testing.T) {
 }
 
 func TestGetSearchWithNoNotesShowsFallback(t *testing.T) {
-	handler, _ := newTestServer(t, "")
+	router, _ := newTestRouter(t, "")
 
-	rec := get(t, handler, "/search/?query=anything")
+	rec := get(t, router, "/search/?query=anything")
 
 	if rec.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d", rec.Code)
