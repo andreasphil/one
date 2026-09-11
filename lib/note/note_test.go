@@ -83,6 +83,10 @@ func TestSlug(t *testing.T) {
 			if result != tc.expected {
 				t.Errorf("expected %q, got %q", tc.expected, result)
 			}
+
+			if again := note.Slug(result); again != result {
+				t.Errorf("expected slug of %q to stay the same, got %q", result, again)
+			}
 		})
 	}
 }
@@ -99,6 +103,16 @@ func TestSlugFunc(t *testing.T) {
 			name:     "simple title",
 			input:    "My Note",
 			expected: "my-note",
+		},
+		{
+			name:     "input that is already a slug",
+			input:    "my-note",
+			expected: "my-note",
+		},
+		{
+			name:     "input that is already a note slug with date",
+			input:    "2026-01-01-meeting-notes",
+			expected: "2026-01-01-meeting-notes",
 		},
 		{
 			name:     "special characters normalization",
@@ -137,6 +151,10 @@ func TestSlugFunc(t *testing.T) {
 			result := note.Slug(tc.input)
 			if result != tc.expected {
 				t.Errorf("expected %q, got %q", tc.expected, result)
+			}
+
+			if again := note.Slug(result); again != result {
+				t.Errorf("expected slug of %q to stay the same, got %q", result, again)
 			}
 		})
 	}
