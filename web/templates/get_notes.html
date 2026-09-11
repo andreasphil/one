@@ -4,8 +4,28 @@
 {{ end }}
 
 {{ define "content" }}
-  <div class="notes-view" has-fallback="empty">
-    <div></div>
+  <div class="notes-view" has-fallback="{{ if not .Data.Notes }}empty{{ end }}">
+    <div>
+      <h1>{{ len .Data.Notes }} notes</h1>
+      <ul>
+        {{ range .Data.Notes }}
+          <li>
+            <a href="/notes/{{ .Slug }}/" class="card">
+              {{ if .Icon }}
+                <header>
+                  <span class="glow" data-content="{{ .Icon }}">{{ .Icon }}</span>
+                </header>
+              {{ end }}
+              <p class="font-size-base text-pretty">{{ .Title }}</p>
+              {{ if .Excerpt }}
+                <p class="clamp font-weight-normal" style="--clamp: 4">{{ .Excerpt }}</p>
+              {{ end }}
+            </a>
+          </li>
+        {{ end }}
+      </ul>
+    </div>
+
     <div fallback-for="empty">
       <p>{{ template "sticker.svg" }}</p>
       <p>Welcome!</p>

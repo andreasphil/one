@@ -35,6 +35,10 @@
     }
   }
 
+  h1 {
+    text-transform: capitalize;
+  }
+
   .prose {
     --disabled-opacity: 1;
     --prose-font-size: clamp(14px, 0.417vw + 8px, 16px);
@@ -61,6 +65,11 @@
       font-family: var(--font-family-display);
       font-style: italic;
     }
+  }
+
+  .card {
+    border: var(--border-width) solid var(--c-border);
+    box-shadow: none;
   }
 }
 

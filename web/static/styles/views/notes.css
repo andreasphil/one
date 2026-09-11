@@ -1,5 +1,29 @@
 @scope (.notes-view) {
   :scope {
     padding: 4rem 2rem;
+    max-width: 80rem;
+    margin-inline: auto;
+  }
+
+  h1 {
+    margin-bottom: 2rem;
+  }
+
+  ul {
+    display: grid;
+    gap: 1rem;
+    grid-auto-rows: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+
+    .card {
+      height: 100%;
+    }
+
+    @supports (display: grid-lanes) {
+      display: grid-lanes;
+    }
   }
 }

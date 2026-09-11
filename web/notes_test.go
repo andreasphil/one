@@ -46,6 +46,18 @@ func assertContainsAll(t *testing.T, body string, want ...string) {
 	}
 }
 
+func mainOf(t *testing.T, body string) string {
+	t.Helper()
+
+	start := strings.Index(body, "<main>")
+	end := strings.Index(body, "</main>")
+	if start < 0 || end < start {
+		t.Fatalf("expected body to contain a main element, got:\n%s", body)
+	}
+
+	return body[start:end]
+}
+
 func TestRootRedirectsToNotesList(t *testing.T) {
 	router, _ := newTestRouter(t, "")
 
@@ -69,17 +81,63 @@ func TestGetNotesListsAllNotes(t *testing.T) {
 		t.Fatalf("expected status 200, got %d", rec.Code)
 	}
 
-	assertContainsAll(t, rec.Body.String(),
-		"<title>Notes | One</title>",
-		"2 Notes",
+	body := rec.Body.String()
+	content := mainOf(t, body)
+
+	assertContainsAll(t, body, "<title>Notes | One</title>")
+
+	assertContainsAll(t, content,
+		`has-fallback=""`,
+		"2 notes",
 		"First note",
 		"Second note",
 		`href="/notes/first-note/"`,
 		`href="/notes/second-note/"`,
 	)
+
+	if n := strings.Count(content, `class="card"`); n != 2 {
+		t.Errorf("expected exactly 2 cards, got %d, content:\n%s", n, content)
+	}
 }
 
-func TestGetNotesWithNoNotesShowsZeroCount(t *testing.T) {
+func TestGetNotesShowsExcerpts(t *testing.T) {
+	router, _ := newTestRouter(t, "# First note\n\nHello **world**, this is\nthe excerpt.\n")
+
+	rec := get(t, router, "/notes/")
+
+	assertContainsAll(t, mainOf(t, rec.Body.String()), "Hello world, this is the excerpt.")
+}
+
+func TestGetNotesOmitsExcerptForEmptyNote(t *testing.T) {
+	router, _ := newTestRouter(t, "# Empty note\n")
+
+	rec := get(t, router, "/notes/")
+
+	content := mainOf(t, rec.Body.String())
+
+	assertContainsAll(t, content, "Empty note")
+
+	if strings.Contains(content, "clamp") {
+		t.Errorf("expected no excerpt for a note without content, got:\n%s", content)
+	}
+}
+
+func TestGetNotesShowsIcons(t *testing.T) {
+	router, _ := newTestRouter(t,
+		"# \U0001F389 Party Planning\n\nLet us celebrate.\n\n# Plain note\n\nNo icon here.\n")
+
+	rec := get(t, router, "/notes/")
+
+	content := mainOf(t, rec.Body.String())
+
+	assertContainsAll(t, content, `data-content="`+"\U0001F389"+`"`)
+
+	if n := strings.Count(content, `class="glow"`); n != 1 {
+		t.Errorf("expected exactly 1 icon, got %d, content:\n%s", n, content)
+	}
+}
+
+func TestGetNotesWithNoNotesShowsEmptyState(t *testing.T) {
 	router, _ := newTestRouter(t, "")
 
 	rec := get(t, router, "/notes/")
@@ -88,7 +146,11 @@ func TestGetNotesWithNoNotesShowsZeroCount(t *testing.T) {
 		t.Fatalf("expected status 200, got %d", rec.Code)
 	}
 
-	assertContainsAll(t, rec.Body.String(), "0 Notes")
+	assertContainsAll(t, mainOf(t, rec.Body.String()),
+		`has-fallback="empty"`,
+		"0 notes",
+		"Welcome!",
+	)
 }
 
 func TestGetNoteRendersUndatedNote(t *testing.T) {

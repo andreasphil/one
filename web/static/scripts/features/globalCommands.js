@@ -44,7 +44,7 @@ export function init() {
       chord: "gn",
       groupName: "Open",
       icon: icon("StickyNote"),
-      action: newNavigationAction("/notes/")
+      action: newNavigationAction("/notes/"),
     },
     {
       id: "open:today",
