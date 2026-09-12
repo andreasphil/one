@@ -24,13 +24,8 @@ func TestFindBySlug(t *testing.T) {
 		{
 			Title: "Root 2",
 			Children: []note.Note{
-				{Title: "Child 1"},
-				{
-					Title: "Child 2",
-					Children: []note.Note{
-						{Title: "Grandchild 1"},
-					},
-				},
+				{Title: "Child 1", Kind: note.KindChild},
+				{Title: "Child 2", Kind: note.KindChild},
 			},
 		},
 		{Title: "Root 3"},
@@ -47,12 +42,6 @@ func TestFindBySlug(t *testing.T) {
 			name:     "find note in children",
 			notes:    notes,
 			slug:     "child-1",
-			expectOk: true,
-		},
-		{
-			name:     "find note in nested children",
-			notes:    notes,
-			slug:     "grandchild-1",
 			expectOk: true,
 		},
 		{
@@ -97,13 +86,8 @@ func TestWalk(t *testing.T) {
 		{
 			Title: "Root 2",
 			Children: []note.Note{
-				{Title: "Child 1"},
-				{
-					Title: "Child 2",
-					Children: []note.Note{
-						{Title: "Grandchild 1"},
-					},
-				},
+				{Title: "Child 1", Kind: note.KindChild},
+				{Title: "Child 2", Kind: note.KindChild},
 			},
 		},
 		{Title: "Root 3"},
@@ -118,7 +102,7 @@ func TestWalk(t *testing.T) {
 		})
 
 		expected := []string{
-			"Root 1", "Root 2", "Child 1", "Child 2", "Grandchild 1", "Root 3",
+			"Root 1", "Root 2", "Child 1", "Child 2", "Root 3",
 		}
 
 		if !cmp.Equal(visited, expected) {
@@ -149,17 +133,15 @@ func TestWalk(t *testing.T) {
 		}
 	})
 
-	t.Run("stopping in nested children also stops parent traversal", func(t *testing.T) {
+	t.Run("stopping in children also stops parent traversal", func(t *testing.T) {
 		var visited []string
 
 		result := note.Walk(notes, func(n note.Note) bool {
 			visited = append(visited, n.Title)
-			return n.Title != "Grandchild 1"
+			return n.Title != "Child 2"
 		})
 
-		expected := []string{
-			"Root 1", "Root 2", "Child 1", "Child 2", "Grandchild 1",
-		}
+		expected := []string{"Root 1", "Root 2", "Child 1", "Child 2"}
 
 		if !cmp.Equal(visited, expected) {
 			t.Errorf("expected visited %v, got %v", expected, visited)
@@ -188,6 +170,94 @@ func TestWalk(t *testing.T) {
 	})
 }
 
+func TestFlatten(t *testing.T) {
+	notes := []note.Note{
+		{Title: "Root 1"},
+		{
+			Title: "Root 2",
+			Children: []note.Note{
+				{Title: "Child 1", Kind: note.KindChild},
+				{Title: "Child 2", Kind: note.KindChild},
+			},
+		},
+		{Title: "Root 3"},
+	}
+
+	t.Run("returns children directly after the note they belong to", func(t *testing.T) {
+		var titles []string
+		for _, n := range note.Flatten(notes) {
+			titles = append(titles, n.Title)
+		}
+
+		expected := []string{"Root 1", "Root 2", "Child 1", "Child 2", "Root 3"}
+
+		if !cmp.Equal(titles, expected) {
+			t.Errorf("expected %v, got %v", expected, titles)
+		}
+	})
+
+	t.Run("returns a non-nil empty slice for no notes", func(t *testing.T) {
+		for _, notes := range [][]note.Note{nil, {}} {
+			result := note.Flatten(notes)
+
+			if result == nil {
+				t.Fatalf("expected a non-nil slice, got nil")
+			}
+
+			if len(result) != 0 {
+				t.Errorf("expected an empty slice, got %v", result)
+			}
+		}
+	})
+}
+
+func TestCount(t *testing.T) {
+	type testcase struct {
+		name     string
+		notes    []note.Note
+		expected int
+	}
+
+	testcases := []testcase{
+		{
+			name:     "no notes",
+			notes:    []note.Note{},
+			expected: 0,
+		},
+		{
+			name:     "notes without children",
+			notes:    []note.Note{{Title: "Root 1"}, {Title: "Root 2"}},
+			expected: 2,
+		},
+		{
+			name: "counts children as notes of their own",
+			notes: []note.Note{
+				{
+					Title: "Root 1",
+					Children: []note.Note{
+						{Title: "Child 1", Kind: note.KindChild},
+						{Title: "Child 2", Kind: note.KindChild},
+					},
+				},
+				{Title: "Root 2"},
+			},
+			expected: 4,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := note.Count(tc.notes); got != tc.expected {
+				t.Errorf("expected %v, got %v", tc.expected, got)
+			}
+
+			if got := len(note.Flatten(tc.notes)); got != tc.expected {
+				t.Errorf("expected Flatten to return %v notes, got %v", tc.expected, got)
+			}
+		})
+	}
+}
+
 func TestResolveSlug(t *testing.T) {
 	type testcase struct {
 		name        string
@@ -200,27 +270,31 @@ func TestResolveSlug(t *testing.T) {
 	notes := []note.Note{
 		{
 			Title: "01.02.2026",
+			Kind:  note.KindDaily,
 			Date:  time.Date(2026, time.February, 1, 0, 0, 0, 0, time.UTC),
 			Children: []note.Note{
 				{
 					Title: "Rehearsal",
+					Kind:  note.KindChild,
 					Date:  time.Date(2026, time.February, 1, 0, 0, 0, 0, time.UTC),
 				},
 			},
 		},
 		{
 			Title: "31.01.2026",
+			Kind:  note.KindDaily,
 			Date:  time.Date(2026, time.January, 31, 0, 0, 0, 0, time.UTC),
 			Children: []note.Note{
 				{
 					Title: "Rehearsal",
+					Kind:  note.KindChild,
 					Date:  time.Date(2026, time.January, 31, 0, 0, 0, 0, time.UTC),
 				},
 			},
 		},
 		{
 			Title:    "Root 1",
-			Children: []note.Note{{Title: "Child 1"}},
+			Children: []note.Note{{Title: "Child 1", Kind: note.KindChild}},
 		},
 	}
 
@@ -533,13 +607,8 @@ func TestTags(t *testing.T) {
 					Title: "A",
 					Tags:  util.NewSetFrom([]note.Tag{"#foo"}),
 					Children: []note.Note{
-						{Title: "B", Tags: util.NewSetFrom([]note.Tag{"#bar"})},
-						{
-							Title: "C",
-							Children: []note.Note{
-								{Title: "D", Tags: util.NewSetFrom([]note.Tag{"#baz"})},
-							},
-						},
+						{Title: "B", Kind: note.KindChild, Tags: util.NewSetFrom([]note.Tag{"#bar"})},
+						{Title: "C", Kind: note.KindChild, Tags: util.NewSetFrom([]note.Tag{"#baz"})},
 					},
 				},
 			},

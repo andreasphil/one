@@ -100,6 +100,47 @@ func TestGetNotesListsAllNotes(t *testing.T) {
 	}
 }
 
+func TestGetNotesListsChildNotes(t *testing.T) {
+	router, _ := newTestRouter(t,
+		"# 01.02.2026\n\nStandup at 9.\n\n## Groceries run\n\nWent to the store.\n\n# Reading list\n\nBooks.\n")
+
+	rec := get(t, router, "/notes/")
+
+	content := mainOf(t, rec.Body.String())
+
+	assertContainsAll(t, content,
+		"3 notes",
+		`href="/notes/2026-02-01/"`,
+		`href="/notes/2026-02-01-groceries-run/"`,
+		`href="/notes/reading-list/"`,
+	)
+
+	if n := strings.Count(content, `class="card"`); n != 3 {
+		t.Errorf("expected exactly 3 cards, got %d, content:\n%s", n, content)
+	}
+}
+
+func TestNavigationListsChildNotesFlat(t *testing.T) {
+	router, _ := newTestRouter(t,
+		"# 01.02.2026\n\nStandup at 9.\n\n## Groceries run\n\nWent to the store.\n\n# Reading list\n\nBooks.\n")
+
+	rec := get(t, router, "/notes/")
+
+	body := rec.Body.String()
+	nav := body[strings.Index(body, `<nav class="navigation">`):strings.Index(body, "</aside>")]
+
+	assertContainsAll(t, nav,
+		"3 Notes",
+		`href="/notes/2026-02-01-groceries-run/"`,
+	)
+
+	// The sidebar is flat, so it only has the list of links at the top and the
+	// list of notes below it, with nothing nested inside either.
+	if n := strings.Count(nav, "<ul>"); n != 2 {
+		t.Errorf("expected exactly 2 lists in a flat navigation, got %d:\n%s", n, nav)
+	}
+}
+
 func TestGetNotesShowsExcerpts(t *testing.T) {
 	router, _ := newTestRouter(t, "# First note\n\nHello **world**, this is\nthe excerpt.\n")
 

@@ -18,9 +18,9 @@ func list(args listArgs, stdout io.Writer, stderr io.Writer) error {
 		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)
 	}
 
-	util.Infof(stderr, "parsed %v notes\n", len(notes))
+	util.Infof(stderr, "parsed %v notes\n", note.Count(notes))
 
-	fmt.Fprintf(stdout, "%v notes\n", len(notes))
+	fmt.Fprintf(stdout, "%v notes\n", note.Count(notes))
 	printTree(stdout, notes, "")
 
 	return nil

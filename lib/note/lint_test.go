@@ -34,12 +34,12 @@ func TestDuplicateSlugs(t *testing.T) {
 			expected: []string{"root-1"},
 		},
 		{
-			name: "returns duplicate slugs across nested children",
+			name: "returns duplicate slugs across children",
 			notes: []note.Note{
 				{
 					Title: "Root 1",
 					Children: []note.Note{
-						{Title: "Child 1"},
+						{Title: "Child 1", Kind: note.KindChild},
 					},
 				},
 				{Title: "Child 1"},
@@ -67,10 +67,12 @@ func TestDuplicateSlugs(t *testing.T) {
 			notes: []note.Note{
 				{
 					Title: "01.01.2025",
+					Kind:  note.KindDaily,
 					Date:  time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
 				},
 				{
 					Title: "01.01.2025",
+					Kind:  note.KindDaily,
 					Date:  time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
 				},
 			},
@@ -113,18 +115,14 @@ func TestCountEmptyTitles(t *testing.T) {
 			expected: 1,
 		},
 		{
-			name: "counts notes with empty titles in nested children",
+			name: "counts notes with empty titles in children",
 			notes: []note.Note{
 				{
 					Title: "Root 1",
 					Children: []note.Note{
-						{Title: ""},
-						{
-							Title: "Child 2",
-							Children: []note.Note{
-								{Title: ""},
-							},
-						},
+						{Title: "", Kind: note.KindChild},
+						{Title: "Child 2", Kind: note.KindChild},
+						{Title: "", Kind: note.KindChild},
 					},
 				},
 			},
@@ -171,14 +169,14 @@ func TestEmptyNotes(t *testing.T) {
 			expected: []string{"Root 1"},
 		},
 		{
-			name: "returns notes without content in nested children",
+			name: "returns notes without content in children",
 			notes: []note.Note{
 				{
 					Title: "Root 1",
 					Raw:   "# Root 1\n\n",
 					Children: []note.Note{
-						{Title: "Child 1", Raw: "## Child 1\n\n"},
-						{Title: "Child 2", Raw: "## Child 2\n\nContent"},
+						{Title: "Child 1", Kind: note.KindChild, Raw: "## Child 1\n\n"},
+						{Title: "Child 2", Kind: note.KindChild, Raw: "## Child 2\n\nContent"},
 					},
 				},
 			},
@@ -191,7 +189,7 @@ func TestEmptyNotes(t *testing.T) {
 					Title: "Root 1",
 					Raw:   "# Root 1\n\n",
 					Children: []note.Note{
-						{Title: "Child 1", Raw: "## Child 1\n\nContent"},
+						{Title: "Child 1", Kind: note.KindChild, Raw: "## Child 1\n\nContent"},
 					},
 				},
 			},

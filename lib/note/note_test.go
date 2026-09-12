@@ -63,17 +63,28 @@ func TestSlug(t *testing.T) {
 			name: "daily note",
 			note: note.Note{
 				Title: "01.01.2026",
+				Kind:  note.KindDaily,
 				Date:  time.Date(2026, time.January, 1, 0, 0, 0, 0, time.UTC),
 			},
 			expected: "2026-01-01",
 		},
 		{
-			name: "note with date and non-date title",
+			name: "child note",
 			note: note.Note{
 				Title: "Meeting Notes",
+				Kind:  note.KindChild,
 				Date:  time.Date(2026, time.January, 1, 0, 0, 0, 0, time.UTC),
 			},
 			expected: "2026-01-01-meeting-notes",
+		},
+		{
+			name: "child note whose title is a date",
+			note: note.Note{
+				Title: "31.12.2025",
+				Kind:  note.KindChild,
+				Date:  time.Date(2026, time.January, 1, 0, 0, 0, 0, time.UTC),
+			},
+			expected: "2026-01-01-31-12-2025",
 		},
 	}
 
@@ -367,61 +378,52 @@ func TestIsEmpty(t *testing.T) {
 	}
 }
 
-func TestIsDailyNote(t *testing.T) {
+func TestKindPredicates(t *testing.T) {
 	type testcase struct {
-		name     string
-		note     note.Note
-		expected bool
+		name       string
+		note       note.Note
+		daily      bool
+		child      bool
+		standalone bool
 	}
+
+	date := time.Date(2026, time.January, 1, 0, 0, 0, 0, time.UTC)
 
 	testcases := []testcase{
 		{
-			name: "valid daily note",
-			note: note.Note{
-				Title: "01.01.2026",
-				Date:  time.Date(2026, time.January, 1, 0, 0, 0, 0, time.UTC),
-			},
-			expected: true,
+			name:  "daily note",
+			note:  note.Note{Title: "01.01.2026", Kind: note.KindDaily, Date: date},
+			daily: true,
 		},
 		{
-			name: "date set but title doesn't match",
-			note: note.Note{
-				Title: "Meeting Notes",
-				Date:  time.Date(2026, time.January, 1, 0, 0, 0, 0, time.UTC),
-			},
-			expected: false,
+			name:  "child note",
+			note:  note.Note{Title: "Child Note", Kind: note.KindChild, Date: date},
+			child: true,
 		},
 		{
-			name: "title matches date format but no date set",
-			note: note.Note{
-				Title: "01.01.2026",
-				Date:  time.Time{},
-			},
-			expected: false,
+			name:       "standalone note",
+			note:       note.Note{Title: "Regular Note"},
+			standalone: true,
 		},
 		{
-			name: "neither date nor matching title",
-			note: note.Note{
-				Title: "Regular Note",
-				Date:  time.Time{},
-			},
-			expected: false,
-		},
-		{
-			name: "child note with date from parent",
-			note: note.Note{
-				Title: "Child Note",
-				Date:  time.Date(2026, time.January, 1, 0, 0, 0, 0, time.UTC),
-			},
-			expected: false,
+			name:       "standalone note whose title looks like a date",
+			note:       note.Note{Title: "01.01.2026"},
+			standalone: true,
 		},
 	}
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := tc.note.IsDailyNote()
-			if result != tc.expected {
-				t.Errorf("expected %v, got %v", tc.expected, result)
+			if got := tc.note.IsDailyNote(); got != tc.daily {
+				t.Errorf("expected IsDailyNote to be %v, got %v", tc.daily, got)
+			}
+
+			if got := tc.note.IsChildNote(); got != tc.child {
+				t.Errorf("expected IsChildNote to be %v, got %v", tc.child, got)
+			}
+
+			if got := tc.note.IsStandalone(); got != tc.standalone {
+				t.Errorf("expected IsStandalone to be %v, got %v", tc.standalone, got)
 			}
 		})
 	}

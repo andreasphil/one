@@ -20,7 +20,7 @@ func sort(args sortArgs, _ io.Writer, stderr io.Writer) error {
 		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)
 	}
 
-	util.Infof(stderr, "parsed %v notes", len(notes))
+	util.Infof(stderr, "parsed %v notes", note.Count(notes))
 
 	notes, didSort := note.Sort(notes)
 	if !didSort {

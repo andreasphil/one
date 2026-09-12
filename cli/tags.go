@@ -18,7 +18,7 @@ func tags(args tagsArgs, stdout io.Writer, stderr io.Writer) error {
 		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)
 	}
 
-	util.Infof(stderr, "parsed %v notes\n", len(notes))
+	util.Infof(stderr, "parsed %v notes\n", note.Count(notes))
 
 	tags := note.Tags(notes)
 

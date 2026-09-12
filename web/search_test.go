@@ -38,7 +38,7 @@ func TestGetSearchWithoutQueryShowsOnlySearchBox(t *testing.T) {
 		"<title>Search | One</title>",
 		`id="searchbox"`,
 		`value=""`,
-		"3 Notes",
+		"4 Notes",
 	)
 
 	for _, unwanted := range []string{"result for", "results for", "No search results."} {
@@ -184,7 +184,7 @@ func TestGetSearchWithoutResultsShowsFallback(t *testing.T) {
 
 	assertContainsAll(t, rec.Body.String(),
 		"0 results for",
-		`has-fallback="empty"`,
+		"<div has-fallback>",
 		"No search results.",
 	)
 }

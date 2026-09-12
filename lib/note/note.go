@@ -9,7 +9,6 @@ import (
 	"github.com/andreasphil/one/util"
 )
 
-var dateTitleExp = regexp.MustCompile(`^\d{2}\.\d{2}\.\d{4}$`)
 var normalizeExp = regexp.MustCompile(`[^\wäöüß]+`)
 var titleHeadingExp = regexp.MustCompile(`^#{1,2}\s+.+\n`)
 
@@ -25,6 +24,21 @@ var underscoreEmphasisExp = regexp.MustCompile(`\b_{1,2}([^_\n]+)_{1,2}\b`)
 var inlineMarkerExp = regexp.MustCompile("[*`]+|~~")
 
 const excerptWords = 30
+
+// Kind describes how a note relates to the structure of the notes file. Every
+// note has exactly one kind, assigned while parsing.
+type Kind int
+
+const (
+	// KindStandalone is a note without a date, not tied to a particular day.
+	KindStandalone Kind = iota
+	// KindDaily is a note whose title is exactly a date in the format of
+	// DD.MM.YYYY.
+	KindDaily
+	// KindChild is a note formed by a level 2 heading inside a daily note. It
+	// inherits the date of that daily note.
+	KindChild
+)
 
 // Tag is a label attached to a note. Its value includes the leading "#".
 type Tag string
@@ -47,10 +61,13 @@ func (t Tag) String() string {
 
 // Note represents a single note parsed from a notes file. Daily notes (notes
 // whose title is a date in the format of DD.MM.YYYY) may have children,
-// which represent the level 2 headings within that daily note.
+// which represent the level 2 headings within that daily note. Children never
+// have children of their own, so notes are at most two levels deep.
 type Note struct {
 	// Title is the note's heading, with tags and emoji removed.
 	Title string
+	// Kind describes how the note relates to the structure of the notes file.
+	Kind Kind
 	// Icon is the first emoji occurring in the note, if any.
 	Icon string
 	// Date is set for daily notes, and inherited by their children.
@@ -58,6 +75,7 @@ type Note struct {
 	// Tags are the tags occurring anywhere in the note.
 	Tags util.Set[Tag]
 	// Children are the notes formed by the level 2 headings of a daily note.
+	// Only daily notes have children.
 	Children []Note
 	// Raw is the note's own markdown source, including its heading but
 	// excluding the source of any children.
@@ -79,24 +97,26 @@ func Slug(input string) string {
 	return strings.Trim(slug, "-")
 }
 
-// Slug returns a URL-friendly identifier for the note, derived from its date
-// (if any) and title. Slugs are not necessarily unique, see DuplicateSlugs.
+// Slug returns a URL-friendly identifier for the note. Daily notes are
+// identified by their date alone, child notes by the date of their parent
+// followed by their title, and standalone notes by their title. Slugs are not
+// necessarily unique, see DuplicateSlugs.
 func (n Note) Slug() string {
-	slug := strings.Builder{}
-
+	date := ""
 	if !n.Date.IsZero() {
-		slug.WriteString(n.Date.Format("2006-01-02"))
+		date = n.Date.Format("2006-01-02")
 	}
 
-	if !n.IsDailyNote() {
-		if slug.Len() > 0 {
-			slug.WriteString("-")
-		}
-
-		slug.WriteString(Slug(n.Title))
+	if n.IsDailyNote() {
+		return date
 	}
 
-	return slug.String()
+	title := Slug(n.Title)
+	if date == "" {
+		return title
+	}
+
+	return date + "-" + title
 }
 
 // Content returns the note's raw content with the title heading removed and
@@ -136,10 +156,19 @@ func (n Note) IsEmpty() bool {
 	return len(n.Content()) == 0
 }
 
-// IsDailyNote reports whether the note has a date and its title matches the
-// daily note format of DD.MM.YYYY.
+// IsDailyNote reports whether the note is a daily note.
 func (n Note) IsDailyNote() bool {
-	return !n.Date.IsZero() && dateTitleExp.MatchString(n.Title)
+	return n.Kind == KindDaily
+}
+
+// IsChildNote reports whether the note is a child note.
+func (n Note) IsChildNote() bool {
+	return n.Kind == KindChild
+}
+
+// IsStandalone reports whether the note is not tied to a particular day.
+func (n Note) IsStandalone() bool {
+	return n.Kind == KindStandalone
 }
 
 // String returns the note's raw markdown source, including that of any
@@ -148,8 +177,8 @@ func (n Note) String() string {
 	var raw strings.Builder
 	raw.WriteString(n.Raw)
 
-	for _, note := range n.Children {
-		raw.WriteString(note.String())
+	for _, child := range n.Children {
+		raw.WriteString(child.Raw)
 	}
 
 	return raw.String()

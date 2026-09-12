@@ -8,22 +8,50 @@ import (
 	"github.com/andreasphil/one/util"
 )
 
-// Walk recursively visits every note and its children, in depth-first,
-// pre-order (i.e. a note is visited before its children). fn is called once per
-// note. Traversal stops as soon as fn returns false, in which case Walk also
-// returns false. If every note was visited, Walk returns true.
+// Walk visits every note and its children, in depth-first, pre-order (i.e. a
+// note is visited before its children). fn is called once per note. Traversal
+// stops as soon as fn returns false, in which case Walk also returns false. If
+// every note was visited, Walk returns true.
 func Walk(notes []Note, fn func(Note) bool) bool {
 	for _, note := range notes {
 		if !fn(note) {
 			return false
 		}
 
-		if len(note.Children) > 0 && !Walk(note.Children, fn) {
-			return false
+		for _, child := range note.Children {
+			if !fn(child) {
+				return false
+			}
 		}
 	}
 
 	return true
+}
+
+// Flatten returns notes and their children as a single list, in depth-first,
+// pre-order, so that the children of a note directly follow it and precede the
+// next note.
+func Flatten(notes []Note) []Note {
+	flat := make([]Note, 0, Count(notes))
+
+	Walk(notes, func(note Note) bool {
+		flat = append(flat, note)
+		return true
+	})
+
+	return flat
+}
+
+// Count returns the total number of notes, counting children as notes of their
+// own.
+func Count(notes []Note) int {
+	count := 0
+
+	for _, note := range notes {
+		count += 1 + len(note.Children)
+	}
+
+	return count
 }
 
 func find(notes []Note, match func(Note) bool) (Note, bool) {
@@ -73,8 +101,10 @@ func ResolveSlug(notes []Note, target string) (string, bool) {
 
 // Sort sorts notes in place, with daily notes ordered by date (descending)
 // before all other notes ordered alphabetically by title (ascending, case
-// insensitive). It returns the sorted notes along with whether sorting actually
-// changed the order (i.e. whether notes were not already sorted).
+// insensitive). Only the top level is sorted. Children keep the order they
+// were authored in, and stay with their parent. It returns the sorted notes
+// along with whether sorting actually changed the order (i.e. whether notes
+// were not already sorted).
 func Sort(notes []Note) ([]Note, bool) {
 	compare := func(a Note, b Note) int {
 		return cmp.Or(

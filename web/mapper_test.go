@@ -26,7 +26,7 @@ func TestNewNoteMeta(t *testing.T) {
 		},
 		{
 			name:     "maps daily note",
-			note:     note.Note{Title: "01.02.2026", Date: time.Date(2026, 2, 1, 0, 0, 0, 0, time.UTC)},
+			note:     note.Note{Title: "01.02.2026", Kind: note.KindDaily, Date: time.Date(2026, 2, 1, 0, 0, 0, 0, time.UTC)},
 			expected: noteMeta{Title: "01.02.2026", Slug: "2026-02-01"},
 		},
 		{
@@ -50,26 +50,23 @@ func TestNewNoteMeta(t *testing.T) {
 func TestMapToNoteMeta(t *testing.T) {
 	date := time.Date(2026, 2, 1, 0, 0, 0, 0, time.UTC)
 
-	notes := []note.Note{
+	// mapToNoteMeta maps the flat list of notes each page is rendered with, see
+	// note.Flatten.
+	notes := note.Flatten([]note.Note{
 		{Title: "Root 1"},
 		{
 			Title: "01.02.2026",
+			Kind:  note.KindDaily,
 			Date:  date,
 			Children: []note.Note{
-				{Title: "Child 1", Date: date},
-				{
-					Title: "Child 2",
-					Date:  date,
-					Children: []note.Note{
-						{Title: "Grandchild 1", Date: date},
-					},
-				},
+				{Title: "Child 1", Kind: note.KindChild, Date: date},
+				{Title: "Child 2", Kind: note.KindChild, Date: date},
 			},
 		},
 		{Title: "Root 3"},
-	}
+	})
 
-	t.Run("flattens notes and children in depth-first, pre-order", func(t *testing.T) {
+	t.Run("maps every note, keeping the order of the input", func(t *testing.T) {
 		result := mapToNoteMeta(notes)
 
 		expected := []noteMeta{
@@ -77,7 +74,6 @@ func TestMapToNoteMeta(t *testing.T) {
 			{Title: "01.02.2026", Slug: "2026-02-01"},
 			{Title: "Child 1", Slug: "2026-02-01-child-1"},
 			{Title: "Child 2", Slug: "2026-02-01-child-2"},
-			{Title: "Grandchild 1", Slug: "2026-02-01-grandchild-1"},
 			{Title: "Root 3", Slug: "root-3"},
 		}
 
@@ -119,7 +115,7 @@ func TestMapToTags(t *testing.T) {
 			Title: "Root 2",
 			Tags:  util.NewSetFrom([]note.Tag{"#work"}),
 			Children: []note.Note{
-				{Title: "Child 1", Tags: util.NewSetFrom([]note.Tag{"#recipe"})},
+				{Title: "Child 1", Kind: note.KindChild, Tags: util.NewSetFrom([]note.Tag{"#recipe"})},
 			},
 		},
 	}
@@ -198,8 +194,8 @@ func TestNewSearchResult(t *testing.T) {
 			},
 		},
 		{
-			name: "maps the date of a dated note",
-			note: note.Note{Title: "Groceries run", Date: date, Raw: "## Groceries run\n"},
+			name: "maps the date of a child note",
+			note: note.Note{Title: "Groceries run", Kind: note.KindChild, Date: date, Raw: "## Groceries run\n"},
 			expected: searchResult{
 				Title: "Groceries run",
 				Slug:  "2026-02-01-groceries-run",
@@ -208,7 +204,7 @@ func TestNewSearchResult(t *testing.T) {
 		},
 		{
 			name: "omits the date of a daily note",
-			note: note.Note{Title: "01.02.2026", Date: date, Raw: "# 01.02.2026\n"},
+			note: note.Note{Title: "01.02.2026", Kind: note.KindDaily, Date: date, Raw: "# 01.02.2026\n"},
 			expected: searchResult{
 				Title: "01.02.2026",
 				Slug:  "2026-02-01",

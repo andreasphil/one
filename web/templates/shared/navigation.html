@@ -35,13 +35,6 @@
     {{ range .Notes }}
       <li>
         {{ template "note_link.html" (dict "Note" . "CurrentURL" $.CurrentURL) }}
-        {{ if .Children }}
-          <ul>
-            {{ range .Children }}
-              <li>{{ template "note_link.html" (dict "Note" . "CurrentURL" $.CurrentURL) }}</li>
-            {{ end }}
-          </ul>
-        {{ end }}
       </li>
     {{ end }}
   </ul>

@@ -20,10 +20,9 @@ func newNoteMeta(n note.Note) noteMeta {
 func mapToNoteMeta(n []note.Note) []noteMeta {
 	m := make([]noteMeta, 0, len(n))
 
-	note.Walk(n, func(i note.Note) bool {
+	for _, i := range n {
 		m = append(m, newNoteMeta(i))
-		return true
-	})
+	}
 
 	return m
 }
@@ -53,7 +52,7 @@ func newSearchResult(n note.Note, renderer markdownRenderer) (searchResult, erro
 	}
 
 	var date time.Time
-	if !n.IsDailyNote() {
+	if n.IsChildNote() {
 		date = n.Date
 	}
 

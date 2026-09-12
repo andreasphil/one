@@ -4,11 +4,11 @@
 {{ end }}
 
 {{ define "content" }}
-  <div class="notes-view" has-fallback="{{ if not .Data.Notes }}empty{{ end }}">
+  <div class="notes-view" has-fallback="{{ if not .Notes }}empty{{ end }}">
     <div>
-      <h1>{{ len .Data.Notes }} notes</h1>
+      <h1>{{ len .Notes }} notes</h1>
       <ul>
-        {{ range .Data.Notes }}
+        {{ range .Notes }}
           <li>
             <a href="/notes/{{ .Slug }}/" class="card">
               {{ if .Icon }}

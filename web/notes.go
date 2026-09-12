@@ -8,17 +8,10 @@ import (
 )
 
 func getNotes(provider NotesProvider) handler {
-	type getNotesData struct {
-		Notes []note.Note
-	}
-
-	render := newRenderFunc[getNotesData](provider, "get_notes.html")
+	render := newRenderFunc[struct{}](provider, "get_notes.html")
 
 	return func(w http.ResponseWriter, r *http.Request) error {
-		return render(w, r, data[getNotesData]{
-			Title: "Notes",
-			Data:  getNotesData{Notes: provider.Notes()},
-		})
+		return render(w, r, data[struct{}]{Title: "Notes"})
 	}
 }
 

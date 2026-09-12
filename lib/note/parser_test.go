@@ -62,6 +62,7 @@ func TestParseSplitsNotesOnHeadings(t *testing.T) {
 			expected: []note.Note{
 				{
 					Title: "01.01.2026",
+					Kind:  note.KindDaily,
 					Raw:   "# 01.01.2026\n\nLine 1\n\nLine 2\n",
 					Date:  time.Date(2026, time.January, 01, 0, 0, 0, 0, time.UTC),
 				},
@@ -73,11 +74,13 @@ func TestParseSplitsNotesOnHeadings(t *testing.T) {
 			expected: []note.Note{
 				{
 					Title: "01.01.2026",
+					Kind:  note.KindDaily,
 					Raw:   "# 01.01.2026\n\nLine 1\n\nLine 2\n\n",
 					Date:  time.Date(2026, time.January, 01, 0, 0, 0, 0, time.UTC),
 					Children: []note.Note{
 						{
 							Title: "Child Note 1",
+							Kind:  note.KindChild,
 							Raw:   "## Child Note 1\n\nLine 3\n\nLine 4\n\n",
 							Date:  time.Date(2026, time.January, 01, 0, 0, 0, 0, time.UTC),
 						},
@@ -85,6 +88,7 @@ func TestParseSplitsNotesOnHeadings(t *testing.T) {
 				},
 				{
 					Title: "02.01.2026",
+					Kind:  note.KindDaily,
 					Raw:   "# 02.01.2026\n\nLine 5\n\nLine 6\n",
 					Date:  time.Date(2026, time.January, 02, 0, 0, 0, 0, time.UTC),
 				},
@@ -96,16 +100,19 @@ func TestParseSplitsNotesOnHeadings(t *testing.T) {
 			expected: []note.Note{
 				{
 					Title: "01.01.2026",
+					Kind:  note.KindDaily,
 					Raw:   "# 01.01.2026\n\nLine 1\n\nLine 2\n\n",
 					Date:  time.Date(2026, time.January, 01, 0, 0, 0, 0, time.UTC),
 					Children: []note.Note{
 						{
 							Title: "Child Note 1",
+							Kind:  note.KindChild,
 							Raw:   "## Child Note 1\n\nLine 3\n\nLine 4\n\n",
 							Date:  time.Date(2026, time.January, 01, 0, 0, 0, 0, time.UTC),
 						},
 						{
 							Title: "Child Note 2",
+							Kind:  note.KindChild,
 							Raw:   "## Child Note 2\n\nLine 5\n\nLine 6\n\n",
 							Date:  time.Date(2026, time.January, 01, 0, 0, 0, 0, time.UTC),
 						},
@@ -113,6 +120,7 @@ func TestParseSplitsNotesOnHeadings(t *testing.T) {
 				},
 				{
 					Title: "02.01.2026",
+					Kind:  note.KindDaily,
 					Raw:   "# 02.01.2026\n\nLine 7\n\nLine 8\n",
 					Date:  time.Date(2026, time.January, 02, 0, 0, 0, 0, time.UTC),
 				},
@@ -124,6 +132,7 @@ func TestParseSplitsNotesOnHeadings(t *testing.T) {
 			expected: []note.Note{
 				{
 					Title: "01.01.2026",
+					Kind:  note.KindDaily,
 					Raw:   "# 01.01.2026\n\nLine 1\n\n```\n\n# Block comment\n\n```\n",
 					Date:  time.Date(2026, time.January, 01, 0, 0, 0, 0, time.UTC),
 				},
@@ -145,6 +154,7 @@ func TestParseSplitsNotesOnHeadings(t *testing.T) {
 			expected: []note.Note{
 				{
 					Title: "01.01.2026",
+					Kind:  note.KindDaily,
 					Raw:   "# 01.01.2026\n\n```\n## Not a child note\n```\n",
 					Date:  time.Date(2026, time.January, 01, 0, 0, 0, 0, time.UTC),
 				},
@@ -217,6 +227,113 @@ func TestParseSplitsNotesOnHeadings(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestParseOnlyTreatsExactDatesAsDailyNotes(t *testing.T) {
+	type testcase struct {
+		name         string
+		input        string
+		expectedKind note.Kind
+		expectDate   bool
+	}
+
+	testcases := []testcase{
+		{
+			name:         "title is exactly a date",
+			input:        "# 01.01.2026\n\nLine 1\n",
+			expectedKind: note.KindDaily,
+			expectDate:   true,
+		},
+		{
+			name:         "title starts with a date",
+			input:        "# 01.01.2026 Standup\n\nLine 1\n",
+			expectedKind: note.KindStandalone,
+		},
+		{
+			name:         "title ends with a date",
+			input:        "# Standup 01.01.2026\n\nLine 1\n",
+			expectedKind: note.KindStandalone,
+		},
+		{
+			name:         "title is a date with an emoji",
+			input:        "# 01.01.2026 \U0001F4CB\n\nLine 1\n",
+			expectedKind: note.KindDaily,
+			expectDate:   true,
+		},
+		{
+			name:         "title is not a valid date",
+			input:        "# 32.01.2026\n\nLine 1\n",
+			expectedKind: note.KindStandalone,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := note.Parse(strings.NewReader(tc.input))
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			if got := result[0].Kind; got != tc.expectedKind {
+				t.Errorf("expected kind %v, got %v", tc.expectedKind, got)
+			}
+
+			if got := !result[0].Date.IsZero(); got != tc.expectDate {
+				t.Errorf("expected date to be set: %v, got %v", tc.expectDate, got)
+			}
+		})
+	}
+}
+
+func TestParseOnlyCreatesChildrenInDailyNotes(t *testing.T) {
+	t.Run("creates children in a daily note", func(t *testing.T) {
+		result, err := note.Parse(strings.NewReader("# 01.01.2026\n\n## Standup\n\nLine 1\n"))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		if len(result[0].Children) != 1 {
+			t.Fatalf("expected 1 child, got %v", len(result[0].Children))
+		}
+
+		child := result[0].Children[0]
+
+		if !child.IsChildNote() {
+			t.Errorf("expected child to be a child note, got kind %v", child.Kind)
+		}
+
+		if !child.Date.Equal(result[0].Date) {
+			t.Errorf("expected child to inherit %v, got %v", result[0].Date, child.Date)
+		}
+	})
+
+	t.Run("does not create children in a note that only starts with a date", func(t *testing.T) {
+		result, err := note.Parse(strings.NewReader("# 01.01.2026 Standup\n\n## Not a child\n\nLine 1\n"))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		if len(result[0].Children) != 0 {
+			t.Errorf("expected no children, got %v", result[0].Children)
+		}
+	})
+
+	t.Run("gives a child whose title is a date its own slug", func(t *testing.T) {
+		result, err := note.Parse(strings.NewReader("# 02.01.2026\n\n## 01.01.2026\n\nLine 1\n"))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		child := result[0].Children[0]
+
+		if child.IsDailyNote() {
+			t.Errorf("expected child not to be a daily note")
+		}
+
+		if child.Slug() == result[0].Slug() {
+			t.Errorf("expected child slug to differ from its parent, got %q", child.Slug())
+		}
+	})
 }
 
 func TestParseRequiresLeadingHeading(t *testing.T) {

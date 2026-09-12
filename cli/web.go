@@ -30,7 +30,7 @@ func serve(args webArgs, _ io.Writer, stderr io.Writer) error {
 		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)
 	}
 
-	util.Infof(stderr, "parsed %v notes", len(notes))
+	util.Infof(stderr, "parsed %v notes", note.Count(notes))
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()

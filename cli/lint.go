@@ -23,7 +23,7 @@ func lint(args lintArgs, _ io.Writer, stderr io.Writer) error {
 		return fmt.Errorf("linting failed")
 	}
 
-	util.Infof(stderr, "parses without errors (%v notes)", len(notes))
+	util.Infof(stderr, "parses without errors (%v notes)", note.Count(notes))
 
 	// Is sorted
 	if _, didSort := note.Sort(notes); didSort {

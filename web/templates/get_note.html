@@ -27,24 +27,24 @@
 
     <aside>
       <nav>
-        {{- if not .Data.Note.Date.IsZero -}}
-          {{ $noteDate := .Data.Note.Date.Format "Mon, 2. Jan 2006" }}
-          {{ if .Data.Note.IsDailyNote }}
-            <span class="color-variant">
-              {{ template "calendar.svg" }}
-              {{ $noteDate }}
-            </span>
-          {{ else }}
-            <a href="/notes/{{ .Data.Note.Date.Format "2006-01-02" }}/">
-              <span class="color-variant">{{ template "calendar.svg" }}</span>
-              {{ $noteDate }}
-            </a>
-          {{ end }}
-        {{- else -}}
+        {{- if .Data.Note.IsStandalone -}}
           <span class="color-variant">
             {{ template "sparkles.svg" }}
             Knowledge Base
           </span>
+        {{- else -}}
+          {{ $noteDate := .Data.Note.Date.Format "Mon, 2. Jan 2006" }}
+          {{ if .Data.Note.IsChildNote }}
+            <a href="/notes/{{ .Data.Note.Date.Format "2006-01-02" }}/">
+              <span class="color-variant">{{ template "calendar.svg" }}</span>
+              {{ $noteDate }}
+            </a>
+          {{ else }}
+            <span class="color-variant">
+              {{ template "calendar.svg" }}
+              {{ $noteDate }}
+            </span>
+          {{ end }}
         {{- end -}}
 
         {{- if .Data.Note.Children -}}

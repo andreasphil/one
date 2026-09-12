@@ -23,12 +23,30 @@ func last[T ~[]I, I any](slice T) *I {
 }
 
 var tagsExp = regexp.MustCompile(`(?:^|\s)#(\w+)`)
-var dateExp = regexp.MustCompile(`^# (\d{2}\.\d{2}\.\d{4})`)
+var dateTitleExp = regexp.MustCompile(`^\d{2}\.\d{2}\.\d{4}$`)
 
 func cleanupTitle(title string) string {
 	title = gomoji.RemoveEmojis(title)
 	title = tagsExp.ReplaceAllString(title, "")
 	return strings.TrimSpace(title)
+}
+
+func newRootNote(title string) Note {
+	n := New(cleanupTitle(title))
+
+	if !dateTitleExp.MatchString(n.Title) {
+		return n
+	}
+
+	date, err := time.Parse("02.01.2006", n.Title)
+	if err != nil {
+		return n
+	}
+
+	n.Kind = KindDaily
+	n.Date = date
+
+	return n
 }
 
 func isFence(line string) bool {
@@ -43,11 +61,13 @@ func isFence(line string) bool {
 //   - a level 1 heading indicates the start of a new note, with all content
 //     until the next level 1 heading considered part of that note, and the
 //     content of the heading being the title of the note.
-//   - if a level 1 heading matches a date in the format of DD.MM.YYYY, the note
-//     is considered a "daily note", and will have the Note.Date set to that date
+//   - if a level 1 heading is exactly a date in the format of DD.MM.YYYY, the
+//     note is considered a "daily note", and will have the Note.Date set to
+//     that date. A date anywhere else in the heading has no special meaning.
 //   - level 2 headings in daily notes will be added to the children of that
-//     note. In notes without a date, the level 2 heading has no special
-//     significance and no child notes will be created.
+//     note, inheriting its date. Children never have children of their own. In
+//     notes without a date, the level 2 heading has no special significance and
+//     no child notes will be created.
 //   - notes can be tagged. A tag starts with a "#", followed by letters,
 //     numbers, and underscores (word characters)
 //   - for code blocks, only fenced code blocks are supported. A fence is
@@ -71,7 +91,7 @@ func Parse(input io.Reader) ([]Note, error) {
 		if shouldParse {
 			// Level 1 heading = new note
 			if title, found := strings.CutPrefix(line, "# "); found {
-				notes = append(notes, New(cleanupTitle(title)))
+				notes = append(notes, newRootNote(title))
 				root = last(notes)
 				current = root
 			} else if current == nil {
@@ -83,26 +103,18 @@ func Parse(input io.Reader) ([]Note, error) {
 			// 	 that date
 			// - otherwise ignore
 			if childTitle, found := strings.CutPrefix(line, "## "); found && root != nil && root.IsDailyNote() {
-				current = root
-
 				childNote := New(cleanupTitle(childTitle))
-				childNote.Date = current.Date
+				childNote.Kind = KindChild
+				childNote.Date = root.Date
 
-				current.Children = append(current.Children, childNote)
-				current = last(current.Children)
+				root.Children = append(root.Children, childNote)
+				current = last(root.Children)
 			}
 
 			// Parse tags
 			tags := tagsExp.FindAllStringSubmatch(line, -1)
 			for _, tag := range tags {
 				current.Tags.Add(NewTag(tag[1]))
-			}
-
-			// Parse date, only in note name for now
-			if match := dateExp.FindStringSubmatch(line); len(match) == 2 {
-				if parsedTime, err := time.Parse("02.01.2006", match[1]); err == nil {
-					current.Date = parsedTime
-				}
 			}
 		}
 
