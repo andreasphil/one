@@ -170,7 +170,7 @@ func TestWalk(t *testing.T) {
 	})
 }
 
-func TestFlatten(t *testing.T) {
+func TestFlat(t *testing.T) {
 	notes := []note.Note{
 		{Title: "Root 1"},
 		{
@@ -185,7 +185,7 @@ func TestFlatten(t *testing.T) {
 
 	t.Run("returns children directly after the note they belong to", func(t *testing.T) {
 		var titles []string
-		for _, n := range note.Flatten(notes) {
+		for _, n := range note.Flat(notes) {
 			titles = append(titles, n.Title)
 		}
 
@@ -198,7 +198,7 @@ func TestFlatten(t *testing.T) {
 
 	t.Run("returns a non-nil empty slice for no notes", func(t *testing.T) {
 		for _, notes := range [][]note.Note{nil, {}} {
-			result := note.Flatten(notes)
+			result := note.Flat(notes)
 
 			if result == nil {
 				t.Fatalf("expected a non-nil slice, got nil")
@@ -251,8 +251,8 @@ func TestCount(t *testing.T) {
 				t.Errorf("expected %v, got %v", tc.expected, got)
 			}
 
-			if got := len(note.Flatten(tc.notes)); got != tc.expected {
-				t.Errorf("expected Flatten to return %v notes, got %v", tc.expected, got)
+			if got := len(note.Flat(tc.notes)); got != tc.expected {
+				t.Errorf("expected Flat to return %v notes, got %v", tc.expected, got)
 			}
 		})
 	}

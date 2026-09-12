@@ -50,13 +50,11 @@ func newRenderFunc[T any](provider NotesProvider, name string) renderFunc[T] {
 	t := template.Must(template.New("").Funcs(helpers).ParseFS(templatesFS, "templates/shared/*.html"))
 	template.Must(t.ParseFS(templatesFS, "templates/components/*.html"))
 	template.Must(t.ParseFS(templatesFS, "templates/icons/*.svg"))
-
 	template.Must(t.ParseFS(templatesFS, fmt.Sprintf("templates/%v", name)))
 
 	return func(w http.ResponseWriter, r *http.Request, data data[T]) error {
 		notes := provider.Notes()
-
-		flat := note.Flatten(notes)
+		flat := note.Flat(notes)
 
 		data.CurrentURL = r.URL.Path
 		data.NotesMeta = mapToNoteMeta(flat)

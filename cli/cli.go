@@ -1,4 +1,3 @@
-// Package cli implements the commands of the one executable.
 package cli
 
 import (
@@ -24,9 +23,6 @@ func usage(w io.Writer) {
 `)
 }
 
-// Run executes the command named by the first of args, with the rest passed to
-// that command as flags. Data is written to stdout, logs and diagnostics to
-// stderr. It returns an error if the command is unknown or if it failed.
 func Run(args []string, stdout io.Writer, stderr io.Writer) error {
 	util.Banner(stderr, "one")
 

@@ -144,8 +144,6 @@ func Parse(input io.Reader) ([]Note, error) {
 	return notes, nil
 }
 
-// ParseFile reads the file at path and parses it into a structured list of
-// notes. See Parse for details on the expected file format.
 func ParseFile(path string) ([]Note, error) {
 	absPath, err := filepath.Abs(path)
 	if err != nil {

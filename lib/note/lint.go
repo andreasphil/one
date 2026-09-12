@@ -1,9 +1,7 @@
 package note
 
 // DuplicateSlugs returns the slugs of any notes (including children) that share
-// their slug with another note. Slugs are returned in the order they first
-// occur, and each duplicate slug is only returned once, regardless of how many
-// notes share it.
+// their slug with another note.
 func DuplicateSlugs(notes []Note) []string {
 	var order []string
 	counts := make(map[string]int)
@@ -44,7 +42,7 @@ func CountEmptyTitles(notes []Note) int {
 
 // EmptyNotes returns any notes (including children) that have no content.
 // Notes with children are never considered empty, even if their own content is
-// empty, since they still hold information through their children.
+// empty.
 func EmptyNotes(notes []Note) []Note {
 	var empty []Note
 

@@ -27,7 +27,6 @@ func style(color string, text string) string {
 	return color + text + reset
 }
 
-// Banner writes text to w in a violet rounded frame.
 func Banner(w io.Writer, text string) {
 	rule := strings.Repeat("─", utf8.RuneCountInString(text)+4)
 
@@ -41,29 +40,25 @@ func logf(w io.Writer, marker string, format string, v ...any) {
 }
 
 // Debugf writes a debug message to w if the ONE_DEBUG environment variable is
-// set. Formatted according to format.
+// set.
 func Debugf(w io.Writer, format string, v ...any) {
 	if _, ok := os.LookupEnv("ONE_DEBUG"); ok {
 		logf(w, style(gray, "-"), format, v...)
 	}
 }
 
-// Infof writes an informational message to w, formatted according to format.
 func Infof(w io.Writer, format string, v ...any) {
 	logf(w, style(blue, "→"), format, v...)
 }
 
-// Warnf writes a warning message to w, formatted according to format.
 func Warnf(w io.Writer, format string, v ...any) {
 	logf(w, style(yellow, "△"), format, v...)
 }
 
-// Errorf writes an error message to w, formatted according to format.
 func Errorf(w io.Writer, format string, v ...any) {
 	logf(w, style(red, "✗"), format, v...)
 }
 
-// Successf writes a success message to w, formatted according to format.
 func Successf(w io.Writer, format string, v ...any) {
 	logf(w, style(green, "✓"), format, v...)
 }

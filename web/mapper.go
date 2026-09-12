@@ -7,6 +7,8 @@ import (
 	"github.com/andreasphil/one/lib/note"
 )
 
+// Note meta ----------------------------------------------
+
 // Should mirror NoteMeta in static/scripts/lib/types.ts.
 type noteMeta struct {
 	Title string
@@ -27,6 +29,8 @@ func mapToNoteMeta(n []note.Note) []noteMeta {
 	return m
 }
 
+// Tags ---------------------------------------------------
+
 func mapToTags(n []note.Note) []string {
 	tags := note.Tags(n)
 	m := make([]string, 0, len(tags))
@@ -37,6 +41,8 @@ func mapToTags(n []note.Note) []string {
 
 	return m
 }
+
+// Search results -----------------------------------------
 
 type searchResult struct {
 	Title string

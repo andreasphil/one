@@ -1,4 +1,3 @@
-// Package markdown provides goldmark extensions for rendering notes.
 package markdown
 
 import (
@@ -17,7 +16,6 @@ import (
 
 // Node ---------------------------------------------------
 
-// KindTag is the kind of the nodes that tags are parsed into.
 var KindTag = ast.NewNodeKind("Tag")
 
 type tagNode struct {
@@ -41,15 +39,10 @@ func (n *tagNode) Dump(_ []byte) *ast.NodeDump {
 
 // Parser -------------------------------------------------
 
-// NewTagParser creates a parser for tags. A tag is a "#" preceded by
-// whitespace or the start of a line, followed by one or more letters, digits
-// or underscores.
 func NewTagParser() parser.Extension {
 	return &tagParserExtension{}
 }
 
-// TagParser is a ready to use tag parser. Parsing tags has no options, so the
-// same instance can be shared by all parsers.
 var TagParser = NewTagParser()
 
 type tagParserExtension struct{}
@@ -100,8 +93,6 @@ func isTagRune(r rune) bool {
 
 // Renderer -----------------------------------------------
 
-// NewTagHTMLRenderer creates a renderer for tags. Tags are rendered as links
-// pointing at prefix followed by the name of the tag, without the leading "#".
 func NewTagHTMLRenderer(prefix string) html.Extension {
 	return &tagHTMLRendererExtension{prefix: prefix}
 }

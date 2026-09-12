@@ -1,4 +1,3 @@
-// Package web serves the notes over HTTP.
 package web
 
 import (
@@ -19,9 +18,7 @@ type NotesProvider interface {
 
 // RouterArgs configures the router.
 type RouterArgs struct {
-	// Notes supplies the notes the web interface renders.
-	Notes NotesProvider
-	// Errors is where request errors are logged. Defaults to io.Discard.
+	Notes  NotesProvider
 	Errors io.Writer
 }
 
@@ -42,9 +39,7 @@ func NewRouter(args RouterArgs) http.Handler {
 	router.Handle("/{$}", http.RedirectHandler("/notes/", http.StatusTemporaryRedirect))
 	router.HandleFunc("GET /notes/{$}", handle(errw, getNotes(args.Notes)))
 	router.HandleFunc("GET /notes/{slug}/{$}", handle(errw, getNote(args.Notes, markdownRenderer)))
-
 	router.HandleFunc("GET /search/{$}", handle(errw, getSearch(args.Notes, markdownRenderer)))
-
 	router.HandleFunc("GET /tags/{tag}/{$}", handle(errw, getTag()))
 
 	router.Handle("/static/", http.FileServerFS(staticFS))

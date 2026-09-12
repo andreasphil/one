@@ -51,8 +51,8 @@ func TestMapToNoteMeta(t *testing.T) {
 	date := time.Date(2026, 2, 1, 0, 0, 0, 0, time.UTC)
 
 	// mapToNoteMeta maps the flat list of notes each page is rendered with, see
-	// note.Flatten.
-	notes := note.Flatten([]note.Note{
+	// note.Flat.
+	notes := note.Flat([]note.Note{
 		{Title: "Root 1"},
 		{
 			Title: "01.02.2026",

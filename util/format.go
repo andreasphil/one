@@ -3,8 +3,7 @@ package util
 import "strings"
 
 // FormatNestedMap flattens m into a space separated list of key=value pairs,
-// with one pair per value. The order of the pairs is not stable, because it
-// follows the iteration order of m.
+// with one pair per value.
 func FormatNestedMap(m map[string][]string) string {
 	result := strings.Builder{}
 

@@ -1,4 +1,3 @@
-// Package note parses, inspects and serializes the notes in a notes file.
 package note
 
 import (
@@ -11,6 +10,8 @@ import (
 
 var normalizeExp = regexp.MustCompile(`[^\wäöüß]+`)
 var titleHeadingExp = regexp.MustCompile(`^#{1,2}\s+.+\n`)
+
+// Expressions for cleaning up excerpts -------------------
 
 var codeFenceExp = regexp.MustCompile("(?m)^[ \t]*(?:```|~~~).*$")
 var ruleExp = regexp.MustCompile(`(?m)^[ \t]*(?:[-*_][ \t]*){3,}$`)
@@ -25,22 +26,18 @@ var inlineMarkerExp = regexp.MustCompile("[*`]+|~~")
 
 const excerptWords = 30
 
-// Kind describes how a note relates to the structure of the notes file. Every
-// note has exactly one kind, assigned while parsing.
+// Note kind ----------------------------------------------
+
 type Kind int
 
 const (
-	// KindStandalone is a note without a date, not tied to a particular day.
 	KindStandalone Kind = iota
-	// KindDaily is a note whose title is exactly a date in the format of
-	// DD.MM.YYYY.
 	KindDaily
-	// KindChild is a note formed by a level 2 heading inside a daily note. It
-	// inherits the date of that daily note.
 	KindChild
 )
 
-// Tag is a label attached to a note. Its value includes the leading "#".
+// Tags ---------------------------------------------------
+
 type Tag string
 
 // NewTag returns the Tag with the given name. The name may be given with or
@@ -59,30 +56,18 @@ func (t Tag) String() string {
 	return string(t)
 }
 
-// Note represents a single note parsed from a notes file. Daily notes (notes
-// whose title is a date in the format of DD.MM.YYYY) may have children,
-// which represent the level 2 headings within that daily note. Children never
-// have children of their own, so notes are at most two levels deep.
+// Note ---------------------------------------------------
+
 type Note struct {
-	// Title is the note's heading, with tags and emoji removed.
-	Title string
-	// Kind describes how the note relates to the structure of the notes file.
-	Kind Kind
-	// Icon is the first emoji occurring in the note, if any.
-	Icon string
-	// Date is set for daily notes, and inherited by their children.
-	Date time.Time
-	// Tags are the tags occurring anywhere in the note.
-	Tags util.Set[Tag]
-	// Children are the notes formed by the level 2 headings of a daily note.
-	// Only daily notes have children.
+	Title    string
+	Kind     Kind
+	Icon     string
+	Date     time.Time
+	Tags     util.Set[Tag]
 	Children []Note
-	// Raw is the note's own markdown source, including its heading but
-	// excluding the source of any children.
-	Raw string
+	Raw      string
 }
 
-// New creates a new, empty Note with the given title.
 func New(title string) Note {
 	return Note{
 		Title: title,
@@ -97,9 +82,7 @@ func Slug(input string) string {
 	return strings.Trim(slug, "-")
 }
 
-// Slug returns a URL-friendly identifier for the note. Daily notes are
-// identified by their date alone, child notes by the date of their parent
-// followed by their title, and standalone notes by their title. Slugs are not
+// Slug returns a URL-friendly identifier for the note. Slugs are not
 // necessarily unique, see DuplicateSlugs.
 func (n Note) Slug() string {
 	date := ""
@@ -151,28 +134,23 @@ func (n Note) Excerpt() string {
 	return strings.Join(words, " ")
 }
 
-// IsEmpty reports whether the note has no content besides its title heading.
 func (n Note) IsEmpty() bool {
 	return len(n.Content()) == 0
 }
 
-// IsDailyNote reports whether the note is a daily note.
 func (n Note) IsDailyNote() bool {
 	return n.Kind == KindDaily
 }
 
-// IsChildNote reports whether the note is a child note.
 func (n Note) IsChildNote() bool {
 	return n.Kind == KindChild
 }
 
-// IsStandalone reports whether the note is not tied to a particular day.
 func (n Note) IsStandalone() bool {
 	return n.Kind == KindStandalone
 }
 
-// String returns the note's raw markdown source, including that of any
-// children.
+// String returns the note's raw markdown source (including children).
 func (n Note) String() string {
 	var raw strings.Builder
 	raw.WriteString(n.Raw)
