@@ -15,9 +15,9 @@ var templatesFS embed.FS
 
 type data[T any] struct {
 	CurrentURL string
-	NotesMeta []noteMeta
-	Notes []note.Note
-	Tags  []string
+	NotesMeta  []noteMeta
+	Notes      []note.Note
+	Tags       []string
 
 	Title string
 	Data  T
