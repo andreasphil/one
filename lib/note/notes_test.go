@@ -342,6 +342,20 @@ func TestResolveSlug(t *testing.T) {
 			expectFound: true,
 		},
 		{
+			name:        "full slug picks a specific child note",
+			notes:       notes,
+			target:      "2026-01-31-rehearsal",
+			expected:    "2026-01-31-rehearsal",
+			expectFound: true,
+		},
+		{
+			name:        "full slug resolves a daily note",
+			notes:       notes,
+			target:      "2026-02-01",
+			expected:    "2026-02-01",
+			expectFound: true,
+		},
+		{
 			name:        "no match falls back to the slugified target",
 			notes:       notes,
 			target:      "Some Other Note",

@@ -80,16 +80,18 @@ func FindBySlug(notes []Note, slug string) (Note, bool) {
 	})
 }
 
-// ResolveSlug returns the slug of the note whose title matches target along
-// with true, ignoring case and any characters that slugs do not preserve. If
-// several notes match, the first one in depth-first, pre-order wins. If no
-// note matches, it returns the slugified target and false, so that links to
-// notes that do not exist point at where the note would live.
+// ResolveSlug returns the slug of the note matching target along with true,
+// ignoring case and any characters that slugs do not preserve. A note matches
+// if either its title or its own slug matches, so that a note can also be
+// linked by the slug shown in its URL. If several notes match, the first one
+// in depth-first, pre-order wins. If no note matches, it returns the slugified
+// target and false, so that links to notes that do not exist point at where
+// the note would live.
 func ResolveSlug(notes []Note, target string) (string, bool) {
 	slug := Slug(target)
 
 	n, found := find(notes, func(note Note) bool {
-		return Slug(note.Title) == slug
+		return Slug(note.Title) == slug || note.Slug() == slug
 	})
 
 	if !found {
