@@ -30,6 +30,7 @@ export function init() {
 
   /** @type {import("../lib/commands.js").Command[]} */
   const commands = [
+    // Navigation
     {
       id: "open:search",
       name: "Search",
@@ -53,6 +54,18 @@ export function init() {
       groupName: "Open",
       icon: icon("Calendar"),
       action: newNavigationAction(`/notes/${new Date().toISOString().substring(0, 10)}/`),
+    },
+
+    // Utils
+    {
+      id: "reveal-in-sidebar",
+      name: "Reveal in sidebar",
+      groupName: "App",
+      icon: icon("Pipette"),
+      action: () => {
+        const current = document.querySelector('[aria-current="page"]');
+        current.scrollIntoView({ behavior: "smooth", block: "center" });
+      },
     },
   ];
 
