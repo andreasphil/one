@@ -24,9 +24,9 @@
         "{{ .Data.Query }}"
       </output>
 
-      <div has-fallback="{{ if not (len .Data.Results) }}empty{{ end }}">
+      <div has-fallback>
         <ul class="search-results">
-          {{ range $i, $result := .Data.Results }}
+          {{- range $i, $result := .Data.Results -}}
             <li>
               <header>
                 <a href="/notes/{{ .Slug }}/">{{ $result.Title }}</a>
@@ -40,7 +40,7 @@
                 {{ $result.HTML }}
               </div>
             </li>
-          {{ end }}
+          {{- end -}}
         </ul>
         <div fallback-for="empty">
           <p>{{ template "search.svg" }}</p>
