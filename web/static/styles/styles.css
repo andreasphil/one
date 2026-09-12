@@ -43,6 +43,8 @@
     --disabled-opacity: 1;
     --prose-font-size: clamp(14px, 0.417vw + 8px, 16px);
 
+    hyphens: auto;
+
     h1 {
       font-variant-numeric: tabular-nums;
     }
@@ -70,6 +72,7 @@
   .card {
     border: var(--border-width) solid var(--c-border);
     box-shadow: none;
+    hyphens: auto;
   }
 }
 
