@@ -15,11 +15,11 @@ func TestTagExtension(t *testing.T) {
 
 	type testcase struct {
 		name     string
-		in       string
+		input    string
 		expected string
 	}
 
-	tests := []testcase{
+	testcases := []testcase{
 		{"simple", "#world", `<p><a class="tag" href="/tags/world/">world</a></p>`},
 		{"underscore", "#my_tag", `<p><a class="tag" href="/tags/my_tag/">my_tag</a></p>`},
 		{"unicode", "#grüße", `<p><a class="tag" href="/tags/gr%C3%BC%C3%9Fe/">grüße</a></p>`},
@@ -31,18 +31,17 @@ func TestTagExtension(t *testing.T) {
 		{"in parens", "(#foo)", `<p>(#foo)</p>`},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			var buf bytes.Buffer
 
-			src := []byte(tc.in)
+			src := []byte(tc.input)
 			if err := r.Render(&buf, src, p.Parse(src)); err != nil {
-				t.Fatal(err)
+				t.Fatalf("Render(%q) error = %v", tc.input, err)
 			}
 
-			result := bytes.TrimSpace(buf.Bytes())
-			if string(result) != tc.expected {
-				t.Errorf("expected %s, got %s", tc.expected, result)
+			if got := string(bytes.TrimSpace(buf.Bytes())); got != tc.expected {
+				t.Errorf("Render(%q) = %q, want %q", tc.input, got, tc.expected)
 			}
 		})
 	}

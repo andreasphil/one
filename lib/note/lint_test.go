@@ -6,6 +6,7 @@ import (
 
 	"github.com/andreasphil/one/lib/note"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 func TestDuplicateSlugs(t *testing.T) {
@@ -82,9 +83,10 @@ func TestDuplicateSlugs(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := note.DuplicateSlugs(tc.notes)
-			if !cmp.Equal(result, tc.expected) {
-				t.Errorf("expected %v, got %v", tc.expected, result)
+			got := note.DuplicateSlugs(tc.notes)
+
+			if diff := cmp.Diff(tc.expected, got, cmpopts.EquateEmpty()); diff != "" {
+				t.Errorf("DuplicateSlugs() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
@@ -137,9 +139,8 @@ func TestCountEmptyTitles(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := note.CountEmptyTitles(tc.notes)
-			if result != tc.expected {
-				t.Errorf("expected %v, got %v", tc.expected, result)
+			if got := note.CountEmptyTitles(tc.notes); got != tc.expected {
+				t.Errorf("CountEmptyTitles() = %d, want %d", got, tc.expected)
 			}
 		})
 	}
@@ -204,13 +205,13 @@ func TestEmptyNotes(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			var titles []string
+			var got []string
 			for _, n := range note.EmptyNotes(tc.notes) {
-				titles = append(titles, n.Title)
+				got = append(got, n.Title)
 			}
 
-			if !cmp.Equal(titles, tc.expected) {
-				t.Errorf("expected %v, got %v", tc.expected, titles)
+			if diff := cmp.Diff(tc.expected, got, cmpopts.EquateEmpty()); diff != "" {
+				t.Errorf("EmptyNotes() titles mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}

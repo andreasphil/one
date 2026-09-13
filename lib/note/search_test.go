@@ -6,6 +6,7 @@ import (
 
 	"github.com/andreasphil/one/lib/note"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 func searchResultTitles(notes []note.Note) []string {
@@ -17,12 +18,12 @@ func searchResultTitles(notes []note.Note) []string {
 	return titles
 }
 
-func parseForSearch(t *testing.T, input string) []note.Note {
+func parseNotes(t *testing.T, input string) []note.Note {
 	t.Helper()
 
 	notes, err := note.Parse(strings.NewReader(input))
 	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
+		t.Fatalf("Parse() error = %v", err)
 	}
 
 	return notes
@@ -127,17 +128,12 @@ func TestContaining(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			notes := parseForSearch(t, searchFixture)
+			notes := parseNotes(t, searchFixture)
 
-			result := searchResultTitles(note.Containing(notes, tc.query))
+			got := searchResultTitles(note.Containing(notes, tc.query))
 
-			if len(result) != len(tc.expected) {
-				t.Fatalf("expected %v matches %v, got %v matches %v",
-					len(tc.expected), tc.expected, len(result), result)
-			}
-
-			if !cmp.Equal(result, tc.expected) {
-				t.Errorf("expected %v, got %v", tc.expected, result)
+			if diff := cmp.Diff(tc.expected, got, cmpopts.EquateEmpty()); diff != "" {
+				t.Errorf("Containing(notes, %q) mismatch (-want +got):\n%s", tc.query, diff)
 			}
 		})
 	}
@@ -161,15 +157,15 @@ About x.
 Also about x.
 `
 
-	notes := parseForSearch(t, input)
+	notes := parseNotes(t, input)
 
-	result := searchResultTitles(note.Containing(notes, "x"))
-	expected := []string{
+	got := searchResultTitles(note.Containing(notes, "x"))
+	want := []string{
 		"01.01.2026", "Child 1", "Child 2", "02.01.2026",
 	}
 
-	if !cmp.Equal(result, expected) {
-		t.Errorf("expected %v, got %v", expected, result)
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("Containing(notes, \"x\") mismatch (-want +got):\n%s", diff)
 	}
 }
 
@@ -204,12 +200,12 @@ Matching everything is fun.
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			notes := parseForSearch(t, input)
+			notes := parseNotes(t, input)
 
-			result := searchResultTitles(note.Containing(notes, tc.query))
+			got := searchResultTitles(note.Containing(notes, tc.query))
 
-			if !cmp.Equal(result, tc.expected) {
-				t.Errorf("expected %v, got %v", tc.expected, result)
+			if diff := cmp.Diff(tc.expected, got, cmpopts.EquateEmpty()); diff != "" {
+				t.Errorf("Containing(notes, %q) mismatch (-want +got):\n%s", tc.query, diff)
 			}
 		})
 	}
@@ -217,31 +213,29 @@ Matching everything is fun.
 
 func TestContainingHandlesEmptyInput(t *testing.T) {
 	t.Run("empty slice", func(t *testing.T) {
-		result := note.Containing([]note.Note{}, "any")
-		if len(result) != 0 {
-			t.Errorf("expected no matches, got %v", searchResultTitles(result))
+		if got := note.Containing([]note.Note{}, "any"); len(got) != 0 {
+			t.Errorf("Containing([], \"any\") = %v, want no matches", searchResultTitles(got))
 		}
 	})
 
 	t.Run("nil slice", func(t *testing.T) {
-		result := note.Containing(nil, "any")
-		if len(result) != 0 {
-			t.Errorf("expected no matches, got %v", searchResultTitles(result))
+		if got := note.Containing(nil, "any"); len(got) != 0 {
+			t.Errorf("Containing(nil, \"any\") = %v, want no matches", searchResultTitles(got))
 		}
 	})
 }
 
 func TestContainingDoesNotModifyInput(t *testing.T) {
-	notes := parseForSearch(t, searchFixture)
-	before := parseForSearch(t, searchFixture)
+	notes := parseNotes(t, searchFixture)
+	before := parseNotes(t, searchFixture)
 
 	note.Containing(notes, "milk")
 
-	if !cmp.Equal(searchResultTitles(notes), searchResultTitles(before)) {
-		t.Errorf("expected input to be unchanged, got %v", searchResultTitles(notes))
+	if diff := cmp.Diff(searchResultTitles(before), searchResultTitles(notes)); diff != "" {
+		t.Errorf("Containing() modified its input (-before +after):\n%s", diff)
 	}
 
-	if len(notes[2].Children) != len(before[2].Children) {
-		t.Errorf("expected children to be unchanged, got %v", notes[2].Children)
+	if got, want := len(notes[2].Children), len(before[2].Children); got != want {
+		t.Errorf("Containing() changed children = %d, want %d", got, want)
 	}
 }

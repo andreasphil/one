@@ -1,29 +1,43 @@
 package web_test
 
 import (
+	"flag"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/andreasphil/one/lib/note"
 	"github.com/andreasphil/one/web"
+	"github.com/google/go-cmp/cmp"
 )
+
+var update = flag.Bool("update", false, "update the golden files in testdata/")
 
 type fakeNotesProvider []note.Note
 
 func (f fakeNotesProvider) Notes() []note.Note { return f }
 
-func newTestRouter(t *testing.T, markdown string) (http.Handler, []note.Note) {
+func parseNotes(t *testing.T, markdown string) []note.Note {
 	t.Helper()
 
 	notes, err := note.Parse(strings.NewReader(markdown))
 	if err != nil {
-		t.Fatalf("failed to parse test notes: %v", err)
+		t.Fatalf("Parse() error = %v", err)
 	}
 
+	return notes
+}
+
+func newTestRouter(t *testing.T, markdown string) (http.Handler, []note.Note) {
+	t.Helper()
+
+	notes := parseNotes(t, markdown)
 	router := web.NewRouter(web.RouterArgs{Notes: fakeNotesProvider(notes)})
+
 	return router, notes
 }
 
@@ -41,8 +55,38 @@ func assertContainsAll(t *testing.T, body string, want ...string) {
 
 	for _, w := range want {
 		if !strings.Contains(body, w) {
-			t.Errorf("expected body to contain %q, got:\n%s", w, body)
+			t.Errorf("body does not contain %q, got:\n%s", w, body)
 		}
+	}
+}
+
+// assertGolden compares a rendered page against the file of the same name in
+// testdata/. Run `go test ./web -update` to accept a change, then review the
+// resulting diff in git — that review is what makes these tests worth having.
+func assertGolden(t *testing.T, name string, got string) {
+	t.Helper()
+
+	path := filepath.Join("testdata", name)
+
+	if *update {
+		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+			t.Fatalf("MkdirAll(%q) error = %v", filepath.Dir(path), err)
+		}
+
+		if err := os.WriteFile(path, []byte(got), 0o644); err != nil {
+			t.Fatalf("WriteFile(%q) error = %v", path, err)
+		}
+
+		return
+	}
+
+	want, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("ReadFile(%q) error = %v (run `go test ./web -update` to create it)", path, err)
+	}
+
+	if diff := cmp.Diff(string(want), got); diff != "" {
+		t.Errorf("%s mismatch (-want +got), run `go test ./web -update` to accept:\n%s", path, diff)
 	}
 }
 
@@ -52,7 +96,7 @@ func mainOf(t *testing.T, body string) string {
 	start := strings.Index(body, "<main>")
 	end := strings.Index(body, "</main>")
 	if start < 0 || end < start {
-		t.Fatalf("expected body to contain a main element, got:\n%s", body)
+		t.Fatalf("body has no <main> element, got:\n%s", body)
 	}
 
 	return body[start:end]
@@ -64,11 +108,11 @@ func TestRootRedirectsToNotesList(t *testing.T) {
 	rec := get(t, router, "/")
 
 	if rec.Code != http.StatusTemporaryRedirect {
-		t.Errorf("expected status %d, got %d", http.StatusTemporaryRedirect, rec.Code)
+		t.Errorf("status = %d, want %d", rec.Code, http.StatusTemporaryRedirect)
 	}
 
 	if loc := rec.Header().Get("Location"); loc != "/notes/" {
-		t.Errorf("expected redirect to /notes/, got %q", loc)
+		t.Errorf("Location = %q, want %q", loc, "/notes/")
 	}
 }
 
@@ -78,26 +122,10 @@ func TestGetNotesListsAllNotes(t *testing.T) {
 	rec := get(t, router, "/notes/")
 
 	if rec.Code != http.StatusOK {
-		t.Fatalf("expected status 200, got %d", rec.Code)
+		t.Fatalf("status = %d, want %d", rec.Code, http.StatusOK)
 	}
 
-	body := rec.Body.String()
-	content := mainOf(t, body)
-
-	assertContainsAll(t, body, "<title>Notes | One</title>")
-
-	assertContainsAll(t, content,
-		`has-fallback=""`,
-		"2 notes",
-		"First note",
-		"Second note",
-		`href="/notes/first-note/"`,
-		`href="/notes/second-note/"`,
-	)
-
-	if n := strings.Count(content, `class="card"`); n != 2 {
-		t.Errorf("expected exactly 2 cards, got %d, content:\n%s", n, content)
-	}
+	assertGolden(t, "notes_list.html", rec.Body.String())
 }
 
 func TestGetNotesListsChildNotes(t *testing.T) {
@@ -106,18 +134,11 @@ func TestGetNotesListsChildNotes(t *testing.T) {
 
 	rec := get(t, router, "/notes/")
 
-	content := mainOf(t, rec.Body.String())
-
-	assertContainsAll(t, content,
-		"3 notes",
-		`href="/notes/2026-02-01/"`,
-		`href="/notes/2026-02-01-groceries-run/"`,
-		`href="/notes/reading-list/"`,
-	)
-
-	if n := strings.Count(content, `class="card"`); n != 3 {
-		t.Errorf("expected exactly 3 cards, got %d, content:\n%s", n, content)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", rec.Code, http.StatusOK)
 	}
+
+	assertGolden(t, "notes_list_with_children.html", rec.Body.String())
 }
 
 func TestNavigationListsChildNotesFlat(t *testing.T) {
@@ -137,7 +158,7 @@ func TestNavigationListsChildNotesFlat(t *testing.T) {
 	// The sidebar is flat, so it only has the list of links at the top and the
 	// list of notes below it, with nothing nested inside either.
 	if n := strings.Count(nav, "<ul>"); n != 2 {
-		t.Errorf("expected exactly 2 lists in a flat navigation, got %d:\n%s", n, nav)
+		t.Errorf("lists in the navigation = %d, want 2 (it should be flat):\n%s", n, nav)
 	}
 }
 
@@ -159,7 +180,7 @@ func TestGetNotesOmitsExcerptForEmptyNote(t *testing.T) {
 	assertContainsAll(t, content, "Empty note")
 
 	if strings.Contains(content, "clamp") {
-		t.Errorf("expected no excerpt for a note without content, got:\n%s", content)
+		t.Errorf("content has an excerpt, want none for a note without content:\n%s", content)
 	}
 }
 
@@ -174,7 +195,7 @@ func TestGetNotesShowsIcons(t *testing.T) {
 	assertContainsAll(t, content, `data-content="`+"\U0001F389"+`"`)
 
 	if n := strings.Count(content, `class="glow"`); n != 1 {
-		t.Errorf("expected exactly 1 icon, got %d, content:\n%s", n, content)
+		t.Errorf("icon = %d, want 1, content:\n%s", n, content)
 	}
 }
 
@@ -184,7 +205,7 @@ func TestGetNotesWithNoNotesShowsEmptyState(t *testing.T) {
 	rec := get(t, router, "/notes/")
 
 	if rec.Code != http.StatusOK {
-		t.Fatalf("expected status 200, got %d", rec.Code)
+		t.Fatalf("status = %d, want %d", rec.Code, http.StatusOK)
 	}
 
 	assertContainsAll(t, mainOf(t, rec.Body.String()),
@@ -201,21 +222,10 @@ func TestGetNoteRendersUndatedNote(t *testing.T) {
 	rec := get(t, router, "/notes/"+slug+"/")
 
 	if rec.Code != http.StatusOK {
-		t.Fatalf("expected status 200, got %d", rec.Code)
+		t.Fatalf("status = %d, want %d", rec.Code, http.StatusOK)
 	}
 
-	body := rec.Body.String()
-
-	assertContainsAll(t, body,
-		"<title>My Guide | One</title>",
-		"Some helpful content.",
-		"Knowledge Base",
-		"golang",
-	)
-
-	if n := strings.Count(body, `class="tag"`); n != 1 {
-		t.Errorf("expected exactly 1 tag, got %d, body:\n%s", n, body)
-	}
+	assertGolden(t, "note_undated.html", rec.Body.String())
 }
 
 func TestGetNoteRendersDailyNoteWithChild(t *testing.T) {
@@ -225,22 +235,17 @@ func TestGetNoteRendersDailyNoteWithChild(t *testing.T) {
 	rec := get(t, router, "/notes/"+root.Slug()+"/")
 
 	if rec.Code != http.StatusOK {
-		t.Fatalf("expected status 200, got %d", rec.Code)
+		t.Fatalf("status = %d, want %d", rec.Code, http.StatusOK)
 	}
 
 	body := rec.Body.String()
+
+	// The formatted date is the one piece of the page that is not literally in
+	// the fixture, so assert it by hand before pinning the rest.
 	wantDate := time.Date(2026, 2, 1, 0, 0, 0, 0, time.UTC).Format("Mon, 2. Jan 2006")
+	assertContainsAll(t, body, wantDate)
 
-	assertContainsAll(t, body,
-		wantDate,
-		"Daily content.",
-		"Also on this day",
-		"Child A",
-	)
-
-	if strings.Contains(body, `href="/notes/2026-02-01"`) {
-		t.Errorf("did not expect date to be a link on the daily note's own page, got:\n%s", body)
-	}
+	assertGolden(t, "note_daily_with_child.html", body)
 }
 
 func TestGetNoteResolvesWikiLinks(t *testing.T) {
@@ -250,7 +255,7 @@ func TestGetNoteResolvesWikiLinks(t *testing.T) {
 	rec := get(t, router, "/notes/2026-02-01/")
 
 	if rec.Code != http.StatusOK {
-		t.Fatalf("expected status 200, got %d", rec.Code)
+		t.Fatalf("status = %d, want %d", rec.Code, http.StatusOK)
 	}
 
 	assertContainsAll(t, rec.Body.String(),
@@ -267,7 +272,7 @@ func TestGetNoteChildLinksBackToParentDate(t *testing.T) {
 	rec := get(t, router, "/notes/"+child.Slug()+"/")
 
 	if rec.Code != http.StatusOK {
-		t.Fatalf("expected status 200, got %d", rec.Code)
+		t.Fatalf("status = %d, want %d", rec.Code, http.StatusOK)
 	}
 
 	body := rec.Body.String()
@@ -314,7 +319,7 @@ func TestGetNoteNotFoundReturns404(t *testing.T) {
 	rec := get(t, router, "/notes/does-not-exist/")
 
 	if rec.Code != http.StatusNotFound {
-		t.Errorf("expected status 404, got %d", rec.Code)
+		t.Errorf("status = %d, want %d", rec.Code, http.StatusNotFound)
 	}
 
 	assertContainsAll(t, rec.Body.String(), "does-not-exist")
@@ -326,7 +331,7 @@ func TestGetNoteMarksActiveNoteInNavigation(t *testing.T) {
 	rec := get(t, router, "/notes/"+notes[0].Slug()+"/")
 
 	if n := strings.Count(rec.Body.String(), `aria-current="page"`); n != 1 {
-		t.Errorf("expected exactly 1 active nav entry, got %d, body:\n%s", n, rec.Body.String())
+		t.Errorf("active nav entry = %d, want 1, body:\n%s", n, rec.Body.String())
 	}
 }
 
@@ -336,6 +341,6 @@ func TestStaticAssetsAreServed(t *testing.T) {
 	rec := get(t, router, "/static/styles/styles.css")
 
 	if rec.Code != http.StatusOK {
-		t.Errorf("expected status 200, got %d", rec.Code)
+		t.Errorf("status = %d, want %d", rec.Code, http.StatusOK)
 	}
 }

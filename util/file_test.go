@@ -13,16 +13,16 @@ func TestWriteTextFileWritesContent(t *testing.T) {
 	content := "hello, world"
 
 	if err := util.WriteTextFile(content, path, 0644); err != nil {
-		t.Fatalf("unexpected error: %v", err)
+		t.Fatalf("WriteTextFile() error = %v", err)
 	}
 
-	result, err := os.ReadFile(path)
+	got, err := os.ReadFile(path)
 	if err != nil {
-		t.Fatalf("failed to read written file: %v", err)
+		t.Fatalf("ReadFile() error = %v", err)
 	}
 
-	if string(result) != content {
-		t.Errorf("unexpected content: got %q, want %q", result, content)
+	if string(got) != content {
+		t.Errorf("file content = %q, want %q", got, content)
 	}
 }
 
@@ -31,16 +31,16 @@ func TestWriteTextFileSetsPermissions(t *testing.T) {
 	perms := os.FileMode(0600)
 
 	if err := util.WriteTextFile("content", path, perms); err != nil {
-		t.Fatalf("unexpected error: %v", err)
+		t.Fatalf("WriteTextFile() error = %v", err)
 	}
 
 	info, err := os.Stat(path)
 	if err != nil {
-		t.Fatalf("failed to stat written file: %v", err)
+		t.Fatalf("Stat() error = %v", err)
 	}
 
-	if info.Mode().Perm() != perms {
-		t.Errorf("unexpected permissions: got %v, want %v", info.Mode().Perm(), perms)
+	if got := info.Mode().Perm(); got != perms {
+		t.Errorf("file mode = %v, want %v", got, perms)
 	}
 }
 
@@ -48,32 +48,32 @@ func TestWriteTextFileOverwritesExisting(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "file.txt")
 
 	if err := os.WriteFile(path, []byte("old content"), 0600); err != nil {
-		t.Fatalf("failed to seed existing file: %v", err)
+		t.Fatalf("WriteFile() error seeding the existing file = %v", err)
 	}
 
 	newContent := "new content"
 	newPerms := os.FileMode(0644)
 
 	if err := util.WriteTextFile(newContent, path, newPerms); err != nil {
-		t.Fatalf("unexpected error: %v", err)
+		t.Fatalf("WriteTextFile() error = %v", err)
 	}
 
-	result, err := os.ReadFile(path)
+	got, err := os.ReadFile(path)
 	if err != nil {
-		t.Fatalf("failed to read written file: %v", err)
+		t.Fatalf("ReadFile() error = %v", err)
 	}
 
-	if string(result) != newContent {
-		t.Errorf("unexpected content: got %q, want %q", result, newContent)
+	if string(got) != newContent {
+		t.Errorf("file content = %q, want %q", got, newContent)
 	}
 
 	info, err := os.Stat(path)
 	if err != nil {
-		t.Fatalf("failed to stat written file: %v", err)
+		t.Fatalf("Stat() error = %v", err)
 	}
 
-	if info.Mode().Perm() != newPerms {
-		t.Errorf("unexpected permissions: got %v, want %v", info.Mode().Perm(), newPerms)
+	if got := info.Mode().Perm(); got != newPerms {
+		t.Errorf("file mode = %v, want %v", got, newPerms)
 	}
 }
 
@@ -82,16 +82,16 @@ func TestWriteTextFileNoLeftoverTempFile(t *testing.T) {
 	path := filepath.Join(dir, "file.txt")
 
 	if err := util.WriteTextFile("content", path, 0644); err != nil {
-		t.Fatalf("unexpected error: %v", err)
+		t.Fatalf("WriteTextFile() error = %v", err)
 	}
 
 	entries, err := os.ReadDir(dir)
 	if err != nil {
-		t.Fatalf("failed to read directory: %v", err)
+		t.Fatalf("ReadDir() error = %v", err)
 	}
 
 	if len(entries) != 1 || entries[0].Name() != "file.txt" {
-		t.Errorf("expected only the target file in directory, got: %v", entries)
+		t.Errorf("directory contents = %v, want only file.txt", entries)
 	}
 }
 
@@ -99,10 +99,10 @@ func TestWriteTextFileErrorOnMissingDir(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "nope", "file.txt")
 
 	if err := util.WriteTextFile("content", path, 0644); err == nil {
-		t.Errorf("expected error for missing directory, got nil")
+		t.Errorf("WriteTextFile() error = nil, want an error for the missing directory")
 	}
 
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
-		t.Errorf("expected no file to be created, stat returned: %v", err)
+		t.Errorf("Stat() error = %v, want a not-exist error", err)
 	}
 }

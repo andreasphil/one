@@ -31,11 +31,11 @@ func TestWikiLinkExtension(t *testing.T) {
 
 	type testcase struct {
 		name     string
-		in       string
+		input    string
 		expected string
 	}
 
-	tests := []testcase{
+	testcases := []testcase{
 		{"simple", "[[a thing]]", `<p><a class="wikilink unresolved" href="/notes/a-thing/">a thing</a></p>`},
 		{"title case", "[[A Thing]]", `<p><a class="wikilink unresolved" href="/notes/a-thing/">A Thing</a></p>`},
 		{"unicode", "[[Äpfel]]", `<p><a class="wikilink unresolved" href="/notes/%C3%A4pfel/">Äpfel</a></p>`},
@@ -52,18 +52,17 @@ func TestWikiLinkExtension(t *testing.T) {
 		{"across lines", "[[a thing\n]]", "<p>[[a thing\n]]</p>"},
 	}
 
-	for _, tc := range tests {
+	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			var buf bytes.Buffer
 
-			src := []byte(tc.in)
+			src := []byte(tc.input)
 			if err := r.Render(&buf, src, p.Parse(src)); err != nil {
-				t.Fatal(err)
+				t.Fatalf("Render(%q) error = %v", tc.input, err)
 			}
 
-			result := bytes.TrimSpace(buf.Bytes())
-			if string(result) != tc.expected {
-				t.Errorf("expected %s, got %s", tc.expected, result)
+			if got := string(bytes.TrimSpace(buf.Bytes())); got != tc.expected {
+				t.Errorf("Render(%q) = %q, want %q", tc.input, got, tc.expected)
 			}
 		})
 	}

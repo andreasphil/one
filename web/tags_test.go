@@ -16,11 +16,11 @@ func TestGetTagRedirectsToSearch(t *testing.T) {
 	rec := get(t, router, "/tags/groceries/")
 
 	if rec.Code != http.StatusTemporaryRedirect {
-		t.Fatalf("expected status %d, got %d", http.StatusTemporaryRedirect, rec.Code)
+		t.Fatalf("status = %d, want %d", rec.Code, http.StatusTemporaryRedirect)
 	}
 
 	if loc := rec.Header().Get("Location"); loc != "/search/?query=%23groceries" {
-		t.Errorf("expected redirect to the search for the tag, got %q", loc)
+		t.Errorf("Location = %q, want %q", loc, "/search/?query=%23groceries")
 	}
 }
 
@@ -30,11 +30,11 @@ func TestGetTagRedirectsToTrailingSlash(t *testing.T) {
 	rec := get(t, router, "/tags/groceries")
 
 	if rec.Code != http.StatusTemporaryRedirect {
-		t.Fatalf("expected status %d, got %d", http.StatusTemporaryRedirect, rec.Code)
+		t.Fatalf("status = %d, want %d", rec.Code, http.StatusTemporaryRedirect)
 	}
 
 	if loc := rec.Header().Get("Location"); loc != "/tags/groceries/" {
-		t.Errorf("expected redirect to /tags/groceries/, got %q", loc)
+		t.Errorf("Location = %q, want %q", loc, "/tags/groceries/")
 	}
 }
 
@@ -44,7 +44,7 @@ func TestGetNoteLinksTagsToTagRoute(t *testing.T) {
 	rec := get(t, router, "/notes/groceries/")
 
 	if rec.Code != http.StatusOK {
-		t.Fatalf("expected status 200, got %d", rec.Code)
+		t.Fatalf("status = %d, want %d", rec.Code, http.StatusOK)
 	}
 
 	assertContainsAll(t, rec.Body.String(), `<a class="tag" href="/tags/groceries/">`)

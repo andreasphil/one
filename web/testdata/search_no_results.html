@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="oklch(100% 0 325)" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="oklch(18% 0.012 325)" media="(prefers-color-scheme: dark)" />
+    <link rel="apple-touch-icon" href="/static/public/apple-touch-icon.png" />
+    <link rel="icon" href="/static/public/favicon.png" sizes="any" />
+    <link rel="manifest" href="/static/manifest.json" />
+    <title>Search for &#34;nonexistent&#34; | One</title>
+
+    
+    <link rel="stylesheet" href="/static/styles/styles.css" />
+
+    
+    <script type="importmap">
+      {
+        "imports": {
+          "@andreasphil/command-bar": "/static/common/command-bar/commandBar.js"
+        }
+      }
+    </script>
+
+    
+    <script src="/static/scripts/app.js" type="module"></script>
+  </head>
+
+  <body>
+    
+  <div class="layout">
+    <aside id="sidebar">
+      
+  <nav class="navigation">
+  <strong>One</strong>
+
+  <ul>
+    <li>
+      <button variant="muted" commandfor="cmd" command="--open">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-command-icon lucide-command"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"/></svg>
+
+        Go to anything
+      </button>
+    </li>
+    <li>
+      <a
+        href="/notes/"
+        class="color-variant"
+        
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sticky-note-icon lucide-sticky-note"><path d="M21 9a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"/><path d="M15 3v5a1 1 0 0 0 1 1h5"/></svg>
+        Notes
+      </a>
+    </li>
+    <li>
+      <a
+        href="/search/"
+        class="color-variant"
+        aria-current="page"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        Search
+      </a>
+    </li>
+  </ul>
+
+  <ul>
+    <li class="caps font-size-small color-primary font-weight-medium">4 Notes</li>
+    
+      <li>
+        
+<a
+  href="/notes/groceries/"
+  title="Groceries"
+  
+>
+  <span class="clamp">
+    Groceries
+    
+  </span>
+</a>
+
+      </li>
+    
+      <li>
+        
+<a
+  href="/notes/reading-list/"
+  title="Reading list"
+  
+>
+  <span class="clamp">
+    Reading list
+    
+  </span>
+</a>
+
+      </li>
+    
+      <li>
+        
+<a
+  href="/notes/2026-02-01/"
+  title="01.02.2026"
+  
+>
+  <span class="clamp">
+    01.02.2026
+    
+      <span class="color-variant">
+        Sun
+      </span>
+    
+  </span>
+</a>
+
+      </li>
+    
+      <li>
+        
+<a
+  href="/notes/2026-02-01-groceries-run/"
+  title="Groceries run"
+  
+>
+  <span class="clamp">
+    Groceries run
+    
+  </span>
+</a>
+
+      </li>
+    
+  </ul>
+</nav>
+
+
+    </aside>
+    <script src="/static/scripts/features/blocking/sidebarScroll.js"></script>
+
+    <main>
+      
+  <div class="search-view">
+    <form action="/search/">
+      <label for="searchbox" class="visually-hidden">Search</label>
+      <input
+        id="searchbox"
+        autofocus
+        name="query"
+        placeholder="Search..."
+        type="search"
+        value="nonexistent"
+        data-focuskey="/"
+      />
+    </form>
+
+    
+      <output class="caps font-size-small color-primary font-weight-medium">
+        0 results for
+        "nonexistent"
+      </output>
+
+      <div has-fallback>
+        <ul class="search-results"></ul>
+        <div fallback-for="empty">
+          <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg></p>
+          <p>No search results.</p>
+        </div>
+      </div>
+    
+  </div>
+
+    </main>
+  </div>
+
+
+    <command-bar id="cmd"></command-bar>
+
+    <template id="clientState.Icons.Calendar"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-icon lucide-calendar"><path d="M8 2v3"/><path d="M16 2v3"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg></template>
+<template id="clientState.Icons.Pipette"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pipette"><path d="m12 9-8.414 8.414A2 2 0 0 0 3 18.828v1.344a2 2 0 0 1-.586 1.414A2 2 0 0 1 3.828 21h1.344a2 2 0 0 0 1.414-.586L15 12"/><path d="m18 9 .4.4a1 1 0 1 1-3 3l-3.8-3.8a1 1 0 1 1 3-3l.4.4 3.4-3.4a1 1 0 1 1 3 3z"/><path d="m2 22 .414-.414"/></svg></template>
+<template id="clientState.Icons.Search"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg></template>
+<template id="clientState.Icons.StickyNote"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sticky-note-icon lucide-sticky-note"><path d="M21 9a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"/><path d="M15 3v5a1 1 0 0 0 1 1h5"/></svg></template>
+<template id="clientState.Icons.Tag"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tag-icon lucide-tag"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></svg></template>
+
+<script type="application/json" id="clientState.NotesMeta">
+  [{"Title":"Groceries","Slug":"groceries"},{"Title":"Reading list","Slug":"reading-list"},{"Title":"01.02.2026","Slug":"2026-02-01"},{"Title":"Groceries run","Slug":"2026-02-01-groceries-run"}]
+</script><script type="application/json" id="clientState.Tags">
+  []
+</script>
+
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+

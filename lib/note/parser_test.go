@@ -1,6 +1,7 @@
 package note_test
 
 import (
+	"errors"
 	"strings"
 	"testing"
 	"time"
@@ -8,6 +9,7 @@ import (
 	"github.com/andreasphil/one/lib/note"
 	"github.com/andreasphil/one/util"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 func TestParseSplitsNotesOnHeadings(t *testing.T) {
@@ -206,24 +208,21 @@ func TestParseSplitsNotesOnHeadings(t *testing.T) {
 		},
 	}
 
-	ignoreTags := cmp.FilterPath(func(p cmp.Path) bool {
-		return strings.Contains(p.String(), "Tags") || strings.Contains(p.String(), "Icon")
-	}, cmp.Ignore())
+	ignoreTags := cmpopts.IgnoreFields(note.Note{}, "Tags", "Icon")
 
-	for _, i := range testcases {
-		t.Run(i.name, func(t *testing.T) {
-			result, err := note.Parse(strings.NewReader(i.input))
-
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := note.Parse(strings.NewReader(tc.input))
 			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
+				t.Fatalf("Parse() error = %v", err)
 			}
 
-			if len(result) != len(i.expected) {
-				t.Errorf("got %d notes, expected %v", len(result), len(i.expected))
+			if len(result) != len(tc.expected) {
+				t.Fatalf("Parse(%q) = %d notes, want %d", tc.input, len(result), len(tc.expected))
 			}
 
-			if diff := cmp.Diff(i.expected, result, ignoreTags); diff != "" {
-				t.Errorf("note mismatch:\n%s", diff)
+			if diff := cmp.Diff(tc.expected, result, ignoreTags); diff != "" {
+				t.Errorf("Parse(%q) mismatch (-want +got):\n%s", tc.input, diff)
 			}
 		})
 	}
@@ -271,15 +270,19 @@ func TestParseOnlyTreatsExactDatesAsDailyNotes(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			result, err := note.Parse(strings.NewReader(tc.input))
 			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
+				t.Fatalf("Parse() error = %v", err)
+			}
+
+			if len(result) == 0 {
+				t.Fatalf("Parse(%q) = 0 notes, want at least 1", tc.input)
 			}
 
 			if got := result[0].Kind; got != tc.expectedKind {
-				t.Errorf("expected kind %v, got %v", tc.expectedKind, got)
+				t.Errorf("Parse(%q) kind = %v, want %v", tc.input, got, tc.expectedKind)
 			}
 
 			if got := !result[0].Date.IsZero(); got != tc.expectDate {
-				t.Errorf("expected date to be set: %v, got %v", tc.expectDate, got)
+				t.Errorf("Parse(%q) has date = %v, want %v", tc.input, got, tc.expectDate)
 			}
 		})
 	}
@@ -289,72 +292,108 @@ func TestParseOnlyCreatesChildrenInDailyNotes(t *testing.T) {
 	t.Run("creates children in a daily note", func(t *testing.T) {
 		result, err := note.Parse(strings.NewReader("# 01.01.2026\n\n## Standup\n\nLine 1\n"))
 		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
+			t.Fatalf("Parse() error = %v", err)
 		}
 
 		if len(result[0].Children) != 1 {
-			t.Fatalf("expected 1 child, got %v", len(result[0].Children))
+			t.Fatalf("Children = %d, want 1", len(result[0].Children))
 		}
 
 		child := result[0].Children[0]
 
 		if !child.IsChildNote() {
-			t.Errorf("expected child to be a child note, got kind %v", child.Kind)
+			t.Errorf("child kind = %v, want %v", child.Kind, note.KindChild)
 		}
 
 		if !child.Date.Equal(result[0].Date) {
-			t.Errorf("expected child to inherit %v, got %v", result[0].Date, child.Date)
+			t.Errorf("child Date = %v, want %v", child.Date, result[0].Date)
 		}
 	})
 
 	t.Run("does not create children in a note that only starts with a date", func(t *testing.T) {
 		result, err := note.Parse(strings.NewReader("# 01.01.2026 Standup\n\n## Not a child\n\nLine 1\n"))
 		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
+			t.Fatalf("Parse() error = %v", err)
 		}
 
 		if len(result[0].Children) != 0 {
-			t.Errorf("expected no children, got %v", result[0].Children)
+			t.Errorf("Children = %d, want 0: %v", len(result[0].Children), result[0].Children)
 		}
 	})
 
 	t.Run("gives a child whose title is a date its own slug", func(t *testing.T) {
 		result, err := note.Parse(strings.NewReader("# 02.01.2026\n\n## 01.01.2026\n\nLine 1\n"))
 		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
+			t.Fatalf("Parse() error = %v", err)
+		}
+
+		if len(result[0].Children) == 0 {
+			t.Fatalf("Children = 0, want 1")
 		}
 
 		child := result[0].Children[0]
 
 		if child.IsDailyNote() {
-			t.Errorf("expected child not to be a daily note")
+			t.Errorf("child IsDailyNote() = true, want false")
 		}
 
 		if child.Slug() == result[0].Slug() {
-			t.Errorf("expected child slug to differ from its parent, got %q", child.Slug())
+			t.Errorf("child Slug() = %q, want it to differ from its parent", child.Slug())
 		}
 	})
 }
 
-func TestParseRequiresLeadingHeading(t *testing.T) {
-	input := "test\n\n# Note 1"
-	_, err := note.Parse(strings.NewReader(input))
+func TestParseErrors(t *testing.T) {
+	type testcase struct {
+		name    string
+		input   string
+		wantErr error
+	}
 
-	if err == nil {
-		t.Errorf("expected to return error when heading is missing")
+	testcases := []testcase{
+		{
+			name:    "content before the first heading",
+			input:   "test\n\n# Note 1",
+			wantErr: note.ErrMissingHeading,
+		},
+		{
+			name:    "unclosed fenced code block",
+			input:   "# Note 1\n\n```\ncode block",
+			wantErr: note.ErrUnclosedFence,
+		},
+		{
+			name:  "closed fenced code block",
+			input: "# Note 1\n\n```\ncode block\n```\n",
+		},
+		{
+			name:  "heading only",
+			input: "# Note 1\n",
+		},
+		{
+			name:  "empty input",
+			input: "",
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := note.Parse(strings.NewReader(tc.input))
+
+			if !errors.Is(err, tc.wantErr) {
+				t.Errorf("Parse(%q) error = %v, want %v", tc.input, err, tc.wantErr)
+			}
+		})
 	}
 }
 
-func TestParseRequiresContent(t *testing.T) {
-	input := ""
-	result, err := note.Parse(strings.NewReader(input))
-
+func TestParseReturnsNoNotesForEmptyInput(t *testing.T) {
+	result, err := note.Parse(strings.NewReader(""))
 	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
+		t.Fatalf("Parse() error = %v", err)
 	}
 
 	if len(result) != 0 {
-		t.Errorf("expected to return empty list when input is empty")
+		t.Errorf("Parse(\"\") = %d notes, want 0", len(result))
 	}
 }
 
@@ -413,18 +452,19 @@ func TestParseExtractsTags(t *testing.T) {
 		},
 	}
 
-	exportSetInternals := cmp.AllowUnexported(util.NewSet[note.Tag]())
-
-	for _, i := range testcases {
-		t.Run(i.name, func(t *testing.T) {
-			result, err := note.Parse(strings.NewReader(i.input))
-
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := note.Parse(strings.NewReader(tc.input))
 			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
+				t.Fatalf("Parse() error = %v", err)
 			}
 
-			if diff := cmp.Diff(i.expected, result[0].Tags, exportSetInternals); diff != "" {
-				t.Errorf("tag list mismatch:\n%s", diff)
+			if len(result) == 0 {
+				t.Fatalf("Parse(%q) = 0 notes, want at least 1", tc.input)
+			}
+
+			if diff := cmp.Diff(tc.expected, result[0].Tags); diff != "" {
+				t.Errorf("Parse(%q) tags mismatch (-want +got):\n%s", tc.input, diff)
 			}
 		})
 	}
@@ -470,32 +510,21 @@ func TestParseExtractsDate(t *testing.T) {
 		},
 	}
 
-	for _, i := range testcases {
-		t.Run(i.name, func(t *testing.T) {
-			result, err := note.Parse(strings.NewReader(i.input))
-
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := note.Parse(strings.NewReader(tc.input))
 			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
+				t.Fatalf("Parse() error = %v", err)
 			}
 
-			if diff := cmp.Diff(i.expected, result[0].Date); diff != "" {
-				t.Errorf("date mismatch:\n%v", diff)
+			if len(result) == 0 {
+				t.Fatalf("Parse(%q) = 0 notes, want at least 1", tc.input)
+			}
+
+			if diff := cmp.Diff(tc.expected, result[0].Date); diff != "" {
+				t.Errorf("Parse(%q) date mismatch (-want +got):\n%s", tc.input, diff)
 			}
 		})
-	}
-}
-
-func TestParseRejectsUnclosedFence(t *testing.T) {
-	input := "# Note 1\n\n```\ncode block"
-	_, err := note.Parse(strings.NewReader(input))
-
-	if err == nil {
-		t.Errorf("expected error for unclosed fenced code block")
-	}
-
-	expectedMsg := "invalid notes file content, fenced code block was not closed"
-	if err.Error() != expectedMsg {
-		t.Errorf("expected error message %q, got %q", expectedMsg, err.Error())
 	}
 }
 
@@ -534,16 +563,19 @@ func TestParseExtractsIcon(t *testing.T) {
 		},
 	}
 
-	for _, i := range testcases {
-		t.Run(i.name, func(t *testing.T) {
-			result, err := note.Parse(strings.NewReader(i.input))
-
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := note.Parse(strings.NewReader(tc.input))
 			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
+				t.Fatalf("Parse() error = %v", err)
 			}
 
-			if diff := cmp.Diff(i.expected, result[0].Icon); diff != "" {
-				t.Errorf("icon mismatch:\n%s", diff)
+			if len(result) == 0 {
+				t.Fatalf("Parse(%q) = 0 notes, want at least 1", tc.input)
+			}
+
+			if diff := cmp.Diff(tc.expected, result[0].Icon); diff != "" {
+				t.Errorf("Parse(%q) icon mismatch (-want +got):\n%s", tc.input, diff)
 			}
 		})
 	}
@@ -584,16 +616,19 @@ func TestParseCleansUpTitle(t *testing.T) {
 		},
 	}
 
-	for _, i := range testcases {
-		t.Run(i.name, func(t *testing.T) {
-			result, err := note.Parse(strings.NewReader(i.input))
-
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := note.Parse(strings.NewReader(tc.input))
 			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
+				t.Fatalf("Parse() error = %v", err)
 			}
 
-			if diff := cmp.Diff(i.expected, result[0].Title); diff != "" {
-				t.Errorf("icon mismatch:\n%s", diff)
+			if len(result) == 0 {
+				t.Fatalf("Parse(%q) = 0 notes, want at least 1", tc.input)
+			}
+
+			if diff := cmp.Diff(tc.expected, result[0].Title); diff != "" {
+				t.Errorf("Parse(%q) title mismatch (-want +got):\n%s", tc.input, diff)
 			}
 		})
 	}
@@ -624,16 +659,19 @@ func TestParseCleansUpChildTitle(t *testing.T) {
 		},
 	}
 
-	for _, i := range testcases {
-		t.Run(i.name, func(t *testing.T) {
-			result, err := note.Parse(strings.NewReader(i.input))
-
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := note.Parse(strings.NewReader(tc.input))
 			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
+				t.Fatalf("Parse() error = %v", err)
 			}
 
-			if diff := cmp.Diff(i.expected, result[0].Children[0].Title); diff != "" {
-				t.Errorf("icon mismatch:\n%s", diff)
+			if len(result) == 0 || len(result[0].Children) == 0 {
+				t.Fatalf("Parse(%q) did not produce a child note", tc.input)
+			}
+
+			if diff := cmp.Diff(tc.expected, result[0].Children[0].Title); diff != "" {
+				t.Errorf("Parse(%q) child title mismatch (-want +got):\n%s", tc.input, diff)
 			}
 		})
 	}

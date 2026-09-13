@@ -50,9 +50,8 @@ func TestFormatNestedMap(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := util.FormatNestedMap(tc.input)
-			if result != tc.expected {
-				t.Errorf("expected %q, got %q", tc.expected, result)
+			if got := util.FormatNestedMap(tc.input); got != tc.expected {
+				t.Errorf("FormatNestedMap(%v) = %q, want %q", tc.input, got, tc.expected)
 			}
 		})
 	}
@@ -64,15 +63,13 @@ func TestFormatNestedMapMultipleKeys(t *testing.T) {
 		"two": {"2", "3"},
 	}
 
-	result := util.FormatNestedMap(input)
-
 	// Map iteration order is not stable, so compare the pairs instead of the
 	// whole string.
-	pairs := strings.Fields(result)
-	slices.Sort(pairs)
-	expected := []string{"one=1", "two=2", "two=3"}
+	got := strings.Fields(util.FormatNestedMap(input))
+	slices.Sort(got)
+	want := []string{"one=1", "two=2", "two=3"}
 
-	if !slices.Equal(pairs, expected) {
-		t.Errorf("expected %v, got %v", expected, pairs)
+	if !slices.Equal(got, want) {
+		t.Errorf("FormatNestedMap(%v) pairs = %v, want %v", input, got, want)
 	}
 }

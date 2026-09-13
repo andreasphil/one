@@ -1,4 +1,4 @@
-package web
+package web_test
 
 import (
 	"encoding/json"
@@ -8,40 +8,47 @@ import (
 
 	"github.com/andreasphil/one/lib/note"
 	"github.com/andreasphil/one/util"
+	"github.com/andreasphil/one/web"
 	"github.com/google/go-cmp/cmp"
 )
+
+func newTestMarkdownRenderer(notes []note.Note) web.MarkdownRenderer {
+	return web.NewMarkdownRenderer(func(target string) (string, bool) {
+		return note.ResolveSlug(notes, target)
+	})
+}
 
 func TestNewNoteMeta(t *testing.T) {
 	type testcase struct {
 		name     string
 		note     note.Note
-		expected noteMeta
+		expected web.NoteMeta
 	}
 
 	testcases := []testcase{
 		{
 			name:     "maps title and slug",
 			note:     note.Note{Title: "Hello World"},
-			expected: noteMeta{Title: "Hello World", Slug: "hello-world"},
+			expected: web.NoteMeta{Title: "Hello World", Slug: "hello-world"},
 		},
 		{
 			name:     "maps daily note",
 			note:     note.Note{Title: "01.02.2026", Kind: note.KindDaily, Date: time.Date(2026, 2, 1, 0, 0, 0, 0, time.UTC)},
-			expected: noteMeta{Title: "01.02.2026", Slug: "2026-02-01"},
+			expected: web.NoteMeta{Title: "01.02.2026", Slug: "2026-02-01"},
 		},
 		{
 			name:     "maps empty note",
 			note:     note.Note{},
-			expected: noteMeta{},
+			expected: web.NoteMeta{},
 		},
 	}
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := newNoteMeta(tc.note)
+			got := web.NewNoteMeta(tc.note)
 
-			if !cmp.Equal(result, tc.expected) {
-				t.Errorf("expected %+v, got %+v", tc.expected, result)
+			if diff := cmp.Diff(tc.expected, got); diff != "" {
+				t.Errorf("NewNoteMeta() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
@@ -67,9 +74,9 @@ func TestMapToNoteMeta(t *testing.T) {
 	})
 
 	t.Run("maps every note, keeping the order of the input", func(t *testing.T) {
-		result := mapToNoteMeta(notes)
+		got := web.MapToNoteMeta(notes)
 
-		expected := []noteMeta{
+		want := []web.NoteMeta{
 			{Title: "Root 1", Slug: "root-1"},
 			{Title: "01.02.2026", Slug: "2026-02-01"},
 			{Title: "Child 1", Slug: "2026-02-01-child-1"},
@@ -77,33 +84,35 @@ func TestMapToNoteMeta(t *testing.T) {
 			{Title: "Root 3", Slug: "root-3"},
 		}
 
-		if !cmp.Equal(result, expected) {
-			t.Errorf("expected %+v, got %+v", expected, result)
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("MapToNoteMeta() mismatch (-want +got):\n%s", diff)
 		}
 	})
 
 	t.Run("returns an empty slice for no notes", func(t *testing.T) {
-		for _, notes := range [][]note.Note{nil, {}} {
-			result := mapToNoteMeta(notes)
+		for name, notes := range map[string][]note.Note{"nil": nil, "empty": {}} {
+			t.Run(name, func(t *testing.T) {
+				got := web.MapToNoteMeta(notes)
 
-			if result == nil {
-				t.Fatalf("expected a non-nil slice, got nil")
-			}
+				if got == nil {
+					t.Fatalf("MapToNoteMeta(%s) = nil, want a non-nil slice", name)
+				}
 
-			if len(result) != 0 {
-				t.Errorf("expected an empty slice, got %+v", result)
-			}
+				if len(got) != 0 {
+					t.Errorf("MapToNoteMeta(%s) = %+v, want an empty slice", name, got)
+				}
+			})
 		}
 	})
 
 	t.Run("serializes an empty slice to an empty JSON array", func(t *testing.T) {
-		result, err := json.Marshal(mapToNoteMeta(nil))
+		got, err := json.Marshal(web.MapToNoteMeta(nil))
 		if err != nil {
-			t.Fatalf("expected no error, got %v", err)
+			t.Fatalf("json.Marshal() error = %v", err)
 		}
 
-		if string(result) != "[]" {
-			t.Errorf("expected %q, got %q", "[]", string(result))
+		if string(got) != "[]" {
+			t.Errorf("json.Marshal(MapToNoteMeta(nil)) = %q, want %q", got, "[]")
 		}
 	})
 }
@@ -121,56 +130,40 @@ func TestMapToTags(t *testing.T) {
 	}
 
 	t.Run("collects unique tags of notes and children without the leading #", func(t *testing.T) {
-		result := mapToTags(notes)
+		got := web.MapToTags(notes)
+		want := []string{"Idea", "recipe", "work"}
 
-		expected := []string{"Idea", "recipe", "work"}
-
-		if !cmp.Equal(result, expected) {
-			t.Errorf("expected %+v, got %+v", expected, result)
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("MapToTags() mismatch (-want +got):\n%s", diff)
 		}
 	})
 
 	t.Run("returns an empty slice for no notes", func(t *testing.T) {
-		for _, notes := range [][]note.Note{nil, {}} {
-			result := mapToTags(notes)
+		for name, notes := range map[string][]note.Note{"nil": nil, "empty": {}} {
+			t.Run(name, func(t *testing.T) {
+				got := web.MapToTags(notes)
 
-			if result == nil {
-				t.Fatalf("expected a non-nil slice, got nil")
-			}
+				if got == nil {
+					t.Fatalf("MapToTags(%s) = nil, want a non-nil slice", name)
+				}
 
-			if len(result) != 0 {
-				t.Errorf("expected an empty slice, got %+v", result)
-			}
+				if len(got) != 0 {
+					t.Errorf("MapToTags(%s) = %+v, want an empty slice", name, got)
+				}
+			})
 		}
 	})
 
 	t.Run("serializes an empty slice to an empty JSON array", func(t *testing.T) {
-		result, err := json.Marshal(mapToTags(nil))
+		got, err := json.Marshal(web.MapToTags(nil))
 		if err != nil {
-			t.Fatalf("expected no error, got %v", err)
+			t.Fatalf("json.Marshal() error = %v", err)
 		}
 
-		if string(result) != "[]" {
-			t.Errorf("expected %q, got %q", "[]", string(result))
+		if string(got) != "[]" {
+			t.Errorf("json.Marshal(MapToTags(nil)) = %q, want %q", got, "[]")
 		}
 	})
-}
-
-func newTestMarkdownRenderer(notes []note.Note) markdownRenderer {
-	return newMarkdownRenderer(func(target string) (string, bool) {
-		return note.ResolveSlug(notes, target)
-	})
-}
-
-func parseTestNotes(t *testing.T, markdown string) []note.Note {
-	t.Helper()
-
-	notes, err := note.Parse(strings.NewReader(markdown))
-	if err != nil {
-		t.Fatalf("failed to parse test notes: %v", err)
-	}
-
-	return notes
 }
 
 func TestNewSearchResult(t *testing.T) {
@@ -180,14 +173,14 @@ func TestNewSearchResult(t *testing.T) {
 	type testcase struct {
 		name     string
 		note     note.Note
-		expected searchResult
+		expected web.SearchResult
 	}
 
 	testcases := []testcase{
 		{
 			name: "maps title, slug and content",
 			note: note.Note{Title: "Groceries", Raw: "# Groceries\n\nBuy **milk**.\n"},
-			expected: searchResult{
+			expected: web.SearchResult{
 				Title: "Groceries",
 				Slug:  "groceries",
 				HTML:  "<p>Buy <strong>milk</strong>.</p>\n",
@@ -196,7 +189,7 @@ func TestNewSearchResult(t *testing.T) {
 		{
 			name: "maps the date of a child note",
 			note: note.Note{Title: "Groceries run", Kind: note.KindChild, Date: date, Raw: "## Groceries run\n"},
-			expected: searchResult{
+			expected: web.SearchResult{
 				Title: "Groceries run",
 				Slug:  "2026-02-01-groceries-run",
 				Date:  date,
@@ -205,7 +198,7 @@ func TestNewSearchResult(t *testing.T) {
 		{
 			name: "omits the date of a daily note",
 			note: note.Note{Title: "01.02.2026", Kind: note.KindDaily, Date: date, Raw: "# 01.02.2026\n"},
-			expected: searchResult{
+			expected: web.SearchResult{
 				Title: "01.02.2026",
 				Slug:  "2026-02-01",
 			},
@@ -213,41 +206,41 @@ func TestNewSearchResult(t *testing.T) {
 		{
 			name:     "maps empty note",
 			note:     note.Note{},
-			expected: searchResult{},
+			expected: web.SearchResult{},
 		},
 	}
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result, err := newSearchResult(tc.note, renderer)
+			got, err := web.NewSearchResult(tc.note, renderer)
 			if err != nil {
-				t.Fatalf("expected no error, got %v", err)
+				t.Fatalf("NewSearchResult() error = %v", err)
 			}
 
-			if !cmp.Equal(result, tc.expected) {
-				t.Errorf("expected %+v, got %+v", tc.expected, result)
+			if diff := cmp.Diff(tc.expected, got); diff != "" {
+				t.Errorf("NewSearchResult() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
 }
 
 func TestNewSearchResultResolvesWikiLinks(t *testing.T) {
-	notes := parseTestNotes(t, "# Groceries\n\nSee [[Reading list]] and [[Nonexistent]].\n\n# Reading list\n\nBooks.\n")
+	notes := parseNotes(t, "# Groceries\n\nSee [[Reading list]] and [[Nonexistent]].\n\n# Reading list\n\nBooks.\n")
 	renderer := newTestMarkdownRenderer(notes)
 
-	result, err := newSearchResult(notes[0], renderer)
+	result, err := web.NewSearchResult(notes[0], renderer)
 	if err != nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatalf("NewSearchResult() error = %v", err)
 	}
 
 	html := string(result.HTML)
 
 	if !strings.Contains(html, `<a class="wikilink" href="/notes/reading-list/">`) {
-		t.Errorf("expected a link to the existing note, got:\n%s", html)
+		t.Errorf("HTML does not link the existing note, got:\n%s", html)
 	}
 
 	if !strings.Contains(html, `<a class="wikilink unresolved" href="/notes/nonexistent/">`) {
-		t.Errorf("expected the link to the missing note to be marked unresolved, got:\n%s", html)
+		t.Errorf("HTML does not mark the link to the missing note unresolved, got:\n%s", html)
 	}
 }
 
@@ -255,39 +248,41 @@ func TestMapToSearchResults(t *testing.T) {
 	renderer := newTestMarkdownRenderer(nil)
 
 	t.Run("maps each note to a result, without flattening children", func(t *testing.T) {
-		notes := parseTestNotes(t, "# Groceries\n\nBuy milk.\n\n## Groceries run\n\nWent to the store.\n\n# Reading list\n\nBooks.\n")
+		notes := parseNotes(t, "# Groceries\n\nBuy milk.\n\n## Groceries run\n\nWent to the store.\n\n# Reading list\n\nBooks.\n")
 
-		results, err := mapToSearchResults(notes, renderer)
+		results, err := web.MapToSearchResults(notes, renderer)
 		if err != nil {
-			t.Fatalf("expected no error, got %v", err)
+			t.Fatalf("MapToSearchResults() error = %v", err)
 		}
 
-		expected := []string{"Groceries", "Reading list"}
-
-		titles := make([]string, 0, len(results))
+		got := make([]string, 0, len(results))
 		for _, result := range results {
-			titles = append(titles, result.Title)
+			got = append(got, result.Title)
 		}
 
-		if !cmp.Equal(titles, expected) {
-			t.Errorf("expected %+v, got %+v", expected, titles)
+		want := []string{"Groceries", "Reading list"}
+
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("MapToSearchResults() titles mismatch (-want +got):\n%s", diff)
 		}
 	})
 
 	t.Run("returns an empty slice for no notes", func(t *testing.T) {
-		for _, notes := range [][]note.Note{nil, {}} {
-			result, err := mapToSearchResults(notes, renderer)
-			if err != nil {
-				t.Fatalf("expected no error, got %v", err)
-			}
+		for name, notes := range map[string][]note.Note{"nil": nil, "empty": {}} {
+			t.Run(name, func(t *testing.T) {
+				got, err := web.MapToSearchResults(notes, renderer)
+				if err != nil {
+					t.Fatalf("MapToSearchResults() error = %v", err)
+				}
 
-			if result == nil {
-				t.Fatalf("expected a non-nil slice, got nil")
-			}
+				if got == nil {
+					t.Fatalf("MapToSearchResults(%s) = nil, want a non-nil slice", name)
+				}
 
-			if len(result) != 0 {
-				t.Errorf("expected an empty slice, got %+v", result)
-			}
+				if len(got) != 0 {
+					t.Errorf("MapToSearchResults(%s) = %+v, want an empty slice", name, got)
+				}
+			})
 		}
 	})
 }

@@ -10,19 +10,21 @@ import (
 
 func TestTag(t *testing.T) {
 	for _, name := range []string{"kermit", "#kermit"} {
-		tag := note.NewTag(name)
+		t.Run(name, func(t *testing.T) {
+			tag := note.NewTag(name)
 
-		if tag != note.Tag("#kermit") {
-			t.Errorf("expected #kermit from %q, got %v", name, tag)
-		}
+			if tag != note.Tag("#kermit") {
+				t.Errorf("NewTag(%q) = %q, want %q", name, tag, note.Tag("#kermit"))
+			}
 
-		if tag.Name() != "kermit" {
-			t.Errorf("expected kermit, got %q", tag.Name())
-		}
+			if got := tag.Name(); got != "kermit" {
+				t.Errorf("NewTag(%q).Name() = %q, want %q", name, got, "kermit")
+			}
 
-		if tag.String() != "#kermit" {
-			t.Errorf("expected #kermit, got %q", tag.String())
-		}
+			if got := tag.String(); got != "#kermit" {
+				t.Errorf("NewTag(%q).String() = %q, want %q", name, got, "#kermit")
+			}
+		})
 	}
 }
 
@@ -30,19 +32,19 @@ func TestNew(t *testing.T) {
 	n := note.New("Test Title")
 
 	if n.Title != "Test Title" {
-		t.Errorf("expected title 'Test Title', got %q", n.Title)
+		t.Errorf("New().Title = %q, want %q", n.Title, "Test Title")
 	}
 
-	if n.Tags.Len() != 0 {
-		t.Errorf("expected empty tags set, got %d tags", n.Tags.Len())
+	if got := n.Tags.Len(); got != 0 {
+		t.Errorf("New().Tags.Len() = %d, want 0", got)
 	}
 
 	if !n.Date.IsZero() {
-		t.Errorf("expected zero date, got %v", n.Date)
+		t.Errorf("New().Date = %v, want the zero time", n.Date)
 	}
 
-	if len(n.Children) != 0 {
-		t.Errorf("expected nil or empty children, got %d children", len(n.Children))
+	if got := len(n.Children); got != 0 {
+		t.Errorf("len(New().Children) = %d, want 0", got)
 	}
 }
 
@@ -90,13 +92,13 @@ func TestSlug(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := tc.note.Slug()
-			if result != tc.expected {
-				t.Errorf("expected %q, got %q", tc.expected, result)
+			got := tc.note.Slug()
+			if got != tc.expected {
+				t.Errorf("Note{Title: %q}.Slug() = %q, want %q", tc.note.Title, got, tc.expected)
 			}
 
-			if again := note.Slug(result); again != result {
-				t.Errorf("expected slug of %q to stay the same, got %q", result, again)
+			if again := note.Slug(got); again != got {
+				t.Errorf("Slug(%q) = %q, want it to stay the same", got, again)
 			}
 		})
 	}
@@ -159,13 +161,13 @@ func TestSlugFunc(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := note.Slug(tc.input)
-			if result != tc.expected {
-				t.Errorf("expected %q, got %q", tc.expected, result)
+			got := note.Slug(tc.input)
+			if got != tc.expected {
+				t.Errorf("Slug(%q) = %q, want %q", tc.input, got, tc.expected)
 			}
 
-			if again := note.Slug(result); again != result {
-				t.Errorf("expected slug of %q to stay the same, got %q", result, again)
+			if again := note.Slug(got); again != got {
+				t.Errorf("Slug(%q) = %q, want it to stay the same", got, again)
 			}
 		})
 	}
@@ -214,9 +216,9 @@ func TestContent(t *testing.T) {
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			n := note.Note{Raw: tc.raw}
-			result := n.Content()
-			if result != tc.expected {
-				t.Errorf("expected %q, got %q", tc.expected, result)
+
+			if got := n.Content(); got != tc.expected {
+				t.Errorf("Note{Raw: %q}.Content() = %q, want %q", tc.raw, got, tc.expected)
 			}
 		})
 	}
@@ -335,9 +337,9 @@ func TestExcerpt(t *testing.T) {
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			n := note.Note{Raw: tc.raw}
-			result := n.Excerpt()
-			if result != tc.expected {
-				t.Errorf("expected %q, got %q", tc.expected, result)
+
+			if got := n.Excerpt(); got != tc.expected {
+				t.Errorf("Note{Raw: %q}.Excerpt() = %q, want %q", tc.raw, got, tc.expected)
 			}
 		})
 	}
@@ -370,9 +372,8 @@ func TestIsEmpty(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := tc.note.IsEmpty()
-			if result != tc.expected {
-				t.Errorf("expected %v, got %v", tc.expected, result)
+			if got := tc.note.IsEmpty(); got != tc.expected {
+				t.Errorf("Note{Raw: %q}.IsEmpty() = %v, want %v", tc.note.Raw, got, tc.expected)
 			}
 		})
 	}
@@ -415,15 +416,15 @@ func TestKindPredicates(t *testing.T) {
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := tc.note.IsDailyNote(); got != tc.daily {
-				t.Errorf("expected IsDailyNote to be %v, got %v", tc.daily, got)
+				t.Errorf("IsDailyNote() = %v, want %v", got, tc.daily)
 			}
 
 			if got := tc.note.IsChildNote(); got != tc.child {
-				t.Errorf("expected IsChildNote to be %v, got %v", tc.child, got)
+				t.Errorf("IsChildNote() = %v, want %v", got, tc.child)
 			}
 
 			if got := tc.note.IsStandalone(); got != tc.standalone {
-				t.Errorf("expected IsStandalone to be %v, got %v", tc.standalone, got)
+				t.Errorf("IsStandalone() = %v, want %v", got, tc.standalone)
 			}
 		})
 	}
@@ -453,12 +454,15 @@ func TestNoteString(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			notes, err := note.Parse(strings.NewReader(tc.input))
 			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
+				t.Fatalf("Parse() error = %v", err)
 			}
 
-			result := notes[0].String()
-			if result != tc.expected {
-				t.Errorf("expected %q, got %q", tc.expected, result)
+			if len(notes) == 0 {
+				t.Fatalf("Parse(%q) = 0 notes, want at least 1", tc.input)
+			}
+
+			if got := notes[0].String(); got != tc.expected {
+				t.Errorf("Note.String() = %q, want %q", got, tc.expected)
 			}
 		})
 	}

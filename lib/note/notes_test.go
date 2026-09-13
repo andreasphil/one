@@ -60,21 +60,18 @@ func TestFindBySlug(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result, ok := note.FindBySlug(tc.notes, tc.slug)
+			got, ok := note.FindBySlug(tc.notes, tc.slug)
 
 			if ok != tc.expectOk {
-				t.Errorf("expected ok=%v, got ok=%v", tc.expectOk, ok)
+				t.Errorf("FindBySlug(notes, %q) ok = %v, want %v", tc.slug, ok, tc.expectOk)
 			}
 
 			if tc.expectOk {
-				if result.Slug() != tc.slug {
-					t.Errorf("expected slug %q, got %q", tc.slug, result.Slug())
+				if got.Slug() != tc.slug {
+					t.Errorf("FindBySlug(notes, %q) slug = %q, want %q", tc.slug, got.Slug(), tc.slug)
 				}
-			} else {
-				exportSetInternals := cmp.AllowUnexported(util.NewSet[note.Tag]())
-				if !cmp.Equal(result, note.Note{}, exportSetInternals) {
-					t.Errorf("expected empty Note{}, got %+v", result)
-				}
+			} else if diff := cmp.Diff(note.Note{}, got); diff != "" {
+				t.Errorf("FindBySlug(notes, %q) mismatch (-want +got):\n%s", tc.slug, diff)
 			}
 		})
 	}
@@ -101,16 +98,16 @@ func TestWalk(t *testing.T) {
 			return true
 		})
 
-		expected := []string{
+		want := []string{
 			"Root 1", "Root 2", "Child 1", "Child 2", "Root 3",
 		}
 
-		if !cmp.Equal(visited, expected) {
-			t.Errorf("expected visited %v, got %v", expected, visited)
+		if diff := cmp.Diff(want, visited); diff != "" {
+			t.Errorf("Walk() visited mismatch (-want +got):\n%s", diff)
 		}
 
 		if !result {
-			t.Errorf("expected result to be true, got false")
+			t.Errorf("Walk() = false, want true")
 		}
 	})
 
@@ -122,14 +119,14 @@ func TestWalk(t *testing.T) {
 			return n.Title != "Child 1"
 		})
 
-		expected := []string{"Root 1", "Root 2", "Child 1"}
+		want := []string{"Root 1", "Root 2", "Child 1"}
 
-		if !cmp.Equal(visited, expected) {
-			t.Errorf("expected visited %v, got %v", expected, visited)
+		if diff := cmp.Diff(want, visited); diff != "" {
+			t.Errorf("Walk() visited mismatch (-want +got):\n%s", diff)
 		}
 
 		if result {
-			t.Errorf("expected result to be false, got true")
+			t.Errorf("Walk() = true, want false")
 		}
 	})
 
@@ -141,14 +138,14 @@ func TestWalk(t *testing.T) {
 			return n.Title != "Child 2"
 		})
 
-		expected := []string{"Root 1", "Root 2", "Child 1", "Child 2"}
+		want := []string{"Root 1", "Root 2", "Child 1", "Child 2"}
 
-		if !cmp.Equal(visited, expected) {
-			t.Errorf("expected visited %v, got %v", expected, visited)
+		if diff := cmp.Diff(want, visited); diff != "" {
+			t.Errorf("Walk() visited mismatch (-want +got):\n%s", diff)
 		}
 
 		if result {
-			t.Errorf("expected result to be false, got true")
+			t.Errorf("Walk() = true, want false")
 		}
 	})
 
@@ -161,11 +158,11 @@ func TestWalk(t *testing.T) {
 		})
 
 		if len(visited) != 0 {
-			t.Errorf("expected no notes to be visited, got %v", visited)
+			t.Errorf("Walk() visited = %v, want none", visited)
 		}
 
 		if !result {
-			t.Errorf("expected result to be true, got false")
+			t.Errorf("Walk() = false, want true")
 		}
 	})
 }
@@ -184,29 +181,31 @@ func TestFlat(t *testing.T) {
 	}
 
 	t.Run("returns children directly after the note they belong to", func(t *testing.T) {
-		var titles []string
+		var got []string
 		for _, n := range note.Flat(notes) {
-			titles = append(titles, n.Title)
+			got = append(got, n.Title)
 		}
 
-		expected := []string{"Root 1", "Root 2", "Child 1", "Child 2", "Root 3"}
+		want := []string{"Root 1", "Root 2", "Child 1", "Child 2", "Root 3"}
 
-		if !cmp.Equal(titles, expected) {
-			t.Errorf("expected %v, got %v", expected, titles)
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("Flat() mismatch (-want +got):\n%s", diff)
 		}
 	})
 
 	t.Run("returns a non-nil empty slice for no notes", func(t *testing.T) {
-		for _, notes := range [][]note.Note{nil, {}} {
-			result := note.Flat(notes)
+		for name, notes := range map[string][]note.Note{"nil": nil, "empty": {}} {
+			t.Run(name, func(t *testing.T) {
+				got := note.Flat(notes)
 
-			if result == nil {
-				t.Fatalf("expected a non-nil slice, got nil")
-			}
+				if got == nil {
+					t.Fatalf("Flat(%s) = nil, want a non-nil slice", name)
+				}
 
-			if len(result) != 0 {
-				t.Errorf("expected an empty slice, got %v", result)
-			}
+				if len(got) != 0 {
+					t.Errorf("Flat(%s) = %v, want an empty slice", name, got)
+				}
+			})
 		}
 	})
 }
@@ -248,11 +247,11 @@ func TestCount(t *testing.T) {
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := note.Count(tc.notes); got != tc.expected {
-				t.Errorf("expected %v, got %v", tc.expected, got)
+				t.Errorf("Count() = %d, want %d", got, tc.expected)
 			}
 
 			if got := len(note.Flat(tc.notes)); got != tc.expected {
-				t.Errorf("expected Flat to return %v notes, got %v", tc.expected, got)
+				t.Errorf("len(Flat()) = %d, want %d", got, tc.expected)
 			}
 		})
 	}
@@ -373,14 +372,14 @@ func TestResolveSlug(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			result, found := note.ResolveSlug(tc.notes, tc.target)
+			got, found := note.ResolveSlug(tc.notes, tc.target)
 
-			if result != tc.expected {
-				t.Errorf("expected %q, got %q", tc.expected, result)
+			if got != tc.expected {
+				t.Errorf("ResolveSlug(notes, %q) = %q, want %q", tc.target, got, tc.expected)
 			}
 
 			if found != tc.expectFound {
-				t.Errorf("expected found=%v, got found=%v", tc.expectFound, found)
+				t.Errorf("ResolveSlug(notes, %q) found = %v, want %v", tc.target, found, tc.expectFound)
 			}
 		})
 	}
@@ -488,14 +487,16 @@ func TestSort(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			result, didSort := note.Sort(tc.notes)
 			if didSort != tc.expectDidSort {
-				t.Errorf("expected sorted to be %v, got %v", tc.expectDidSort, didSort)
+				t.Errorf("Sort() didSort = %v, want %v", didSort, tc.expectDidSort)
 			}
 
-			for i, n := range result {
-				if n.Title != tc.expected[i] {
-					t.Errorf("expected note at %d to be %v, got %v", i, tc.expected[i], n.Title)
-					t.FailNow()
-				}
+			got := make([]string, 0, len(result))
+			for _, n := range result {
+				got = append(got, n.Title)
+			}
+
+			if diff := cmp.Diff(tc.expected, got); diff != "" {
+				t.Fatalf("Sort() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
@@ -507,14 +508,13 @@ func TestSortNormalizesNewline(t *testing.T) {
 
 	notes, err := note.Parse(strings.NewReader(input))
 	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
+		t.Fatalf("Parse() error = %v", err)
 	}
 
 	notes, _ = note.Sort(notes)
 
-	result := note.String(notes)
-	if result != expected {
-		t.Errorf("expected %q, got %q", expected, result)
+	if got := note.String(notes); got != expected {
+		t.Errorf("String(Sort(notes)) = %q, want %q", got, expected)
 	}
 }
 
@@ -552,12 +552,11 @@ func TestString(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			notes, err := note.Parse(strings.NewReader(tc.input))
 			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
+				t.Fatalf("Parse() error = %v", err)
 			}
 
-			result := note.String(notes)
-			if result != tc.expected {
-				t.Errorf("expected %q, got %q", tc.expected, result)
+			if got := note.String(notes); got != tc.expected {
+				t.Errorf("String(%q) = %q, want %q", tc.input, got, tc.expected)
 			}
 		})
 	}
@@ -635,7 +634,7 @@ func TestTags(t *testing.T) {
 			got := note.Tags(tc.notes)
 
 			if diff := cmp.Diff(tc.expected, got, cmpopts.EquateEmpty()); diff != "" {
-				t.Errorf("unexpected tags (-want +got):\n%v", diff)
+				t.Errorf("Tags() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
