@@ -59,3 +59,7 @@ func (s Set[T]) Values() []T {
 func (s Set[T]) Len() int {
 	return len(s.values)
 }
+
+func (s Set[T]) Equal(other Set[T]) bool {
+	return maps.Equal(s.values, other.values)
+}
