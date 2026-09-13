@@ -676,3 +676,43 @@ func TestParseCleansUpChildTitle(t *testing.T) {
 		})
 	}
 }
+
+func FuzzParse(f *testing.F) {
+	seeds := []string{
+		"",
+		"# Note 1",
+		"# Note 1\n\nLine 1\n\nLine 2\n",
+		"# Note 1\n\nLine 1\n\n# Note 2\n\nLine 2\n",
+		"# 01.01.2026\n\nLine 1\n\n## Child Note 1\n\nLine 2\n",
+		"# 01.01.2026 \U0001F4CB #tag\n\nLine 1 #tag_2\n",
+		"# Note 1\n\n```\n# Not a new note\n```\n",
+		"# Note 1\n\n````\n```\n# Not a new note\n```\n````\n",
+		"# Note 1\n\n```js\n## Not a child note\n```\n",
+		"# Note 1\n\n```\ncode block",
+		"test\n\n# Note 1",
+		"# 32.01.2026\n\nLine 1\n",
+		"# Note 1\n\nSee [[Reading list]] and [[01.02.2026]].\n",
+	}
+
+	for _, seed := range seeds {
+		f.Add(seed)
+	}
+
+	f.Fuzz(func(t *testing.T, input string) {
+		notes, err := note.Parse(strings.NewReader(input))
+		if err != nil {
+			return
+		}
+
+		serialized := note.String(notes)
+
+		again, err := note.Parse(strings.NewReader(serialized))
+		if err != nil {
+			t.Fatalf("round-trip of %q produced %q, which does not parse: %v", input, serialized, err)
+		}
+
+		if got, want := note.Count(again), note.Count(notes); got != want {
+			t.Errorf("round-trip of %q = %d notes, want %d", input, got, want)
+		}
+	})
+}

@@ -23,3 +23,9 @@ run = ["go fmt", "pnpm prettier -cw web/"]
 
 [tasks.test]
 run = "go test ./..."
+
+[tasks.fuzz]
+usage = """
+  arg "<duration>" default="1m"
+"""
+run = "go test ./lib/note -fuzz FuzzParse -fuzztime ${usage_duration}"
