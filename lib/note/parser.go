@@ -3,7 +3,6 @@ package note
 import (
 	"bufio"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -14,6 +13,12 @@ import (
 	"github.com/forPelevin/gomoji"
 )
 
+var ErrMissingHeading = errors.New("invalid format: file must start with a heading")
+var ErrUnclosedFence = errors.New("invalid notes file content, fenced code block was not closed")
+
+var tagsExp = regexp.MustCompile(`(?:^|\s)#(\w+)`)
+var dateTitleExp = regexp.MustCompile(`^\d{2}\.\d{2}\.\d{4}$`)
+
 func last[T ~[]I, I any](slice T) *I {
 	if len(slice) == 0 {
 		return nil
@@ -21,9 +26,6 @@ func last[T ~[]I, I any](slice T) *I {
 
 	return &slice[len(slice)-1]
 }
-
-var tagsExp = regexp.MustCompile(`(?:^|\s)#(\w+)`)
-var dateTitleExp = regexp.MustCompile(`^\d{2}\.\d{2}\.\d{4}$`)
 
 func cleanupTitle(title string) string {
 	title = gomoji.RemoveEmojis(title)
@@ -95,7 +97,7 @@ func Parse(input io.Reader) ([]Note, error) {
 				root = last(notes)
 				current = root
 			} else if current == nil {
-				return nil, fmt.Errorf("invalid format: file must start with a heading")
+				return nil, ErrMissingHeading
 			}
 
 			// Level 2 heading =
@@ -138,7 +140,7 @@ func Parse(input io.Reader) ([]Note, error) {
 	}
 
 	if inFencedBlock {
-		return nil, errors.New("invalid notes file content, fenced code block was not closed")
+		return nil, ErrUnclosedFence
 	}
 
 	return notes, nil
