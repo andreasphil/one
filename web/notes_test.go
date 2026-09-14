@@ -242,7 +242,7 @@ func TestGetNoteRendersDailyNoteWithChild(t *testing.T) {
 
 	// The formatted date is the one piece of the page that is not literally in
 	// the fixture, so assert it by hand before pinning the rest.
-	wantDate := time.Date(2026, 2, 1, 0, 0, 0, 0, time.UTC).Format("Mon, 2. Jan 2006")
+	wantDate := time.Date(2026, 2, 1, 0, 0, 0, 0, time.UTC).Format("02.01.2006 (Mon)")
 	assertContainsAll(t, body, wantDate)
 
 	assertGolden(t, "note_daily_with_child.html", body)

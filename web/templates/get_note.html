@@ -33,7 +33,7 @@
             Knowledge Base
           </span>
         {{- else -}}
-          {{ $noteDate := .Data.Note.Date.Format "Mon, 2. Jan 2006" }}
+          {{ $noteDate := .Data.Note.Date.Format "02.01.2006 (Mon)" }}
           {{ if .Data.Note.IsChildNote }}
             <a href="/notes/{{ .Data.Note.Date.Format "2006-01-02" }}/">
               <span class="color-variant">{{ template "calendar.svg" }}</span>

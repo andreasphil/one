@@ -8,7 +8,7 @@
     {{ .Note.Title }}
     {{ if .Note.IsDailyNote }}
       <span class="color-variant">
-        {{ .Note.Date.Format "Mon" }}
+        ({{ .Note.Date.Format "Mon" }})
       </span>
     {{ end }}
   </span>
