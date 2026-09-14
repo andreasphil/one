@@ -1,11 +1,5 @@
 package note
 
-import (
-	"strings"
-)
-
-// Filtering ----------------------------------------------
-
 type Match struct{}
 
 type Filter func(Note) (bool, []Match)
@@ -48,30 +42,4 @@ func Search(notes []Note, chain FilterChain) []Result {
 	})
 
 	return found
-}
-
-// Simple string search -----------------------------------
-
-func containsExactPhrase(query string) Filter {
-	normalizedQuery := strings.ToLower(query)
-
-	return func(n Note) (bool, []Match) {
-		normalizedRaw := strings.ToLower(n.Raw)
-		if strings.Contains(normalizedRaw, normalizedQuery) {
-			return true, nil
-		}
-
-		return false, nil
-	}
-}
-
-func Containing(notes []Note, query string) []Note {
-	results := []Note{}
-	chain := FilterChain{containsExactPhrase(query)}
-
-	for _, i := range Search(notes, chain) {
-		results = append(results, i.Note)
-	}
-
-	return results
 }

@@ -63,7 +63,9 @@ type searchResult struct {
 	HTML  template.HTML
 }
 
-func newSearchResult(n note.Note, renderer markdownRenderer) (searchResult, error) {
+func newSearchResult(r note.Result, renderer markdownRenderer) (searchResult, error) {
+	n := r.Note
+
 	html, err := renderer.render(n.Content())
 	if err != nil {
 		return searchResult{}, err
@@ -77,10 +79,10 @@ func newSearchResult(n note.Note, renderer markdownRenderer) (searchResult, erro
 	return searchResult{Title: n.Title, Slug: n.Slug(), Date: date, HTML: html}, nil
 }
 
-func mapToSearchResults(n []note.Note, renderer markdownRenderer) ([]searchResult, error) {
-	m := make([]searchResult, 0, len(n))
+func mapToSearchResults(r []note.Result, renderer markdownRenderer) ([]searchResult, error) {
+	m := make([]searchResult, 0, len(r))
 
-	for _, i := range n {
+	for _, i := range r {
 		result, err := newSearchResult(i, renderer)
 		if err != nil {
 			return nil, err

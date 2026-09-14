@@ -182,6 +182,15 @@ func TestMapToTags(t *testing.T) {
 	})
 }
 
+func toSearchResults(notes []note.Note) []note.Result {
+	results := make([]note.Result, 0, len(notes))
+	for _, n := range notes {
+		results = append(results, note.Result{Note: n})
+	}
+
+	return results
+}
+
 func TestNewSearchResult(t *testing.T) {
 	renderer := newTestMarkdownRenderer(nil)
 	date := time.Date(2026, 2, 1, 0, 0, 0, 0, time.UTC)
@@ -228,7 +237,7 @@ func TestNewSearchResult(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			got, err := web.NewSearchResult(tc.note, renderer)
+			got, err := web.NewSearchResult(note.Result{Note: tc.note}, renderer)
 			if err != nil {
 				t.Fatalf("NewSearchResult() error = %v", err)
 			}
@@ -244,7 +253,7 @@ func TestNewSearchResultResolvesWikiLinks(t *testing.T) {
 	notes := parseNotes(t, "# Groceries\n\nSee [[Reading list]] and [[Nonexistent]].\n\n# Reading list\n\nBooks.\n")
 	renderer := newTestMarkdownRenderer(notes)
 
-	result, err := web.NewSearchResult(notes[0], renderer)
+	result, err := web.NewSearchResult(note.Result{Note: notes[0]}, renderer)
 	if err != nil {
 		t.Fatalf("NewSearchResult() error = %v", err)
 	}
@@ -266,7 +275,7 @@ func TestMapToSearchResults(t *testing.T) {
 	t.Run("maps each note to a result, without flattening children", func(t *testing.T) {
 		notes := parseNotes(t, "# Groceries\n\nBuy milk.\n\n## Groceries run\n\nWent to the store.\n\n# Reading list\n\nBooks.\n")
 
-		results, err := web.MapToSearchResults(notes, renderer)
+		results, err := web.MapToSearchResults(toSearchResults(notes), renderer)
 		if err != nil {
 			t.Fatalf("MapToSearchResults() error = %v", err)
 		}
@@ -284,9 +293,9 @@ func TestMapToSearchResults(t *testing.T) {
 	})
 
 	t.Run("returns an empty slice for no notes", func(t *testing.T) {
-		for name, notes := range map[string][]note.Note{"nil": nil, "empty": {}} {
+		for name, results := range map[string][]note.Result{"nil": nil, "empty": {}} {
 			t.Run(name, func(t *testing.T) {
-				got, err := web.MapToSearchResults(notes, renderer)
+				got, err := web.MapToSearchResults(results, renderer)
 				if err != nil {
 					t.Fatalf("MapToSearchResults() error = %v", err)
 				}

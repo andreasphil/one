@@ -18,7 +18,9 @@ func getSearch(provider NotesProvider, renderer markdownRenderer) handler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		query := r.URL.Query().Get("query")
 
-		results, err := mapToSearchResults(note.Containing(provider.Notes(), query), renderer)
+		notes := note.Search(provider.Notes(), note.FilterChain{note.FilterExactPhrase(query, false)})
+
+		results, err := mapToSearchResults(notes, renderer)
 		if err != nil {
 			return httpStatusErrorf(http.StatusUnprocessableEntity, "failed to render note to html: %v", err)
 		}
