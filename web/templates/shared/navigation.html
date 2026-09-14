@@ -20,6 +20,16 @@
     </li>
     <li>
       <a
+        href="/tags/"
+        class="color-variant"
+        {{ if eq .CurrentURL "/tags/" }}aria-current="page"{{ end }}
+      >
+        {{ template "tag.svg" }}
+        Tags
+      </a>
+    </li>
+    <li>
+      <a
         href="/search/"
         class="color-variant"
         {{ if eq .CurrentURL "/search/" }}aria-current="page"{{ end }}

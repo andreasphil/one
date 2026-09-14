@@ -10,6 +10,7 @@
 @import "./views/note.css" layer(components);
 @import "./views/notes.css" layer(components);
 @import "./views/search.css" layer(components);
+@import "./views/tags.css" layer(components);
 
 @layer base {
   /* --- TODO: fix in design system --- */

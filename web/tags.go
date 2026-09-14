@@ -7,6 +7,14 @@ import (
 	"github.com/andreasphil/one/lib/note"
 )
 
+func getTags(provider NotesProvider) handler {
+	render := newRenderFunc[struct{}](provider, "get_tags.html")
+
+	return func(w http.ResponseWriter, r *http.Request) error {
+		return render(w, r, data[struct{}]{Title: "Tags"})
+	}
+}
+
 func getTag() handler {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		tag := r.PathValue("tag")

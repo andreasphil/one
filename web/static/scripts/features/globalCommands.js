@@ -57,6 +57,14 @@ export function init() {
       action: newNavigationAction("/notes/"),
     },
     {
+      id: "open:tags",
+      name: "Tags",
+      chord: "gx",
+      groupName: "Open",
+      icon: icon("Tag"),
+      action: newNavigationAction("/tags/"),
+    },
+    {
       id: "open:today",
       name: "Today",
       chord: "gt",
