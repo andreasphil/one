@@ -413,27 +413,27 @@ func TestParseExtractsTags(t *testing.T) {
 		{
 			name:     "tag in title",
 			input:    "# Note 1 #tag\n",
-			expected: util.NewSetFrom([]note.Tag{"#tag"}),
+			expected: util.NewSetFrom([]note.Tag{note.NewTag("tag")}),
 		},
 		{
 			name:     "tag in body",
 			input:    "# Note 1\n\nLine 1 #tag\n",
-			expected: util.NewSetFrom([]note.Tag{"#tag"}),
+			expected: util.NewSetFrom([]note.Tag{note.NewTag("tag")}),
 		},
 		{
 			name:     "multiple tags",
 			input:    "# Note 1 #tag_1\n\nLine 1 #tag_2\n",
-			expected: util.NewSetFrom([]note.Tag{"#tag_1", "#tag_2"}),
+			expected: util.NewSetFrom([]note.Tag{note.NewTag("tag_1"), note.NewTag("tag_2")}),
 		},
 		{
 			name:     "multiple tags in one line",
 			input:    "# Note 1\n\nLine #tag_1 1 #tag_2\n",
-			expected: util.NewSetFrom([]note.Tag{"#tag_1", "#tag_2"}),
+			expected: util.NewSetFrom([]note.Tag{note.NewTag("tag_1"), note.NewTag("tag_2")}),
 		},
 		{
 			name:     "duplicate tags",
 			input:    "# Note 1\n\nLine 1 #tag_1\n\nLine 2 #tag_1",
-			expected: util.NewSetFrom([]note.Tag{"#tag_1"}),
+			expected: util.NewSetFrom([]note.Tag{note.NewTag("tag_1")}),
 		},
 		{
 			name:     "tags in fenced code block",
@@ -443,7 +443,7 @@ func TestParseExtractsTags(t *testing.T) {
 		{
 			name:     "at the start of a line",
 			input:    "# Note 1\n\n#tag_1 Line 1",
-			expected: util.NewSetFrom([]note.Tag{"#tag_1"}),
+			expected: util.NewSetFrom([]note.Tag{note.NewTag("tag_1")}),
 		},
 		{
 			name:     "anchors in links",

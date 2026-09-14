@@ -586,46 +586,46 @@ func TestTags(t *testing.T) {
 		{
 			name: "returns tags sorted alphabetically",
 			notes: []note.Note{
-				{Title: "A", Tags: util.NewSetFrom([]note.Tag{"#foo", "#baz"})},
-				{Title: "B", Tags: util.NewSetFrom([]note.Tag{"#bar"})},
+				{Title: "A", Tags: util.NewSetFrom([]note.Tag{note.NewTag("foo"), note.NewTag("baz")})},
+				{Title: "B", Tags: util.NewSetFrom([]note.Tag{note.NewTag("bar")})},
 			},
-			expected: []note.Tag{"#bar", "#baz", "#foo"},
+			expected: []note.Tag{note.NewTag("bar"), note.NewTag("baz"), note.NewTag("foo")},
 		},
 		{
 			name: "sorts without regard to case",
 			notes: []note.Note{
-				{Title: "A", Tags: util.NewSetFrom([]note.Tag{"#Beta", "#alpha", "#Gamma"})},
+				{Title: "A", Tags: util.NewSetFrom([]note.Tag{note.NewTag("Beta"), note.NewTag("alpha"), note.NewTag("Gamma")})},
 			},
-			expected: []note.Tag{"#alpha", "#Beta", "#Gamma"},
+			expected: []note.Tag{note.NewTag("alpha"), note.NewTag("Beta"), note.NewTag("Gamma")},
 		},
 		{
 			name: "returns each tag only once",
 			notes: []note.Note{
-				{Title: "A", Tags: util.NewSetFrom([]note.Tag{"#foo", "#bar"})},
-				{Title: "B", Tags: util.NewSetFrom([]note.Tag{"#foo"})},
+				{Title: "A", Tags: util.NewSetFrom([]note.Tag{note.NewTag("foo"), note.NewTag("bar")})},
+				{Title: "B", Tags: util.NewSetFrom([]note.Tag{note.NewTag("foo")})},
 			},
-			expected: []note.Tag{"#bar", "#foo"},
+			expected: []note.Tag{note.NewTag("bar"), note.NewTag("foo")},
 		},
 		{
 			name: "keeps tags that differ only in case apart",
 			notes: []note.Note{
-				{Title: "A", Tags: util.NewSetFrom([]note.Tag{"#Foo", "#foo"})},
+				{Title: "A", Tags: util.NewSetFrom([]note.Tag{note.NewTag("Foo"), note.NewTag("foo")})},
 			},
-			expected: []note.Tag{"#Foo", "#foo"},
+			expected: []note.Tag{note.NewTag("Foo"), note.NewTag("foo")},
 		},
 		{
 			name: "includes tags of children",
 			notes: []note.Note{
 				{
 					Title: "A",
-					Tags:  util.NewSetFrom([]note.Tag{"#foo"}),
+					Tags:  util.NewSetFrom([]note.Tag{note.NewTag("foo")}),
 					Children: []note.Note{
-						{Title: "B", Kind: note.KindChild, Tags: util.NewSetFrom([]note.Tag{"#bar"})},
-						{Title: "C", Kind: note.KindChild, Tags: util.NewSetFrom([]note.Tag{"#baz"})},
+						{Title: "B", Kind: note.KindChild, Tags: util.NewSetFrom([]note.Tag{note.NewTag("bar")})},
+						{Title: "C", Kind: note.KindChild, Tags: util.NewSetFrom([]note.Tag{note.NewTag("baz")})},
 					},
 				},
 			},
-			expected: []note.Tag{"#bar", "#baz", "#foo"},
+			expected: []note.Tag{note.NewTag("bar"), note.NewTag("baz"), note.NewTag("foo")},
 		},
 	}
 

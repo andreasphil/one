@@ -135,12 +135,12 @@ func TestMapToNoteMeta(t *testing.T) {
 
 func TestMapToTags(t *testing.T) {
 	notes := []note.Note{
-		{Title: "Root 1", Tags: util.NewSetFrom([]note.Tag{"#work", "#Idea"})},
+		{Title: "Root 1", Tags: util.NewSetFrom([]note.Tag{note.NewTag("work"), note.NewTag("Idea")})},
 		{
 			Title: "Root 2",
-			Tags:  util.NewSetFrom([]note.Tag{"#work"}),
+			Tags:  util.NewSetFrom([]note.Tag{note.NewTag("work")}),
 			Children: []note.Note{
-				{Title: "Child 1", Kind: note.KindChild, Tags: util.NewSetFrom([]note.Tag{"#recipe"})},
+				{Title: "Child 1", Kind: note.KindChild, Tags: util.NewSetFrom([]note.Tag{note.NewTag("recipe")})},
 			},
 		},
 	}

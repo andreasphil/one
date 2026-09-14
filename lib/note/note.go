@@ -38,22 +38,26 @@ const (
 
 // Tags ---------------------------------------------------
 
-type Tag string
+type Tag struct{ name string }
 
 // NewTag returns the Tag with the given name. The name may be given with or
 // without a leading "#".
 func NewTag(name string) Tag {
-	return Tag("#" + strings.TrimPrefix(name, "#"))
+	return Tag{name: strings.TrimPrefix(name, "#")}
 }
 
 // Name returns the tag without its leading "#".
 func (t Tag) Name() string {
-	return strings.TrimPrefix(string(t), "#")
+	return t.name
 }
 
 // String returns the tag including its leading "#".
 func (t Tag) String() string {
-	return string(t)
+	return "#" + t.name
+}
+
+func (t Tag) Equal(other Tag) bool {
+	return t == other
 }
 
 // Note ---------------------------------------------------

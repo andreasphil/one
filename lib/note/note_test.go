@@ -13,8 +13,8 @@ func TestTag(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			tag := note.NewTag(name)
 
-			if tag != note.Tag("#kermit") {
-				t.Errorf("NewTag(%q) = %q, want %q", name, tag, note.Tag("#kermit"))
+			if tag != note.NewTag("kermit") {
+				t.Errorf("NewTag(%q) = %q, want %q", name, tag, note.NewTag("kermit"))
 			}
 
 			if got := tag.Name(); got != "kermit" {

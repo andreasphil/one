@@ -94,8 +94,8 @@ func Tags(notes []Note) []Tag {
 	values := tags.Values()
 	slices.SortFunc(values, func(a Tag, b Tag) int {
 		return cmp.Or(
-			cmp.Compare(strings.ToLower(string(a)), strings.ToLower(string(b))),
-			cmp.Compare(a, b),
+			cmp.Compare(strings.ToLower(a.Name()), strings.ToLower(b.Name())),
+			cmp.Compare(a.Name(), b.Name()),
 		)
 	})
 
