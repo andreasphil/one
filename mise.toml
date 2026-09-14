@@ -24,6 +24,9 @@ run = ["go fmt", "pnpm prettier -cw web/"]
 [tasks.test]
 run = "go test ./..."
 
+[tasks.typecheck]
+run = "pnpm tsc"
+
 [tasks.fuzz]
 usage = """
   arg "<duration>" default="1m"

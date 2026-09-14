@@ -2,6 +2,7 @@
   "type": "module",
   "devDependencies": {
     "prettier": "3.9.6",
-    "prettier-plugin-go-template": "0.0.15"
+    "prettier-plugin-go-template": "0.0.15",
+    "typescript": "7.0.2"
   }
 }

@@ -8,7 +8,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "paths": {
-      "@andreasphil/command-bar": ["./web/static/common/command-bar/commandBar.js"]
+      "@andreasphil/command-bar": ["./web/static/common/command-bar/commandBar.d.ts"]
     },
     "skipLibCheck": true,
     "target": "esnext",
