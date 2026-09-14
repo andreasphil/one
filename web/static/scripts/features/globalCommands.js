@@ -1,4 +1,5 @@
 import { newNavigationAction, useCommands } from "../lib/commands.js";
+import { formatDate } from "../lib/format.js";
 import { getIcons } from "../state/icons.js";
 import { getNotes } from "../state/notes.js";
 import { getTags } from "../state/tags.js";
@@ -9,10 +10,18 @@ export function init() {
   const { tags } = getTags();
   const { register } = useCommands();
 
+  /** @param {import("../lib/types.js").NoteMeta} note */
+  function formatNoteTitle(note) {
+    let title = note.Title;
+    if (note.IsChildNote && note.Date) title = `${title} (${formatDate(new Date(note.Date))})`;
+
+    return title;
+  }
+
   /** @type {import("../lib/commands.js").Command[]} */
   const notesCommands = notes.map((i) => ({
     id: `note:open:${i.Slug}`,
-    name: i.Title,
+    name: formatNoteTitle(i),
     groupName: "Notes",
     icon: icon("StickyNote"),
     action: newNavigationAction(`/notes/${i.Slug}/`),
@@ -64,7 +73,7 @@ export function init() {
       icon: icon("Pipette"),
       action: () => {
         const current = document.querySelector('[aria-current="page"]');
-        current.scrollIntoView({ behavior: "smooth", block: "center" });
+        current?.scrollIntoView({ behavior: "smooth", block: "center" });
       },
     },
   ];

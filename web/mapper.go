@@ -11,12 +11,24 @@ import (
 
 // Should mirror NoteMeta in static/scripts/lib/types.ts.
 type noteMeta struct {
-	Title string
-	Slug  string
+	Title       string
+	Slug        string
+	Date        string `json:",omitempty"`
+	IsChildNote bool
 }
 
 func newNoteMeta(n note.Note) noteMeta {
-	return noteMeta{Title: n.Title, Slug: n.Slug()}
+	var date string
+	if !n.Date.IsZero() {
+		date = n.Date.Format("2006-01-02")
+	}
+
+	return noteMeta{
+		Title:       n.Title,
+		Slug:        n.Slug(),
+		Date:        date,
+		IsChildNote: n.IsChildNote(),
+	}
 }
 
 func mapToNoteMeta(n []note.Note) []noteMeta {

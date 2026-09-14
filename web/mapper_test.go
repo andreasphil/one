@@ -34,7 +34,12 @@ func TestNewNoteMeta(t *testing.T) {
 		{
 			name:     "maps daily note",
 			note:     note.Note{Title: "01.02.2026", Kind: note.KindDaily, Date: time.Date(2026, 2, 1, 0, 0, 0, 0, time.UTC)},
-			expected: web.NoteMeta{Title: "01.02.2026", Slug: "2026-02-01"},
+			expected: web.NoteMeta{Title: "01.02.2026", Slug: "2026-02-01", Date: "2026-02-01"},
+		},
+		{
+			name:     "maps child note",
+			note:     note.Note{Title: "Groceries run", Kind: note.KindChild, Date: time.Date(2026, 2, 1, 0, 0, 0, 0, time.UTC)},
+			expected: web.NoteMeta{Title: "Groceries run", Slug: "2026-02-01-groceries-run", Date: "2026-02-01", IsChildNote: true},
 		},
 		{
 			name:     "maps empty note",
@@ -51,6 +56,17 @@ func TestNewNoteMeta(t *testing.T) {
 				t.Errorf("NewNoteMeta() mismatch (-want +got):\n%s", diff)
 			}
 		})
+	}
+}
+
+func TestNewNoteMetaOmitsZeroDate(t *testing.T) {
+	got, err := json.Marshal(web.NewNoteMeta(note.Note{Title: "Hello World"}))
+	if err != nil {
+		t.Fatalf("json.Marshal() error = %v", err)
+	}
+
+	if strings.Contains(string(got), "Date") {
+		t.Errorf("json.Marshal(NewNoteMeta()) = %s, want no date", got)
 	}
 }
 
@@ -78,9 +94,9 @@ func TestMapToNoteMeta(t *testing.T) {
 
 		want := []web.NoteMeta{
 			{Title: "Root 1", Slug: "root-1"},
-			{Title: "01.02.2026", Slug: "2026-02-01"},
-			{Title: "Child 1", Slug: "2026-02-01-child-1"},
-			{Title: "Child 2", Slug: "2026-02-01-child-2"},
+			{Title: "01.02.2026", Slug: "2026-02-01", Date: "2026-02-01"},
+			{Title: "Child 1", Slug: "2026-02-01-child-1", Date: "2026-02-01", IsChildNote: true},
+			{Title: "Child 2", Slug: "2026-02-01-child-2", Date: "2026-02-01", IsChildNote: true},
 			{Title: "Root 3", Slug: "root-3"},
 		}
 

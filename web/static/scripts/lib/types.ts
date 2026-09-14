@@ -2,4 +2,6 @@
 export type NoteMeta = {
   Title: string;
   Slug: string;
+  Date?: string;
+  IsChildNote: boolean;
 };
