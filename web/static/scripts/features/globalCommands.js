@@ -78,5 +78,5 @@ export function init() {
     },
   ];
 
-  register(...tagsCommands, ...notesCommands, ...commands);
+  register(...notesCommands, ...tagsCommands, ...commands);
 }
