@@ -8,7 +8,7 @@
     <link rel="apple-touch-icon" href="/static/public/apple-touch-icon.png" />
     <link rel="icon" href="/static/public/favicon.png" sizes="any" />
     <link rel="manifest" href="/static/manifest.json" />
-    <title>Search for &#34;milk&#34; | One</title>
+    <title>#nonexistent | One</title>
 
     
     <link rel="stylesheet" href="/static/styles/styles.css" />
@@ -56,7 +56,7 @@
       <a
         href="/tags/"
         class="color-variant"
-        
+        aria-current="page"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tag-icon lucide-tag"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></svg>
         Tags
@@ -66,7 +66,7 @@
       <a
         href="/search/"
         class="color-variant"
-        aria-current="page"
+        
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
         Search
@@ -148,46 +148,59 @@
 
     <main>
       
-  <div class="search-view">
-    <form action="/search/">
-      <label for="searchbox" class="visually-hidden">Search</label>
-      <input
-        id="searchbox"
-        autofocus
-        name="query"
-        placeholder="Search..."
-        type="search"
-        value="milk"
-        data-focuskey="/"
-      />
-    </form>
+  <div class="tags-view">
+    <div has-fallback="">
+      <div>
+        <h1>3 tags</h1>
+        <ul>
+          
+            <li>
+              <a
+                href="/tags/books/"
+                class="tag"
+                
+              >
+                books
+              </a>
+            </li>
+          
+            <li>
+              <a
+                href="/tags/errands/"
+                class="tag"
+                
+              >
+                errands
+              </a>
+            </li>
+          
+            <li>
+              <a
+                href="/tags/groceries/"
+                class="tag"
+                
+              >
+                groceries
+              </a>
+            </li>
+          
+        </ul>
+      </div>
+
+      <div fallback-for="empty">
+        <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tag-x-icon lucide-tag-x"><path d="m16.5 6.5-3.914-3.914A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.43 2.43 0 0 0 3.42 0l1.79-1.79"/><path d="m16.5 10.5 5 5"/><path d="m21.5 10.5-5 5"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></svg></p>
+        <p>No tags.</p>
+      </div>
+    </div>
 
     
-      <output class="caps font-size-small color-primary font-weight-medium">
-        2 results for
-        "milk"
-      </output>
+      <h2 class="caps font-size-small color-primary font-weight-medium">
+        0 notes tagged
+        "nonexistent"
+      </h2>
 
       <div has-fallback>
-        <ul class="search-results"><li>
-      <header>
-        <a href="/notes/groceries/">Groceries</a>
-        
-      </header>
-      <div class="prose"><p>Buy <strong>milk</strong> and eggs.</p>
-</div>
-    </li><li>
-      <header>
-        <a href="/notes/2026-02-01-groceries-run/">Groceries run</a>
-        
-          <span class="color-variant font-weight-medium">
-            (01.02.2026)
-          </span>
-        
-      </header>
-      <div class="prose"><p>Went to the store for milk.</p>
-</div>
-    </li></ul>
+        <ul class="search-results"></ul>
 
         <div fallback-for="empty">
           <p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg></p>
@@ -213,7 +226,7 @@
 <script type="application/json" id="clientState.NotesMeta">
   [{"Title":"Groceries","Slug":"groceries","IsChildNote":false},{"Title":"Reading list","Slug":"reading-list","IsChildNote":false},{"Title":"01.02.2026","Slug":"2026-02-01","Date":"2026-02-01","IsChildNote":false},{"Title":"Groceries run","Slug":"2026-02-01-groceries-run","Date":"2026-02-01","IsChildNote":true}]
 </script><script type="application/json" id="clientState.Tags">
-  []
+  ["books","errands","groceries"]
 </script>
 
   </body>
