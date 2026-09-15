@@ -25,23 +25,7 @@
       </output>
 
       <div has-fallback>
-        <ul class="search-results">
-          {{- range $i, $result := .Data.Results -}}
-            <li>
-              <header>
-                <a href="/notes/{{ .Slug }}/">{{ $result.Title }}</a>
-                {{ if not $result.Date.IsZero }}
-                  <span class="color-variant font-weight-medium">
-                    ({{ $result.Date.Format "02.01.2006" }})
-                  </span>
-                {{ end }}
-              </header>
-              <div class="prose">
-                {{ $result.HTML }}
-              </div>
-            </li>
-          {{- end -}}
-        </ul>
+        {{ template "search_results.html" .Data.Results }}
         <div fallback-for="empty">
           <p>{{ template "search.svg" }}</p>
           <p>No search results.</p>
