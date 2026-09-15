@@ -41,8 +41,10 @@
   </ul>
 
   <ul>
-    <li class="caps font-size-small color-primary font-weight-medium">{{ len .Notes }} Notes</li>
-    {{ range .Notes }}
+    <li class="caps font-size-small color-primary font-weight-medium">
+      {{ len .NotesMeta }} Notes
+    </li>
+    {{ range .NotesMeta }}
       <li>
         {{ template "note_link.html" (dict "Note" . "CurrentURL" $.CurrentURL) }}
       </li>

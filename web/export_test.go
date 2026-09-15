@@ -6,6 +6,7 @@ package web
 
 type (
 	NoteMeta         = noteMeta
+	NoteDate         = noteDate
 	SearchResult     = searchResult
 	MarkdownRenderer = markdownRenderer
 )

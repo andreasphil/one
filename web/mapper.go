@@ -1,6 +1,7 @@
 package web
 
 import (
+	"encoding/json"
 	"html/template"
 	"time"
 
@@ -9,24 +10,33 @@ import (
 
 // Note meta ----------------------------------------------
 
+// noteDate keeps the time.Time API available to templates while serializing as
+// a plain YYYY-MM-DD string for clients.
+type noteDate struct{ time.Time }
+
+func (d noteDate) MarshalJSON() ([]byte, error) {
+	return json.Marshal(d.Format("2006-01-02"))
+}
+
+func (d noteDate) Equal(other noteDate) bool {
+	return d.Time.Equal(other.Time)
+}
+
 // Should mirror NoteMeta in static/scripts/lib/types.ts.
 type noteMeta struct {
 	Title       string
 	Slug        string
-	Date        string `json:",omitempty"`
+	Date        noteDate `json:",omitzero"`
+	IsDailyNote bool
 	IsChildNote bool
 }
 
 func newNoteMeta(n note.Note) noteMeta {
-	var date string
-	if !n.Date.IsZero() {
-		date = n.Date.Format("2006-01-02")
-	}
-
 	return noteMeta{
 		Title:       n.Title,
 		Slug:        n.Slug(),
-		Date:        date,
+		Date:        noteDate{n.Date},
+		IsDailyNote: n.IsDailyNote(),
 		IsChildNote: n.IsChildNote(),
 	}
 }

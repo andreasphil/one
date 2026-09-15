@@ -17,7 +17,6 @@ var templatesFS embed.FS
 type data[T any] struct {
 	CurrentURL string
 	NotesMeta  []noteMeta
-	Notes      []note.Note
 	Tags       []string
 
 	Title string
@@ -57,11 +56,9 @@ func newRenderFunc[T any](provider NotesProvider, name string) renderFunc[T] {
 
 	return func(w http.ResponseWriter, r *http.Request, data data[T]) error {
 		notes := provider.Notes()
-		flat := note.Flat(notes)
 
 		data.CurrentURL = r.URL.Path
-		data.NotesMeta = mapToNoteMeta(flat)
-		data.Notes = flat
+		data.NotesMeta = mapToNoteMeta(note.Flat(notes))
 		data.Tags = mapToTags(notes)
 
 		var buf bytes.Buffer

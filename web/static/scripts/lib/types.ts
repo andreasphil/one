@@ -3,5 +3,6 @@ export type NoteMeta = {
   Title: string;
   Slug: string;
   Date?: string;
+  IsDailyNote: boolean;
   IsChildNote: boolean;
 };

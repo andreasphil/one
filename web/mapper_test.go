@@ -19,6 +19,8 @@ func newTestMarkdownRenderer(notes []note.Note) web.MarkdownRenderer {
 }
 
 func TestNewNoteMeta(t *testing.T) {
+	date := time.Date(2026, 2, 1, 0, 0, 0, 0, time.UTC)
+
 	type testcase struct {
 		name     string
 		note     note.Note
@@ -33,13 +35,13 @@ func TestNewNoteMeta(t *testing.T) {
 		},
 		{
 			name:     "maps daily note",
-			note:     note.Note{Title: "01.02.2026", Kind: note.KindDaily, Date: time.Date(2026, 2, 1, 0, 0, 0, 0, time.UTC)},
-			expected: web.NoteMeta{Title: "01.02.2026", Slug: "2026-02-01", Date: "2026-02-01"},
+			note:     note.Note{Title: "01.02.2026", Kind: note.KindDaily, Date: date},
+			expected: web.NoteMeta{Title: "01.02.2026", Slug: "2026-02-01", Date: web.NoteDate{Time: date}, IsDailyNote: true},
 		},
 		{
 			name:     "maps child note",
-			note:     note.Note{Title: "Groceries run", Kind: note.KindChild, Date: time.Date(2026, 2, 1, 0, 0, 0, 0, time.UTC)},
-			expected: web.NoteMeta{Title: "Groceries run", Slug: "2026-02-01-groceries-run", Date: "2026-02-01", IsChildNote: true},
+			note:     note.Note{Title: "Groceries run", Kind: note.KindChild, Date: date},
+			expected: web.NoteMeta{Title: "Groceries run", Slug: "2026-02-01-groceries-run", Date: web.NoteDate{Time: date}, IsChildNote: true},
 		},
 		{
 			name:     "maps empty note",
@@ -94,9 +96,9 @@ func TestMapToNoteMeta(t *testing.T) {
 
 		want := []web.NoteMeta{
 			{Title: "Root 1", Slug: "root-1"},
-			{Title: "01.02.2026", Slug: "2026-02-01", Date: "2026-02-01"},
-			{Title: "Child 1", Slug: "2026-02-01-child-1", Date: "2026-02-01", IsChildNote: true},
-			{Title: "Child 2", Slug: "2026-02-01-child-2", Date: "2026-02-01", IsChildNote: true},
+			{Title: "01.02.2026", Slug: "2026-02-01", Date: web.NoteDate{Time: date}, IsDailyNote: true},
+			{Title: "Child 1", Slug: "2026-02-01-child-1", Date: web.NoteDate{Time: date}, IsChildNote: true},
+			{Title: "Child 2", Slug: "2026-02-01-child-2", Date: web.NoteDate{Time: date}, IsChildNote: true},
 			{Title: "Root 3", Slug: "root-3"},
 		}
 
