@@ -4,23 +4,44 @@
 {{ end }}
 
 {{ define "content" }}
-  <div class="tags-view" has-fallback="{{ if not .Tags }}empty{{ end }}">
-    <div>
-      <h1>{{ len .Tags }} tags</h1>
-      <ul>
-        {{ range .Tags }}
-          <li>
-            <a href="/tags/{{ . }}/" class="tag">
-              {{ . }}
-            </a>
-          </li>
-        {{ end }}
-      </ul>
+  <div class="tags-view">
+    <div has-fallback="{{ if not .Tags }}empty{{ end }}">
+      <div>
+        <h1>{{ len .Tags }} tags</h1>
+        <ul>
+          {{ range .Tags }}
+            <li>
+              <a
+                href="/tags/{{ . }}/"
+                class="tag"
+                {{ if eq . $.Data.Tag }}aria-current="location"{{ end }}
+              >
+                {{ . }}
+              </a>
+            </li>
+          {{ end }}
+        </ul>
+      </div>
+
+      <div fallback-for="empty">
+        <p>{{ template "tag-x.svg" }}</p>
+        <p>No tags.</p>
+      </div>
     </div>
 
-    <div fallback-for="empty">
-      <p>{{ template "tag-x.svg" }}</p>
-      <p>No tags.</p>
-    </div>
+    {{ if .Data.Tag }}
+      <h2 class="caps font-size-small color-primary font-weight-medium">
+        {{ len .Data.Results }} note{{ if ne (len .Data.Results) 1 }}s{{ end }} tagged
+        "{{ .Data.Tag }}"
+      </h2>
+
+      <div has-fallback>
+        {{ template "search_results.html" .Data.Results }}
+        <div fallback-for="empty">
+          <p>{{ template "search.svg" }}</p>
+          <p>No search results.</p>
+        </div>
+      </div>
+    {{ end }}
   </div>
 {{ end }}

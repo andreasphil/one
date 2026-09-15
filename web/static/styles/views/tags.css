@@ -1,4 +1,4 @@
-@scope (.tags-view) {
+@scope (.tags-view) to (.search-results) {
   :scope {
     padding: 4rem 2rem;
     max-width: 60rem;
@@ -14,7 +14,13 @@
     flex-wrap: wrap;
     gap: 0.5rem;
     list-style-type: none;
-    margin: 0;
+    margin-bottom: 2rem;
     padding: 0;
+  }
+
+  h2 {
+    all: unset;
+    display: block;
+    margin-bottom: 0.75rem;
   }
 }

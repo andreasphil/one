@@ -2,30 +2,41 @@ package web
 
 import (
 	"net/http"
-	"net/url"
 
 	"github.com/andreasphil/one/lib/note"
 )
 
+type getTagData struct {
+	Results []searchResult
+	Tag     string
+}
+
 func getTags(provider NotesProvider) handler {
-	render := newRenderFunc[struct{}](provider, "get_tags.html")
+	render := newRenderFunc[getTagData](provider, "get_tags.html")
 
 	return func(w http.ResponseWriter, r *http.Request) error {
-		return render(w, r, data[struct{}]{Title: "Tags"})
+		return render(w, r, data[getTagData]{Title: "Tags"})
 	}
 }
 
-func getTag() handler {
-	return func(w http.ResponseWriter, r *http.Request) error {
-		tag := r.PathValue("tag")
+func getTag(provider NotesProvider, renderer markdownRenderer) handler {
+	render := newRenderFunc[getTagData](provider, "get_tags.html")
 
-		target := url.URL{
-			Path:     "/search/",
-			RawQuery: url.Values{"query": {note.NewTag(tag).String()}}.Encode(),
+	return func(w http.ResponseWriter, r *http.Request) error {
+		tag := note.NewTag(r.PathValue("tag"))
+
+		notes := note.Search(provider.Notes(), note.FilterChain{note.FilterHasTag(tag)})
+
+		results, err := mapToSearchResults(notes, renderer)
+		if err != nil {
+			return httpStatusErrorf(http.StatusUnprocessableEntity, "failed to render note to html: %v", err)
 		}
 
-		http.Redirect(w, r, target.String(), http.StatusTemporaryRedirect)
+		title := tag.String()
 
-		return nil
+		return render(w, r, data[getTagData]{
+			Title: title,
+			Data:  getTagData{Results: results, Tag: tag.Name()},
+		})
 	}
 }

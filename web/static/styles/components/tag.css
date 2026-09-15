@@ -21,6 +21,12 @@
     color: var(--primary);
   }
 
+  &[aria-current="location"] {
+    background-color: var(--c-fg);
+    border-color: var(--c-fg);
+    color: var(--c-bg);
+  }
+
   &:focus-visible {
     outline: var(--outline);
     outline-offset: var(--outline-outset);

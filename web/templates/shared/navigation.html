@@ -22,7 +22,7 @@
       <a
         href="/tags/"
         class="color-variant"
-        {{ if eq .CurrentURL "/tags/" }}aria-current="page"{{ end }}
+        {{ if hasPrefix .CurrentURL "/tags/" }}aria-current="page"{{ end }}
       >
         {{ template "tag.svg" }}
         Tags

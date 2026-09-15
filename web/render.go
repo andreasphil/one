@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strings"
 
 	"github.com/andreasphil/one/lib/note"
 )
@@ -27,6 +28,8 @@ type renderFunc[T any] func(http.ResponseWriter, *http.Request, data[T]) error
 
 func newRenderFunc[T any](provider NotesProvider, name string) renderFunc[T] {
 	helpers := template.FuncMap{
+		"hasPrefix": strings.HasPrefix,
+
 		"dict": func(values ...any) (map[string]any, error) {
 			if len(values)%2 != 0 {
 				return nil, fmt.Errorf("dict: odd number of arguments")

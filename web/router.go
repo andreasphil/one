@@ -41,7 +41,7 @@ func NewRouter(args RouterArgs) http.Handler {
 	router.HandleFunc("GET /notes/{slug}/{$}", handle(errw, getNote(args.Notes, markdownRenderer)))
 	router.HandleFunc("GET /search/{$}", handle(errw, getSearch(args.Notes, markdownRenderer)))
 	router.HandleFunc("GET /tags/{$}", handle(errw, getTags(args.Notes)))
-	router.HandleFunc("GET /tags/{tag}/{$}", handle(errw, getTag()))
+	router.HandleFunc("GET /tags/{tag}/{$}", handle(errw, getTag(args.Notes, markdownRenderer)))
 
 	router.Handle("/static/", http.FileServerFS(staticFS))
 
