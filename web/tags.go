@@ -32,6 +32,10 @@ func getTag(provider NotesProvider, renderer markdownRenderer) handler {
 			return httpStatusErrorf(http.StatusUnprocessableEntity, "failed to render note to html: %v", err)
 		}
 
+		if len(results) == 0 {
+			w.WriteHeader(http.StatusNotFound)
+		}
+
 		title := tag.String()
 
 		return render(w, r, data[getTagData]{
