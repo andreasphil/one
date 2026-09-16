@@ -22,6 +22,5 @@
 
   button {
     border-radius: var(--border-radius-small);
-    padding: 0.5rem 0.625rem;
   }
 }
