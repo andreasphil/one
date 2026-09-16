@@ -23,4 +23,12 @@
   button {
     border-radius: var(--border-radius-small);
   }
+
+  .prose &:first-child > pre {
+    margin-top: 0;
+  }
+
+  .prose &:last-child > pre {
+    margin-bottom: 0;
+  }
 }
