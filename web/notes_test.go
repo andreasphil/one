@@ -60,9 +60,6 @@ func assertContainsAll(t *testing.T, body string, want ...string) {
 	}
 }
 
-// assertGolden compares a rendered page against the file of the same name in
-// testdata/. Run `go test ./web -update` to accept a change, then review the
-// resulting diff in git — that review is what makes these tests worth having.
 func assertGolden(t *testing.T, name string, got string) {
 	t.Helper()
 
@@ -278,7 +275,7 @@ func TestGetNoteChildLinksBackToParentDate(t *testing.T) {
 	body := rec.Body.String()
 
 	assertContainsAll(t, body,
-		"Child content.",
+		"<p>Child content.</p>",
 		`href="/notes/2026-02-01/"`,
 	)
 }
