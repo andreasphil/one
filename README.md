@@ -52,7 +52,7 @@ echo "this won't be touched by the parser"
 Run `one web --input <file>` to browse a notes file like this one in the browser, or `one --help` to see everything else `one` can do, such as sorting, linting, and formatting notes from the command line.
 
 > [!NOTE]
-> 
+>
 > If you want to format notes, [oxfmt](https://oxc.rs/docs/guide/usage/formatter) has to be in your `PATH`.
 
 ## Development
@@ -67,7 +67,6 @@ mise run test   # Run tests
 
 ## Credits
 
-This app uses a number of open source packages listed in [go.mod](go.mod). Icons are from [Lucide](https://lucide.dev). It was inspired by Jeff Huang's [My productivity app is a never-ending .txt file](https://jeffhuang.com/productivity_text_file/) and Andrej Karpathy's [The Append-and-Review Note](https://karpathy.bearblog.dev/the-append-and-review-note/).
+This app uses a number of open source packages listed in [go.mod](go.mod). Icons are from [Lucide](https://lucide.dev). It was inspired by Jeff Huang's [My productivity app is a never-ending .txt file](https://jeffhuang.com/productivity_text_file/) and Andrej Karpathy's [The Append-and-Review Note](https://karpathy.bearblog.dev/the-append-and-review-note/). The architecture of the web interface is loosely based on by [How I write HTTP services in Go after 13 years](https://grafana.com/blog/how-i-write-http-services-in-go-after-13-years/) and [Simple Lists](https://benhoyt.com/writings/simple-lists/).
 
 Thanks 🙏
-</content>
