@@ -1,0 +1,27 @@
+.code-block {
+  position: relative;
+
+  x-copybutton {
+    opacity: 0;
+    position: absolute;
+    right: 0.5rem;
+    top: 0.5rem;
+    transition: var(--transition);
+    transition-property: opacity;
+  }
+
+  &:is(:hover, :focus-within) x-copybutton {
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    x-copybutton {
+      opacity: 1;
+    }
+  }
+
+  button {
+    border-radius: var(--border-radius-small);
+    padding: 0.5rem 0.625rem;
+  }
+}

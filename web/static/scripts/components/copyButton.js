@@ -44,6 +44,15 @@ export class CopyButton extends HTMLElement {
     return this.getAttribute("copiedmessage") ?? "Copied!";
   }
 
+  get iconOnly() {
+    return this.hasAttribute("icononly");
+  }
+
+  /** One of the variants supported by the button styles of the design system. */
+  get variant() {
+    return this.getAttribute("variant");
+  }
+
   // Lifecycle ----------------------------------------------
 
   #disconnect = new AbortController();
@@ -55,7 +64,6 @@ export class CopyButton extends HTMLElement {
 
     this.#element = document.createElement("button");
     this.#element.setAttribute("type", "button");
-    this.append(this.#element);
 
     const slot = document.createElement("span");
     slot.classList.add("slot");
@@ -72,18 +80,20 @@ export class CopyButton extends HTMLElement {
     copied.append(icon("Check"));
     copied.append(document.createElement("span"));
     slot.append(copied);
-
-    this.#render();
   }
 
   connectedCallback() {
     this.#disconnect = new AbortController();
+
+    this.append(this.#element);
 
     this.#element.addEventListener("click", this, { signal: this.#disconnect.signal });
 
     if (this.valueFrom && this.value !== null) {
       console.warn("value and valuefrom are both set, valuefrom takes precedence", this);
     }
+
+    this.#render();
   }
 
   disconnectedCallback() {
@@ -101,11 +111,16 @@ export class CopyButton extends HTMLElement {
   }
 
   #render() {
-    const labelEl = this.#element.querySelector(".label > span");
-    labelEl.textContent = this.label;
+    const label = this.#element.querySelector(".label > span");
+    label.textContent = this.label;
+    if (this.iconOnly) label.classList.add("visually-hidden");
 
-    const messageEl = this.#element.querySelector(".copied-message > span");
-    messageEl.textContent = this.copiedMessage;
+    const copied = this.#element.querySelector(".copied-message > span");
+    copied.textContent = this.copiedMessage;
+    if (this.iconOnly) copied.classList.add("visually-hidden");
+
+    this.#element.removeAttribute("variant");
+    if (this.variant) this.#element.setAttribute("variant", this.variant);
 
     this.classList.remove("copied");
     if (this.#didCopy) this.classList.add("copied");
