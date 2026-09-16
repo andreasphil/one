@@ -33,9 +33,10 @@
     }
 
     nav {
-      > span {
+      ul > li > span {
         align-items: center;
         display: flex;
+        font-weight: var(--font-weight-medium);
         gap: 0.75ch;
       }
 

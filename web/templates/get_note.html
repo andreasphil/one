@@ -6,7 +6,7 @@
 {{ define "content" }}
   <div class="note-view">
     <div class="content">
-      <div class="prose">
+      <div class="prose" id="note">
         <h1>
           {{ if .Data.Note.Icon }}
             <span class="glow" data-content="{{ .Data.Note.Icon }}">{{ .Data.Note.Icon }}</span>
@@ -27,25 +27,42 @@
 
     <aside>
       <nav>
-        {{- if .Data.Note.IsStandalone -}}
-          <span class="color-variant">
-            {{ template "sparkles.svg" }}
-            Knowledge Base
-          </span>
-        {{- else -}}
-          {{ $noteDate := .Data.Note.Date.Format "02.01.2006 (Mon)" }}
-          {{ if .Data.Note.IsChildNote }}
-            <a href="/notes/{{ .Data.Note.Date.Format "2006-01-02" }}/">
-              <span class="color-variant">{{ template "calendar.svg" }}</span>
-              {{ $noteDate }}
-            </a>
-          {{ else }}
-            <span class="color-variant">
-              {{ template "calendar.svg" }}
-              {{ $noteDate }}
+        <ul>
+          <li>
+            {{- if .Data.Note.IsStandalone -}}
+              <span class="color-variant">
+                {{ template "sparkles.svg" }}
+                Knowledge Base
+              </span>
+            {{- else -}}
+              {{ $noteDate := .Data.Note.Date.Format "02.01.2006 (Mon)" }}
+              {{ if .Data.Note.IsChildNote }}
+                <a href="/notes/{{ .Data.Note.Date.Format "2006-01-02" }}/">
+                  {{ template "calendar.svg" }}
+                  {{ $noteDate }}
+                </a>
+              {{ else }}
+                <span class="color-variant">
+                  {{ template "calendar.svg" }}
+                  {{ $noteDate }}
+                </span>
+              {{ end }}
+            {{- end -}}
+          </li>
+          <li>
+            <span>
+              <button
+                commandfor="copymenu"
+                command="toggle-popover"
+                style="anchor-name: --note-menu-anchor"
+                variant="muted"
+              >
+                {{ template "pencil-ruler.svg" }}
+                Tools
+              </button>
             </span>
-          {{ end }}
-        {{- end -}}
+          </li>
+        </ul>
 
         {{- if .Data.Note.Children -}}
           <ul>
@@ -74,14 +91,28 @@
             </div>
           </div>
         </section>
-
-        <ul>
-          <li class="caps font-size-small color-primary font-weight-medium">Actions</li>
-          <li>
-            <x-copybutton label="Copy slug" value="{{ .Data.Note.Slug }}"></x-copybutton>
-          </li>
-        </ul>
       </nav>
     </aside>
+
+    <menu
+      id="copymenu"
+      popover
+      style="position-anchor: --note-menu-anchor; position-area: bottom span-right;"
+    >
+      <li role="menuitem">Copy...</li>
+      <li role="menuitem">
+        <x-copybutton label="Slug" value="{{ .Data.Note.Slug }}"></x-copybutton>
+      </li>
+      {{ if not .Data.Note.IsEmpty }}
+        <li role="menuitem">
+          <x-copybutton label="Markdown" valuefrom="clientState.NoteRaw"></x-copybutton>
+        </li>
+        <li role="menuitem">
+          <x-copybutton label="Rich text" valuefrom="note"></x-copybutton>
+        </li>
+      {{ end }}
+    </menu>
+
+    <script id="clientState.NoteRaw" type="text/plain">{{ .Data.Note.Raw }}</script>
   </div>
 {{ end }}

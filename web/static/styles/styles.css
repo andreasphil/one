@@ -42,6 +42,10 @@
     text-transform: capitalize;
   }
 
+  menu {
+    font-size: var(--font-size);
+  }
+
   .prose {
     --disabled-opacity: 1;
     --prose-font-size: clamp(14px, 0.417vw + 8px, 16px);

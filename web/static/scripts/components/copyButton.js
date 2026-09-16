@@ -1,5 +1,10 @@
 import { getIcons } from "../state/icons.js";
 
+/** @param {string | null} value */
+function plainTextItem(value) {
+  return new ClipboardItem({ "text/plain": new Blob([value ?? ""], { type: "text/plain" }) });
+}
+
 export class CopyButton extends HTMLElement {
   static tag = "x-copybutton";
 
@@ -20,6 +25,10 @@ export class CopyButton extends HTMLElement {
     return this.getAttribute("value");
   }
 
+  get valueFrom() {
+    return this.getAttribute("valuefrom");
+  }
+
   get copiedMessage() {
     return this.getAttribute("copiedmessage") ?? "Copied!";
   }
@@ -32,7 +41,6 @@ export class CopyButton extends HTMLElement {
     const { getElement: icon } = getIcons();
 
     this.#element = document.createElement("button");
-    this.#element.setAttribute("variant", "muted");
     this.#element.setAttribute("type", "button");
     this.append(this.#element);
 
@@ -59,6 +67,10 @@ export class CopyButton extends HTMLElement {
     this.#disconnect = new AbortController();
 
     this.#element.addEventListener("click", this, { signal: this.#disconnect.signal });
+
+    if (this.valueFrom && this.value !== null) {
+      console.warn("value and valuefrom are both set, valuefrom takes precedence", this);
+    }
   }
 
   disconnectedCallback() {
@@ -67,8 +79,7 @@ export class CopyButton extends HTMLElement {
 
   async handleEvent() {
     try {
-      const content = new ClipboardItem({ "text/plain": this.value });
-      await navigator.clipboard.write([content]);
+      await navigator.clipboard.write([this.#clipboardItem()]);
       this.#showDidCopy();
     } catch (e) {
       alert("Could not copy the value to the clipboard.");
@@ -95,5 +106,24 @@ export class CopyButton extends HTMLElement {
       this.#didCopy = false;
       this.#render();
     }, 2000);
+  }
+
+  #clipboardItem() {
+    if (!this.valueFrom) return plainTextItem(this.value);
+
+    const source = document.getElementById(this.valueFrom);
+    if (!source) throw new Error(`element with id ${this.valueFrom} does not exist`);
+    else if (source instanceof HTMLScriptElement) {
+      if (source.type !== "text/plain") {
+        throw new Error(`script ${this.valueFrom} is not of type text/plain`);
+      }
+
+      return plainTextItem(source.textContent);
+    }
+
+    return new ClipboardItem({
+      "text/html": new Blob([source.outerHTML], { type: "text/html" }),
+      "text/plain": new Blob([source.innerText], { type: "text/plain" }),
+    });
   }
 }
