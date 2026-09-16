@@ -8,9 +8,9 @@
   }
 
   li {
-    border-radius: var(--border-radius-small);
+    border-radius: var(--border-radius);
     border: var(--border-width) solid var(--c-border);
-    padding: 1rem 1.125rem;
+    padding: 1rem 1.25rem;
   }
 
   header {
