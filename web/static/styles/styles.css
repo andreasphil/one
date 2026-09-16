@@ -15,15 +15,6 @@
 @import "./views/tags.css" layer(components);
 
 @layer base {
-  /* --- TODO: fix in design system --- */
-  table {
-    display: block;
-    line-height: normal;
-    overflow-x: auto;
-    padding-bottom: 1px;
-  }
-  /* --- end todo --- */
-
   :root {
     --body-padding-x: 0px;
     --body-padding-y: 0px;
@@ -31,15 +22,17 @@
     --font-size: 14px;
     --outer-spacing-y: 0;
     --tint: 325;
-
-    aside nav button {
-      justify-content: start;
-      width: 100%;
-    }
   }
 
   h1 {
     text-transform: capitalize;
+  }
+
+  table {
+    display: block;
+    line-height: normal;
+    overflow-x: auto;
+    padding-bottom: 1px;
   }
 
   menu {
@@ -83,12 +76,12 @@
   }
 }
 
+@layer utils {
+  a.color-variant:is(:hover) {
+    color: var(--c-link-hover);
+  }
+}
+
 :root {
   --font-family-display: Georgia, serif;
 }
-
-/* --- TODO: fix in design system --- */
-a.color-variant:is(:hover) {
-  color: var(--c-link-hover);
-}
-/* --- end todo --- */

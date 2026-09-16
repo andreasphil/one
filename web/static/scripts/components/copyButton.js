@@ -13,18 +13,29 @@ export class CopyButton extends HTMLElement {
     customElements.define(tag, this);
   }
 
+  // State, refs --------------------------------------------
+
   #element;
 
   #didCopy = false;
+
+  // Public API ---------------------------------------------
 
   get label() {
     return this.getAttribute("label");
   }
 
+  /** Plain string value * */
   get value() {
     return this.getAttribute("value");
   }
 
+  /**
+   * Should be set to the ID of an HTML element. When set, the value is taken
+   * from that HTML element. If it is a script tag with type `text/plain`,
+   * the content is copied as plain text. If it is a regular HTML element, the
+   * content is copied as rich text.
+   */
   get valueFrom() {
     return this.getAttribute("valuefrom");
   }
@@ -32,6 +43,8 @@ export class CopyButton extends HTMLElement {
   get copiedMessage() {
     return this.getAttribute("copiedmessage") ?? "Copied!";
   }
+
+  // Lifecycle ----------------------------------------------
 
   #disconnect = new AbortController();
 
@@ -97,6 +110,8 @@ export class CopyButton extends HTMLElement {
     this.classList.remove("copied");
     if (this.#didCopy) this.classList.add("copied");
   }
+
+  // Internal -----------------------------------------------
 
   #showDidCopy() {
     this.#didCopy = true;
