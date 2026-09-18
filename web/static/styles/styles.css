@@ -86,3 +86,21 @@
 :root {
   --font-family-display: Georgia, serif;
 }
+
+menu[popover] {
+  opacity: 0;
+  transition: all var(--transition-duration-quick) var(--transition-timing) allow-discrete;
+  translate: 0 -0.25rem;
+
+  &:popover-open {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  @starting-style {
+    &:popover-open {
+      opacity: 0;
+      translate: 0 -0.25rem;
+    }
+  }
+}
