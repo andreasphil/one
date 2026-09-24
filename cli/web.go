@@ -8,16 +8,9 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/andreasphil/one/lib/note"
 	"github.com/andreasphil/one/util"
 	"github.com/andreasphil/one/web"
 )
-
-type staticNotesProvider []note.Note
-
-func (s staticNotesProvider) Notes() []note.Note {
-	return s
-}
 
 type webArgs struct {
 	input string
@@ -25,18 +18,16 @@ type webArgs struct {
 }
 
 func serve(args webArgs, _ io.Writer, stderr io.Writer) error {
-	notes, err := note.ParseFile(args.input)
+	provider, err := newFileNotesProvider(args.input, stderr)
 	if err != nil {
 		return fmt.Errorf("failed to read notes from %v, %v", args.input, err)
 	}
-
-	util.Infof(stderr, "parsed %v notes", note.Count(notes))
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
 	router := web.NewRouter(web.RouterArgs{
-		Notes:  staticNotesProvider(notes),
+		Notes:  provider,
 		Errors: stderr,
 	})
 
