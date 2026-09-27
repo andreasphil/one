@@ -6,6 +6,7 @@
 @import "./components/code-block.css" layer(components);
 @import "./components/copy-button.css" layer(components);
 @import "./components/search-results.css" layer(components);
+@import "./components/sticky-title.css" layer(components);
 @import "./components/tag.css" layer(components);
 @import "./components/wikilink.css" layer(components);
 @import "./shared/layout.css" layer(components);
@@ -85,10 +86,6 @@
 
 :root {
   --font-family-display: Georgia, serif;
-}
-
-:target {
-  scroll-margin: 10vh;
 }
 
 menu[popover] {

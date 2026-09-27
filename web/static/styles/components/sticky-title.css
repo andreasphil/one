@@ -1,0 +1,36 @@
+@scope (x-stickytitle) {
+  :scope {
+    align-items: flex-start;
+    display: flex;
+    height: 0;
+    justify-content: center;
+    position: sticky;
+    top: 1rem;
+    z-index: 1;
+  }
+
+  .pill {
+    backdrop-filter: var(--backdrop-glass);
+    background-color: var(--c-glass-bg);
+    border-radius: 999px;
+    border: var(--border-width) solid var(--c-border-glass);
+    box-shadow: var(--shadow-glass);
+    font-weight: var(--font-weight-medium);
+    max-width: calc(100% - 4rem);
+    opacity: 0;
+    overflow: hidden;
+    padding: 0.375rem 1rem;
+    text-overflow: ellipsis;
+    transition: var(--transition);
+    transition-property: opacity, translate, visibility;
+    translate: 0 -0.5rem;
+    visibility: hidden;
+    white-space: nowrap;
+  }
+
+  &.active .pill {
+    opacity: 1;
+    translate: 0 0;
+    visibility: visible;
+  }
+}

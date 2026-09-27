@@ -1,4 +1,4 @@
-<ul class="search-results">
+<ul id="results" class="search-results">
   {{- range . -}}
   <li id="result-{{ .Slug }}">
     <header>
@@ -9,7 +9,7 @@
       </span>
       {{ end }}
     </header>
-    <div class="prose">{{ .HTML }}</div>
+    <div class="prose">{{- .HTML -}}</div>
   </li>
   {{- end -}}
 </ul>

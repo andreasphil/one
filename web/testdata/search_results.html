@@ -155,12 +155,12 @@
       <label for="searchbox" class="visually-hidden">Search</label>
       <input
         id="searchbox"
-        
         name="query"
         placeholder="Search..."
         type="search"
         value="milk"
         data-focuskey="/"
+        
       />
     </form>
 
@@ -170,8 +170,10 @@
         "milk"
       </output>
 
+      <x-stickytitle for="results"></x-stickytitle>
+
       <div has-fallback>
-        <ul class="search-results"><li id="result-groceries">
+        <ul id="results" class="search-results"><li id="result-groceries">
     <header>
       <a href="/notes/groceries/">Groceries</a>
       

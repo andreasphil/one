@@ -24,6 +24,8 @@
         "{{ .Data.Query }}"
       </output>
 
+      <x-stickytitle for="results"></x-stickytitle>
+
       <div has-fallback>
         {{ template "search_results.html" .Data.Results }}
         <div fallback-for="empty">
