@@ -17,6 +17,10 @@
       outline: var(--outline);
       outline-offset: var(--outline-inset);
     }
+
+    &:has(.prose:empty) header {
+      margin-bottom: 0;
+    }
   }
 
   header {
