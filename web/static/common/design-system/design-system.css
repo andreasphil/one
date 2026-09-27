@@ -159,7 +159,7 @@ abbr {
 :is(code, kbd, mark) {
   border-radius: var(--border-radius-small);
   background: none;
-  padding: .25rem .375rem;
+  padding: .125rem .25rem;
   text-decoration: none;
 }
 
