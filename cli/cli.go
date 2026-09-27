@@ -17,6 +17,7 @@ func usage(w io.Writer) {
    sort          Sort notes
    lint          Check notes for issues
    format, fmt   Format notes
+   snapshot      Commit notes to git
    web           Serve notes over HTTP
 
  Run 'one <command> --help' for the flags of a specific command.
@@ -55,7 +56,7 @@ func Run(args []string, stdout io.Writer, stderr io.Writer) error {
 		sortFlags := flag.NewFlagSet("sort", flag.ExitOnError)
 		sortInput := sortFlags.String("input", "one.md", "file to read")
 		sortOutput := sortFlags.String("output", "", "file to write to. writes to input if not specified")
-		sortCheck := sortFlags.Bool("check", false, "if set, only reports if the file needs sorting without writing any changes")
+		sortCheck := sortFlags.Bool("check", false, "if set, only reports if the file needs sorting without making any changes")
 		sortFlags.Parse(params)
 
 		return sort(sortArgs{input: *sortInput, output: *sortOutput, check: *sortCheck}, stdout, stderr)
@@ -71,10 +72,19 @@ func Run(args []string, stdout io.Writer, stderr io.Writer) error {
 		formatFlags := flag.NewFlagSet("format", flag.ExitOnError)
 		formatInput := formatFlags.String("input", "one.md", "file to read")
 		formatOutput := formatFlags.String("output", "", "file to write to. writes to input if not specified")
-		formatCheck := formatFlags.Bool("check", false, "if set, only reports if the file needs formatting without writing any changes")
+		formatCheck := formatFlags.Bool("check", false, "if set, only reports if the file needs formatting without making any changes")
 		formatFlags.Parse(params)
 
 		return format(formatArgs{input: *formatInput, output: *formatOutput, check: *formatCheck}, stdout, stderr)
+
+	case "snapshot":
+		snapshotFlags := flag.NewFlagSet("snapshot", flag.ExitOnError)
+		snapshotInput := snapshotFlags.String("input", "one.md", "file to read")
+		snapshotCheck := snapshotFlags.Bool("check", false, "if set, only reports if a snapshot would be created without making any changes")
+		snapshotTidy := snapshotFlags.Bool("tidy", false, "if set, sorts and formats notes before creating the snapshot")
+		snapshotFlags.Parse(params)
+
+		return snapshot(snapshotArgs{input: *snapshotInput, check: *snapshotCheck, tidy: *snapshotTidy}, stdout, stderr)
 
 	case "web":
 		webFlags := flag.NewFlagSet("web", flag.ExitOnError)
