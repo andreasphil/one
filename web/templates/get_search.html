@@ -9,12 +9,12 @@
       <label for="searchbox" class="visually-hidden">Search</label>
       <input
         id="searchbox"
-        autofocus
         name="query"
         placeholder="Search..."
         type="search"
         value="{{ .Data.Query }}"
         data-focuskey="/"
+        {{ if not .Data.Query }}autofocus{{ end }}
       />
     </form>
 

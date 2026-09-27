@@ -1,8 +1,8 @@
+import { isEditable } from "../lib/keyboard.js";
+
 export function init() {
   document.addEventListener("keydown", (e) => {
-    if (e.target instanceof HTMLElement && e.target.matches("input, textarea, [contenteditable]")) {
-      return;
-    }
+    if (isEditable(e.target)) return;
 
     const el = document.querySelector(`[data-focuskey=${CSS.escape(e.key)}]`);
     if (!(el instanceof HTMLInputElement)) return;

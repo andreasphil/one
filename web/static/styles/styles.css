@@ -87,6 +87,10 @@
   --font-family-display: Georgia, serif;
 }
 
+:target {
+  scroll-margin: 10vh;
+}
+
 menu[popover] {
   opacity: 0;
   transition: all var(--transition-duration-quick) var(--transition-timing) allow-discrete;
