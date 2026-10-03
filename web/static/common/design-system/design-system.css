@@ -418,6 +418,7 @@ button, [role="button"], input:is([type="button"], [type="submit"], [type="reset
   background-color: var(--c-surface-bg);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-elevation-low);
+  hyphens: auto;
   flex-direction: column;
   gap: .25rem;
   padding: 1.125rem 1.25rem;
@@ -1079,6 +1080,7 @@ table {
   border-spacing: 0;
   text-indent: 0;
   width: 100%;
+  line-height: 1.4;
 
   & th, & td {
     border: 0px solid var(--c-border);
@@ -1196,9 +1198,10 @@ ul[role="tablist"] {
   --c-link: var(--primary);
   --outer-spacing-y: 1rem;
   --prose-font-size: var(--font-size);
-  --prose-line-height: 1.75;
+  --prose-line-height: 1.666;
   --prose-max-width: 80ch;
   font-size: var(--prose-font-size);
+  hyphens: auto;
   line-height: var(--prose-line-height);
   max-width: var(--prose-max-width);
   text-wrap: pretty;
@@ -1216,7 +1219,7 @@ ul[role="tablist"] {
     margin-bottom: calc(var(--outer-spacing-y) * 2);
   }
 
-  & :is(h1, h2, h3) {
+  & :is(h1, h2, h3, h4) {
     margin-top: calc(var(--outer-spacing-y) * 2);
   }
 
@@ -1225,7 +1228,18 @@ ul[role="tablist"] {
   }
 
   & li {
-    margin-top: .25rem;
+    margin-top: calc(var(--outer-spacing-y) * .375);
+  }
+
+  & dt {
+    font-weight: var(--font-weight-medium);
+    margin-top: var(--outer-spacing-y);
+  }
+
+  & dd {
+    --outer-spacing-y: .375rem;
+    margin: 0;
+    padding-left: 1rem;
   }
 }
 

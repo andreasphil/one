@@ -10,7 +10,7 @@
       <ul>
         {{ range .Data.Notes }}
           <li>
-            <a href="/notes/{{ .Slug }}/" class="card">
+            <a href="/notes/{{ .Slug }}/" class="card border no-shadow">
               {{ if .Icon }}
                 <header>
                   <span class="glow" data-content="{{ .Icon }}">{{ .Icon }}</span>

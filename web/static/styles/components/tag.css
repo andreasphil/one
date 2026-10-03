@@ -11,6 +11,7 @@
   display: inline-block;
   font-family: var(--font-family-mono);
   font-size: var(--font-size-mono);
+  hyphens: auto;
   padding: 0.1rem 0.375rem;
   text-decoration: none;
   transition-property: color, border-color, background-color;

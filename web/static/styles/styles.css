@@ -25,57 +25,6 @@
     --outer-spacing-y: 0;
     --tint: 325;
   }
-
-  h1 {
-    text-transform: capitalize;
-  }
-
-  table {
-    display: block;
-    line-height: 1.4;
-    overflow-x: auto;
-    padding-bottom: 1px;
-  }
-
-  menu {
-    font-size: var(--font-size);
-  }
-
-  .prose {
-    --disabled-opacity: 1;
-    --prose-font-size: clamp(14px, 0.417vw + 8px, 16px);
-
-    hyphens: auto;
-
-    h1 {
-      font-variant-numeric: tabular-nums;
-    }
-
-    dl {
-      dt {
-        font-weight: var(--font-weight-medium);
-        margin-top: var(--outer-spacing-y);
-      }
-
-      dd {
-        --outer-spacing-y: 0.375rem;
-        margin: 0;
-        padding-left: 1rem;
-      }
-    }
-
-    em,
-    blockquote {
-      font-family: var(--font-family-display);
-      font-style: italic;
-    }
-  }
-
-  .card {
-    border: var(--border-width) solid var(--c-border);
-    box-shadow: none;
-    hyphens: auto;
-  }
 }
 
 @layer utils {
@@ -88,20 +37,46 @@
   --font-family-display: Georgia, serif;
 }
 
-menu[popover] {
-  opacity: 0;
-  transition: all var(--transition-duration-quick) var(--transition-timing) allow-discrete;
-  translate: 0 -0.25rem;
+table {
+  display: block;
+  overflow-x: auto;
+  padding-bottom: 1px;
+}
 
-  &:popover-open {
-    opacity: 1;
-    translate: 0 0;
+menu {
+  font-size: var(--font-size);
+
+  &[popover] {
+    opacity: 0;
+    transition: all var(--transition-duration-quick) var(--transition-timing) allow-discrete;
+    translate: 0 -0.25rem;
+
+    &:popover-open {
+      opacity: 1;
+      translate: 0 0;
+    }
+
+    @starting-style {
+      &:popover-open {
+        opacity: 0;
+        translate: 0 -0.25rem;
+      }
+    }
+  }
+}
+
+.prose {
+  --disabled-opacity: 1;
+  --prose-font-size: clamp(14px, 0.417vw + 8px, 16px);
+
+  h1 {
+    font-variant-numeric: tabular-nums;
+    text-transform: capitalize;
   }
 
-  @starting-style {
-    &:popover-open {
-      opacity: 0;
-      translate: 0 -0.25rem;
-    }
+  em,
+  blockquote {
+    font-family: var(--font-family-display);
+    font-style: italic;
   }
 }
