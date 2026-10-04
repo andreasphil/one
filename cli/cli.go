@@ -12,12 +12,13 @@ func usage(w io.Writer) {
 	fmt.Fprint(w, ` Usage: one <command> [flags]
 
  Commands:
-   list, ls      List notes and their structure
-   tags          List tags
-   sort          Sort notes
-   lint          Check notes for issues
    format, fmt   Format notes
+   lint          Check notes for issues
+   list, ls      List notes and their structure
+   merge         Merge notes from another file
    snapshot      Commit notes to git
+   sort          Sort notes
+   tags          List tags
    web           Serve notes over HTTP
 
  Run 'one <command> --help' for the flags of a specific command.
@@ -60,6 +61,26 @@ func Run(args []string, stdout io.Writer, stderr io.Writer) error {
 		sortFlags.Parse(params)
 
 		return sort(sortArgs{input: *sortInput, output: *sortOutput, check: *sortCheck}, stdout, stderr)
+
+	case "merge":
+		mergeFlags := flag.NewFlagSet("merge", flag.ExitOnError)
+		mergeInput := mergeFlags.String("input", "one.md", "file to merge into")
+		mergeOutput := mergeFlags.String("output", "", "file to write to. writes to input if not specified")
+
+		mergeFlags.Usage = func() {
+			fmt.Fprintf(mergeFlags.Output(), "Usage of merge: one merge [flags] <file>\n")
+			mergeFlags.PrintDefaults()
+		}
+
+		mergeFlags.Parse(params)
+
+		if mergeFlags.NArg() == 0 {
+			return fmt.Errorf("no file to merge specified")
+		} else if mergeFlags.NArg() > 1 {
+			return fmt.Errorf("expected exactly one file to merge")
+		}
+
+		return merge(mergeArgs{input: *mergeInput, output: *mergeOutput, file: mergeFlags.Arg(0)}, stdout, stderr)
 
 	case "lint":
 		lintFlags := flag.NewFlagSet("lint", flag.ExitOnError)

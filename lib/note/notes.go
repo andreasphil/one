@@ -102,20 +102,31 @@ func Tags(notes []Note) []Tag {
 	return values
 }
 
-func Sort(notes []Note) ([]Note, bool) {
-	compare := func(a Note, b Note) int {
-		return cmp.Or(
-			b.Date.Compare(a.Date),
-			cmp.Compare(strings.ToLower(a.Title), strings.ToLower(b.Title)),
-		)
-	}
+func compare(a Note, b Note) int {
+	return cmp.Or(
+		b.Date.Compare(a.Date),
+		cmp.Compare(strings.ToLower(a.Title), strings.ToLower(b.Title)),
+	)
+}
 
+func Sort(notes []Note) ([]Note, bool) {
 	isSorted := slices.IsSortedFunc(notes, compare)
 	if !isSorted {
 		slices.SortStableFunc(notes, compare)
 	}
 
 	return notes, !isSorted
+}
+
+func Merge(notes []Note, incoming []Note) ([]Note, bool) {
+	isSorted := slices.IsSortedFunc(notes, compare)
+	merged := slices.Concat(notes, incoming)
+
+	if isSorted {
+		slices.SortStableFunc(merged, compare)
+	}
+
+	return merged, isSorted
 }
 
 func String(notes []Note) string {

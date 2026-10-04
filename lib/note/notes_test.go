@@ -518,6 +518,82 @@ func TestSortNormalizesNewline(t *testing.T) {
 	}
 }
 
+func TestMerge(t *testing.T) {
+	type testcase struct {
+		name         string
+		notes        []note.Note
+		incoming     []note.Note
+		expected     []string
+		expectSorted bool
+	}
+
+	testcases := []testcase{
+		{
+			name: "sorts incoming notes into sorted notes",
+			notes: []note.Note{
+				{
+					Title: "01.03.2025",
+					Date:  time.Date(2025, 03, 01, 0, 0, 0, 0, time.UTC),
+				},
+				{
+					Title: "01.01.2025",
+					Date:  time.Date(2025, 01, 01, 0, 0, 0, 0, time.UTC),
+				},
+				{Title: "A"},
+				{Title: "C"},
+			},
+			incoming: []note.Note{
+				{Title: "B"},
+				{
+					Title: "01.02.2025",
+					Date:  time.Date(2025, 02, 01, 0, 0, 0, 0, time.UTC),
+				},
+			},
+			expected:     []string{"01.03.2025", "01.02.2025", "01.01.2025", "A", "B", "C"},
+			expectSorted: true,
+		},
+		{
+			name:         "appends incoming notes to unsorted notes",
+			notes:        []note.Note{{Title: "C"}, {Title: "A"}},
+			incoming:     []note.Note{{Title: "D"}, {Title: "B"}},
+			expected:     []string{"C", "A", "D", "B"},
+			expectSorted: false,
+		},
+		{
+			name:         "keeps existing notes before incoming notes with the same title",
+			notes:        []note.Note{{Title: "A", Raw: "existing"}},
+			incoming:     []note.Note{{Title: "A", Raw: "incoming"}},
+			expected:     []string{"A existing", "A incoming"},
+			expectSorted: true,
+		},
+		{
+			name:         "merges into empty notes",
+			notes:        nil,
+			incoming:     []note.Note{{Title: "B"}, {Title: "A"}},
+			expected:     []string{"A", "B"},
+			expectSorted: true,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, sorted := note.Merge(tc.notes, tc.incoming)
+			if sorted != tc.expectSorted {
+				t.Errorf("Merge() sorted = %v, want %v", sorted, tc.expectSorted)
+			}
+
+			got := make([]string, 0, len(result))
+			for _, n := range result {
+				got = append(got, strings.TrimSpace(n.Title+" "+n.Raw))
+			}
+
+			if diff := cmp.Diff(tc.expected, got); diff != "" {
+				t.Fatalf("Merge() mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
 func TestString(t *testing.T) {
 	type testcase struct {
 		name     string
