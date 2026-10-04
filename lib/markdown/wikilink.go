@@ -17,22 +17,22 @@ import (
 
 var KindWikiLink = ast.NewNodeKind("WikiLink")
 
-type wikiLinkNode struct {
+type WikiLinkNode struct {
 	ast.BaseInline
 	Value text.SingleLineValue
 }
 
-func newWikiLinkNode(value text.SingleLineValue) *wikiLinkNode {
-	n := &wikiLinkNode{Value: value}
+func newWikiLinkNode(value text.SingleLineValue) *WikiLinkNode {
+	n := &WikiLinkNode{Value: value}
 	n.Init(n)
 	return n
 }
 
-func (n *wikiLinkNode) Kind() ast.NodeKind {
+func (n *WikiLinkNode) Kind() ast.NodeKind {
 	return KindWikiLink
 }
 
-func (n *wikiLinkNode) Dump(_ []byte) *ast.NodeDump {
+func (n *WikiLinkNode) Dump(_ []byte) *ast.NodeDump {
 	return ast.NewNodeDump(n, map[string]any{"Value": n.Value})
 }
 
@@ -105,7 +105,7 @@ func (e *wikiLinkHTMLRendererExtension) render(
 		return ast.WalkContinue, nil
 	}
 
-	n, ok := node.(*wikiLinkNode)
+	n, ok := node.(*WikiLinkNode)
 	if !ok {
 		return ast.WalkStop, fmt.Errorf("expected wiki link node, got %v", node)
 	}

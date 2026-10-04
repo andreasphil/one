@@ -7,15 +7,15 @@ import (
 	"github.com/andreasphil/one/lib/note"
 )
 
-func getNotes(provider NotesProvider) handler {
+func getNotes(provider NotesProvider, renderer markdownRenderer) handler {
 	type getNotesData struct {
-		Notes []note.Note
+		Notes []noteCard
 	}
 
 	render := newRenderFunc[getNotesData](provider, "get_notes.html")
 
 	return func(w http.ResponseWriter, r *http.Request) error {
-		notes := note.Flat(provider.Notes())
+		notes := mapToNoteCards(note.Flat(provider.Notes()), renderer)
 
 		return render(w, r, data[getNotesData]{
 			Title: "Notes",

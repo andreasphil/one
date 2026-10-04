@@ -10,21 +10,6 @@ import (
 
 var normalizeExp = regexp.MustCompile(`[^\wäöüß]+`)
 
-// Expressions for cleaning up excerpts -------------------
-
-var codeFenceExp = regexp.MustCompile("(?m)^[ \t]*(?:```|~~~).*$")
-var ruleExp = regexp.MustCompile(`(?m)^[ \t]*(?:[-*_][ \t]*){3,}$`)
-var tableDividerExp = regexp.MustCompile(`(?m)^[ \t]*[|:-][ \t:|-]*$`)
-var tablePipeExp = regexp.MustCompile(`\|`)
-var wikilinkExp = regexp.MustCompile(`\[\[([^\]\n]+)\]\]`)
-var linkExp = regexp.MustCompile(`!?\[([^\]]*)\]\([^)]*\)`)
-var autolinkExp = regexp.MustCompile(`<(https?://[^>]+)>`)
-var blockMarkerExp = regexp.MustCompile(`(?m)^[ \t]*(?:(?:#{1,6}|>|[-*+]|\d+\.)(?:[ \t]+|$))+(?:\[[ xX]\][ \t]+)?`)
-var underscoreEmphasisExp = regexp.MustCompile(`\b_{1,2}([^_\n]+)_{1,2}\b`)
-var inlineMarkerExp = regexp.MustCompile("[*`]+|~~")
-
-const excerptWords = 30
-
 // Note kind ----------------------------------------------
 
 type Kind int
@@ -112,31 +97,6 @@ func (n Note) Slug() string {
 func (n Note) Content() string {
 	_, content, _ := strings.Cut(n.Raw, "\n")
 	return strings.TrimSpace(content)
-}
-
-// Excerpt returns the first 30 words of the note's content, with markdown
-// formatting removed and whitespace normalized. Longer content is truncated
-// and ends with "...". The cleanup is best effort and may leave markers of
-// less common syntax intact.
-func (n Note) Excerpt() string {
-	text := n.Content()
-	text = codeFenceExp.ReplaceAllString(text, "")
-	text = ruleExp.ReplaceAllString(text, "")
-	text = tableDividerExp.ReplaceAllString(text, "")
-	text = tablePipeExp.ReplaceAllString(text, " ")
-	text = wikilinkExp.ReplaceAllString(text, "$1")
-	text = linkExp.ReplaceAllString(text, "$1")
-	text = autolinkExp.ReplaceAllString(text, "$1")
-	text = blockMarkerExp.ReplaceAllString(text, "")
-	text = underscoreEmphasisExp.ReplaceAllString(text, "$1")
-	text = inlineMarkerExp.ReplaceAllString(text, "")
-
-	words := strings.Fields(text)
-	if len(words) > excerptWords {
-		return strings.Join(words[:excerptWords], " ") + "..."
-	}
-
-	return strings.Join(words, " ")
 }
 
 // IsEmpty reports whether the note has no content. Notes with children are

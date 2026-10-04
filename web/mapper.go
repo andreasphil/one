@@ -51,6 +51,34 @@ func mapToNoteMeta(n []note.Note) []noteMeta {
 	return m
 }
 
+// Note cards ---------------------------------------------
+
+type noteCard struct {
+	Title   string
+	Slug    string
+	Icon    string
+	Excerpt string
+}
+
+func newNoteCard(n note.Note, renderer markdownRenderer) noteCard {
+	return noteCard{
+		Title:   n.Title,
+		Slug:    n.Slug(),
+		Icon:    n.Icon,
+		Excerpt: renderer.excerpt(n.Content()),
+	}
+}
+
+func mapToNoteCards(n []note.Note, renderer markdownRenderer) []noteCard {
+	m := make([]noteCard, 0, len(n))
+
+	for _, i := range n {
+		m = append(m, newNoteCard(i, renderer))
+	}
+
+	return m
+}
+
 // Tags ---------------------------------------------------
 
 func mapToTags(n []note.Note) []string {

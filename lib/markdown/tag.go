@@ -18,22 +18,22 @@ import (
 
 var KindTag = ast.NewNodeKind("Tag")
 
-type tagNode struct {
+type TagNode struct {
 	ast.BaseInline
 	Value text.SingleLineValue
 }
 
-func newTagNode(value text.SingleLineValue) *tagNode {
-	n := &tagNode{Value: value}
+func newTagNode(value text.SingleLineValue) *TagNode {
+	n := &TagNode{Value: value}
 	n.Init(n)
 	return n
 }
 
-func (n *tagNode) Kind() ast.NodeKind {
+func (n *TagNode) Kind() ast.NodeKind {
 	return KindTag
 }
 
-func (n *tagNode) Dump(_ []byte) *ast.NodeDump {
+func (n *TagNode) Dump(_ []byte) *ast.NodeDump {
 	return ast.NewNodeDump(n, map[string]any{"Value": n.Value})
 }
 
@@ -116,7 +116,7 @@ func (e *tagHTMLRendererExtension) render(
 		return ast.WalkContinue, nil
 	}
 
-	n, ok := node.(*tagNode)
+	n, ok := node.(*TagNode)
 	if !ok {
 		return ast.WalkStop, fmt.Errorf("expected tag node, got %v", node)
 	}

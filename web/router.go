@@ -37,7 +37,7 @@ func NewRouter(args RouterArgs) http.Handler {
 	router := http.NewServeMux()
 
 	router.Handle("/{$}", http.RedirectHandler("/notes/", http.StatusTemporaryRedirect))
-	router.HandleFunc("GET /notes/{$}", handle(errw, getNotes(args.Notes)))
+	router.HandleFunc("GET /notes/{$}", handle(errw, getNotes(args.Notes, markdownRenderer)))
 	router.HandleFunc("GET /notes/{slug}/{$}", handle(errw, getNote(args.Notes, markdownRenderer)))
 	router.HandleFunc("GET /search/{$}", handle(errw, getSearch(args.Notes, markdownRenderer)))
 	router.HandleFunc("GET /tags/{$}", handle(errw, getTags(args.Notes)))

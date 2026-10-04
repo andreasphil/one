@@ -19,3 +19,5 @@ var (
 	NewSearchResult     = newSearchResult
 	MapToSearchResults  = mapToSearchResults
 )
+
+func (m markdownRenderer) Excerpt(input string) string { return m.excerpt(input) }
