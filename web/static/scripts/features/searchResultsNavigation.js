@@ -22,9 +22,8 @@ let navigating = false;
 let navigatingTimeout = 0;
 
 /**
- * The selected item, unless the user has scrolled it out of view. While a
- * keyboard-triggered scroll is running, positions are in flux, so the
- * selection is trusted as is.
+ * The selected item, unless the user has scrolled it out of view. While a keyboard-triggered scroll
+ * is running, positions are in flux, so the selection is trusted as is.
  *
  * @param {Element} list
  */
@@ -70,10 +69,6 @@ function select(item) {
 }
 
 export function init() {
-  addEventListener("pageshow", () => {
-    document.querySelector(".search-results > li:target")?.scrollIntoView({ behavior: "instant" });
-  });
-
   document.addEventListener("keydown", (e) => {
     if (e.altKey || e.ctrlKey || e.metaKey || isEditable(e.target)) return;
 

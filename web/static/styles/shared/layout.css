@@ -4,8 +4,9 @@
     flex-direction: column;
 
     @media (width >= 640px) {
+      align-items: flex-start;
       flex-direction: row;
-      height: 100dvh;
+      min-height: 100dvh;
     }
   }
 
@@ -13,9 +14,10 @@
     background-color: var(--c-surface-bg);
     container-type: inline-size;
     flex: 1;
+    min-width: 0;
 
     @media (width >= 640px) {
-      overflow: auto;
+      align-self: stretch;
     }
   }
 
@@ -28,7 +30,10 @@
     @media (width >= 640px) {
       border-bottom-width: 0px;
       border-right-width: var(--border-width);
+      height: 100dvh;
       overflow: auto;
+      position: sticky;
+      top: 0;
       width: 17rem;
     }
   }

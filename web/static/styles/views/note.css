@@ -2,20 +2,18 @@
   :scope {
     display: flex;
     flex-direction: column;
-    height: 100%;
 
     @container (width >= 640px) {
+      align-items: flex-start;
       flex-direction: row;
+      min-height: 100dvh;
     }
   }
 
   .content {
     flex: 1;
+    min-width: 0;
     padding: 4rem 2rem;
-
-    @container (width >= 640px) {
-      overflow: auto;
-    }
   }
 
   aside {
@@ -27,8 +25,11 @@
     @container (width >= 640px) {
       border-left-width: var(--border-width);
       border-top-width: 0px;
+      height: 100dvh;
       overflow: auto;
       padding-block: 4rem;
+      position: sticky;
+      top: 0;
       width: 17rem;
     }
 
