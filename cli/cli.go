@@ -89,7 +89,7 @@ func Run(args []string, stdout io.Writer, stderr io.Writer) error {
 	case "web":
 		webFlags := flag.NewFlagSet("web", flag.ExitOnError)
 		webInput := webFlags.String("input", "one.md", "file to read")
-		webPort := webFlags.String("port", "8080", "port to serve on")
+		webPort := webFlags.String("port", "1111", "port to serve on")
 		webFlags.Parse(params)
 
 		return serve(webArgs{input: *webInput, port: *webPort}, stdout, stderr)

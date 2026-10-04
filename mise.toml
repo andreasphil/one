@@ -14,8 +14,9 @@ run = "mise watch -rc -- web"
 [tasks.web]
 usage = """
   arg "<file>" default="one.md"
+  arg "<port>" default="1110"
 """
-run = "go run . web --input ${usage_file}"
+run = "go run . web --input ${usage_file} --port ${usage_port}"
 sources = ["**/*.{go,html,css,js}"]
 
 [tasks.fmt]
