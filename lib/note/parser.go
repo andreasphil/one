@@ -77,6 +77,10 @@ func isFence(line string) bool {
 //     info string, which is ignored. Lines starting with 4 or more backticks
 //     are not fences, so they can be used for nesting inside a block. Tilde
 //     fences and code blocks by indentation are not supported.
+//
+// Parse stores everything on Note that needs parsing context to decide (e.g.
+// line position, fence state, the parent note). Methods on Note only derive
+// from those fields and never re-parse the markdown.
 func Parse(input io.Reader) ([]Note, error) {
 	scanner := bufio.NewScanner(input)
 	var notes []Note
@@ -122,6 +126,13 @@ func Parse(input io.Reader) ([]Note, error) {
 			if strings.HasPrefix(strings.TrimLeft(line, " \t"), ">") {
 				current.HasQuote = true
 			}
+
+			// Extract first emoji for icon
+			if current.Icon == "" {
+				if emojis := gomoji.FindAll(line); len(emojis) > 0 {
+					current.Icon = emojis[0].Character
+				}
+			}
 		}
 
 		if isFence(line) {
@@ -129,13 +140,6 @@ func Parse(input io.Reader) ([]Note, error) {
 
 			if inFencedBlock {
 				current.HasSnippet = true
-			}
-		}
-
-		// Extract first emoji for icon
-		if current.Icon == "" {
-			if emojis := gomoji.FindAll(line); len(emojis) > 0 {
-				current.Icon = emojis[0].Character
 			}
 		}
 

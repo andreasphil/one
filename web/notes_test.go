@@ -245,6 +245,19 @@ func TestGetNoteRendersDailyNoteWithChild(t *testing.T) {
 	assertGolden(t, "note_daily_with_child.html", body)
 }
 
+func TestGetNoteRendersEmptyDailyNoteWithChild(t *testing.T) {
+	router, notes := newTestRouter(t, "# 01.02.2026\n\n## Child A\n\nChild content.\n")
+	root := notes[0]
+
+	rec := get(t, router, "/notes/"+root.Slug()+"/")
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", rec.Code, http.StatusOK)
+	}
+
+	assertGolden(t, "note_daily_empty_with_child.html", rec.Body.String())
+}
+
 func TestGetNoteResolvesWikiLinks(t *testing.T) {
 	router, _ := newTestRouter(t,
 		"# 01.02.2026\n\nSee [[Child A]], [[01.02.2026]] and [[nope]].\n\n## Child A\n\nChild content.\n")

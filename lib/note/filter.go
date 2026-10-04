@@ -17,7 +17,7 @@ func FilterHasTag(tag Tag) Filter {
 
 func FilterIsTagged() Filter {
 	return func(n Note) (bool, []Match) {
-		return n.Tags.Len() > 0, nil
+		return n.IsTagged(), nil
 	}
 }
 

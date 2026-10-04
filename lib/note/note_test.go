@@ -368,6 +368,11 @@ func TestIsEmpty(t *testing.T) {
 			note:     note.Note{Raw: "# Title\n\nContent"},
 			expected: false,
 		},
+		{
+			name:     "returns that note with children is not empty",
+			note:     note.Note{Raw: "# Title\n\n", Children: []note.Note{{Raw: "## Child\n"}}},
+			expected: false,
+		},
 	}
 
 	for _, tc := range testcases {

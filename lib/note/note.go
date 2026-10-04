@@ -9,7 +9,6 @@ import (
 )
 
 var normalizeExp = regexp.MustCompile(`[^\wäöüß]+`)
-var titleHeadingExp = regexp.MustCompile(`^#{1,2}\s+.+\n`)
 
 // Expressions for cleaning up excerpts -------------------
 
@@ -111,7 +110,7 @@ func (n Note) Slug() string {
 // Content returns the note's raw content with the title heading removed and
 // surrounding whitespace trimmed.
 func (n Note) Content() string {
-	content := titleHeadingExp.ReplaceAllString(n.Raw, "")
+	_, content, _ := strings.Cut(n.Raw, "\n")
 	return strings.TrimSpace(content)
 }
 
@@ -140,8 +139,14 @@ func (n Note) Excerpt() string {
 	return strings.Join(words, " ")
 }
 
+// IsEmpty reports whether the note has no content. Notes with children are
+// never considered empty, even if their own content is empty.
 func (n Note) IsEmpty() bool {
-	return len(n.Content()) == 0
+	return len(n.Children) == 0 && len(n.Content()) == 0
+}
+
+func (n Note) IsTagged() bool {
+	return n.Tags.Len() > 0
 }
 
 func (n Note) IsDailyNote() bool {

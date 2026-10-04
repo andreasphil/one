@@ -40,14 +40,13 @@ func CountEmptyTitles(notes []Note) int {
 	return count
 }
 
-// EmptyNotes returns any notes (including children) that have no content.
-// Notes with children are never considered empty, even if their own content is
-// empty.
+// EmptyNotes returns any notes (including children) that are empty, see
+// Note.IsEmpty.
 func EmptyNotes(notes []Note) []Note {
 	var empty []Note
 
 	Walk(notes, func(note Note) bool {
-		if len(note.Children) == 0 && note.IsEmpty() {
+		if note.IsEmpty() {
 			empty = append(empty, note)
 		}
 		return true

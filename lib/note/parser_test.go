@@ -566,6 +566,11 @@ func TestParseExtractsIcon(t *testing.T) {
 			input:    "# 01.01.2026\n\n🎉 Line 1\n\n## Child Note 1\n\nLine 2\n",
 			expected: "🎉",
 		},
+		{
+			name:     "ignores emoji in fenced code block",
+			input:    "# Note 1\n\n```\n🎉\n```\n\n🚀 Line 1\n",
+			expected: "🚀",
+		},
 	}
 
 	for _, tc := range testcases {

@@ -14,7 +14,7 @@
           {{ .Data.Note.Title }}
         </h1>
 
-        {{ if not .Data.Note.IsEmpty }}
+        {{ if .Data.Note.Content }}
           {{- .Data.HTML -}}
         {{ else }}
           <div fallback-for="empty">
@@ -106,7 +106,7 @@
       <li role="menuitem">
         <x-copybutton label="Slug" value="{{ .Data.Note.Slug }}"></x-copybutton>
       </li>
-      {{ if not .Data.Note.IsEmpty }}
+      {{ if .Data.Note.Content }}
         <li role="menuitem">
           <x-copybutton label="Markdown" valuefrom="clientState.NoteRaw"></x-copybutton>
         </li>
