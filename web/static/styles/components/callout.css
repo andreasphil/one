@@ -1,0 +1,42 @@
+.callout {
+  --callout-color: var(--primary);
+
+  background-color: oklch(from var(--callout-color) l c h / 0.075);
+  border-radius: var(--border-radius);
+  color: var(--c-fg);
+  margin: var(--outer-spacing-y) 0;
+  padding: 0.75rem 1rem;
+
+  > header {
+    color: var(--callout-color);
+    font-weight: var(--font-weight-medium);
+  }
+
+  > :nth-child(2) {
+    margin-top: 0;
+  }
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+
+  &.callout-note {
+    --callout-color: oklch(from var(--primary) l c 250);
+  }
+
+  &.callout-tip {
+    --callout-color: oklch(from var(--primary) l c 170);
+  }
+
+  &.callout-important {
+    --callout-color: var(--primary);
+  }
+
+  &.callout-warning {
+    --callout-color: oklch(from var(--primary) calc(l * 1.1) calc(c * 0.95) 80);
+  }
+
+  &.callout-caution {
+    --callout-color: oklch(from var(--primary) l c 15);
+  }
+}

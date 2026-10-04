@@ -56,7 +56,7 @@ func TestExcerpt(t *testing.T) {
 		{
 			name:     "callout with empty quote lines",
 			content:  "> [!NOTE]\n>\n> Not responsible for singed eyebrows.\n>\n> Especially Beaker.",
-			expected: "[!NOTE] Not responsible for singed eyebrows. Especially Beaker.",
+			expected: "Not responsible for singed eyebrows. Especially Beaker.",
 		},
 		{
 			name:     "snake case preserved across lines",

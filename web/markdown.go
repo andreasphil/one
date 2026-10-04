@@ -24,6 +24,7 @@ func newMarkdownRenderer(resolveNote func(target string) (string, bool)) markdow
 		extension.TypographerParser,
 		extension.DefinitionListParser,
 
+		markdown.CalloutParser,
 		markdown.TagParser,
 		markdown.WikiLinkParser,
 	))
@@ -32,6 +33,7 @@ func newMarkdownRenderer(resolveNote func(target string) (string, bool)) markdow
 		extension.GFMHTMLRenderer,
 		extension.DefinitionListHTMLRenderer,
 
+		markdown.CalloutHTMLRenderer,
 		markdown.NewTagHTMLRenderer("/tags/"),
 		markdown.NewWikiLinkHTMLRenderer("/notes/", resolveNote),
 	))

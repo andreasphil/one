@@ -621,3 +621,22 @@ I don't know how many more years of this I've got in me, or in this theater, or 
 It's not too much. It's just the show. Wocka wocka, I suppose, even though that's Fozzie's line and not mine. Time to go home.
 
 #kermit #backstage 🐸
+
+# Backstage Safety Signage
+
+New signs for the backstage hallway, approved by Sam the Eagle after only minor objections. #backstage
+
+> [!NOTE]
+> The stage door sticks in humid weather. Push, then pull, then ask Sweetums.
+
+> [!TIP]
+> Earplugs are available at the stage manager's desk during Animal's drum solo.
+
+> [!IMPORTANT]
+> All cannon launches must be logged with Scooter **before** Gonzo climbs in.
+
+> [!WARNING]
+> The Swedish Chef's kitchen is an active fire zone. Proceed with a fire extinguisher.
+
+> [!CAUTION]
+> Do not press the red button in Muppet Labs. Beaker will not be held responsible.
