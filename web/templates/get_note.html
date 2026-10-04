@@ -101,6 +101,9 @@
     >
       <li role="menuitem">Copy...</li>
       <li role="menuitem">
+        <x-copybutton label="Title" value="{{ .Data.Note.Title }}"></x-copybutton>
+      </li>
+      <li role="menuitem">
         <x-copybutton label="Slug" value="{{ .Data.Note.Slug }}"></x-copybutton>
       </li>
       {{ if not .Data.Note.IsEmpty }}
