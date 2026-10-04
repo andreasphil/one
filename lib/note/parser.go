@@ -118,10 +118,18 @@ func Parse(input io.Reader) ([]Note, error) {
 			for _, tag := range tags {
 				current.Tags.Add(NewTag(tag[1]))
 			}
+
+			if strings.HasPrefix(strings.TrimLeft(line, " \t"), ">") {
+				current.HasQuote = true
+			}
 		}
 
 		if isFence(line) {
 			inFencedBlock = !inFencedBlock
+
+			if inFencedBlock {
+				current.HasSnippet = true
+			}
 		}
 
 		// Extract first emoji for icon

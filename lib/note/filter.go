@@ -21,6 +21,18 @@ func FilterIsTagged() Filter {
 	}
 }
 
+func FilterHasQuote() Filter {
+	return func(n Note) (bool, []Match) {
+		return n.HasQuote, nil
+	}
+}
+
+func FilterHasSnippet() Filter {
+	return func(n Note) (bool, []Match) {
+		return n.HasSnippet, nil
+	}
+}
+
 func FilterExactPhrase(phrase string, caseSensitive bool) Filter {
 	if !caseSensitive {
 		phrase = strings.ToLower(phrase)

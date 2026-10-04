@@ -351,3 +351,48 @@ Matching everything is fun.
 		})
 	}
 }
+
+func TestFilterHasQuoteAndSnippet(t *testing.T) {
+	input := `# Plain
+
+Nothing special, 1 > 0.
+
+# Quote
+
+> Someone said something
+
+# Snippet
+
+` + "```" + `
+a > b
+` + "```" + `
+
+# Both
+
+> Quote
+
+` + "```go" + `
+x := 1
+` + "```" + `
+`
+
+	testcases := []struct {
+		name     string
+		filter   note.Filter
+		expected []string
+	}{
+		{"has quote", note.FilterHasQuote(), []string{"Quote", "Both"}},
+		{"has snippet", note.FilterHasSnippet(), []string{"Snippet", "Both"}},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			notes := parseNotes(t, input)
+			got := resultTitles(note.Search(notes, note.FilterChain{tc.filter}))
+
+			if diff := cmp.Diff(tc.expected, got, cmpopts.EquateEmpty()); diff != "" {
+				t.Errorf("mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}

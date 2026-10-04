@@ -133,10 +133,11 @@ func TestParseSplitsNotesOnHeadings(t *testing.T) {
 			input: "# 01.01.2026\n\nLine 1\n\n```\n\n# Block comment\n\n```\n",
 			expected: []note.Note{
 				{
-					Title: "01.01.2026",
-					Kind:  note.KindDaily,
-					Raw:   "# 01.01.2026\n\nLine 1\n\n```\n\n# Block comment\n\n```\n",
-					Date:  time.Date(2026, time.January, 01, 0, 0, 0, 0, time.UTC),
+					Title:      "01.01.2026",
+					Kind:       note.KindDaily,
+					Raw:        "# 01.01.2026\n\nLine 1\n\n```\n\n# Block comment\n\n```\n",
+					HasSnippet: true,
+					Date:       time.Date(2026, time.January, 01, 0, 0, 0, 0, time.UTC),
 				},
 			},
 		},
@@ -145,8 +146,9 @@ func TestParseSplitsNotesOnHeadings(t *testing.T) {
 			input: "# Note 1\n\n```\n# Not a new note\n```\n",
 			expected: []note.Note{
 				{
-					Title: "Note 1",
-					Raw:   "# Note 1\n\n```\n# Not a new note\n```\n",
+					Title:      "Note 1",
+					Raw:        "# Note 1\n\n```\n# Not a new note\n```\n",
+					HasSnippet: true,
 				},
 			},
 		},
@@ -155,10 +157,11 @@ func TestParseSplitsNotesOnHeadings(t *testing.T) {
 			input: "# 01.01.2026\n\n```\n## Not a child note\n```\n",
 			expected: []note.Note{
 				{
-					Title: "01.01.2026",
-					Kind:  note.KindDaily,
-					Raw:   "# 01.01.2026\n\n```\n## Not a child note\n```\n",
-					Date:  time.Date(2026, time.January, 01, 0, 0, 0, 0, time.UTC),
+					Title:      "01.01.2026",
+					Kind:       note.KindDaily,
+					Raw:        "# 01.01.2026\n\n```\n## Not a child note\n```\n",
+					HasSnippet: true,
+					Date:       time.Date(2026, time.January, 01, 0, 0, 0, 0, time.UTC),
 				},
 			},
 		},
@@ -167,8 +170,9 @@ func TestParseSplitsNotesOnHeadings(t *testing.T) {
 			input: "# Note 1\n\n```js\n# Not a new note\n```\n",
 			expected: []note.Note{
 				{
-					Title: "Note 1",
-					Raw:   "# Note 1\n\n```js\n# Not a new note\n```\n",
+					Title:      "Note 1",
+					Raw:        "# Note 1\n\n```js\n# Not a new note\n```\n",
+					HasSnippet: true,
 				},
 			},
 		},
@@ -177,8 +181,9 @@ func TestParseSplitsNotesOnHeadings(t *testing.T) {
 			input: "# Note 1\n\n````\n```\n# Not a new note\n```\n````\n",
 			expected: []note.Note{
 				{
-					Title: "Note 1",
-					Raw:   "# Note 1\n\n````\n```\n# Not a new note\n```\n````\n",
+					Title:      "Note 1",
+					Raw:        "# Note 1\n\n````\n```\n# Not a new note\n```\n````\n",
+					HasSnippet: true,
 				},
 			},
 		},

@@ -63,13 +63,15 @@ func (t Tag) Equal(other Tag) bool {
 // Note ---------------------------------------------------
 
 type Note struct {
-	Title    string
-	Kind     Kind
-	Icon     string
-	Date     time.Time
-	Tags     util.Set[Tag]
-	Children []Note
-	Raw      string
+	Title      string
+	Kind       Kind
+	Date       time.Time
+	HasQuote   bool
+	HasSnippet bool
+	Icon       string
+	Tags       util.Set[Tag]
+	Children   []Note
+	Raw        string
 }
 
 func New(title string) Note {
