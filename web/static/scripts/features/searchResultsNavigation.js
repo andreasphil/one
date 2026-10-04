@@ -11,20 +11,62 @@ function getItems(list) {
   return [...list.querySelectorAll(":scope > li")];
 }
 
+/** @param {Element} item */
+function isInView(item) {
+  const { top, bottom } = item.getBoundingClientRect();
+  return bottom > 0 && top < window.innerHeight;
+}
+
+/** True while a scroll triggered by select() is still in progress. */
+let navigating = false;
+let navigatingTimeout = 0;
+
+/**
+ * The selected item, unless the user has scrolled it out of view. While a
+ * keyboard-triggered scroll is running, positions are in flux, so the
+ * selection is trusted as is.
+ *
+ * @param {Element} list
+ */
+function getCurrent(list) {
+  const selected = getSelected(list);
+  return selected && (navigating || isInView(selected)) ? selected : null;
+}
+
 /**
  * @param {Element} list
  * @param {1 | -1} offset
  */
 function getRelative(list, offset) {
   const items = getItems(list);
-  const current = getSelected(list);
-  const index = current ? items.indexOf(current) + offset : offset > 0 ? 0 : -1;
-  return items.at(index % items.length);
+  const current = getCurrent(list);
+  if (current) return items[items.indexOf(current) + offset];
+
+  // Headings land at the scroll margin when navigated to, so that's the line
+  // between "above" and "visible". The pixel of slack absorbs rounding.
+  const line = (parseFloat(getComputedStyle(items[0] ?? list).scrollMarginTop) || 0) - 1;
+  const headingTop = (/** @type {Element} */ item) =>
+    (item.querySelector(":scope > header") ?? item).getBoundingClientRect().top;
+
+  return offset > 0
+    ? items.find((i) => headingTop(i) >= line)
+    : items.findLast((i) => headingTop(i) < line);
 }
 
 /** @param {Element | undefined} item */
 function select(item) {
-  if (item) location.replace(`#${item.id}`);
+  if (!item) return;
+
+  navigating = true;
+  clearTimeout(navigatingTimeout);
+  const done = () => {
+    navigating = false;
+    clearTimeout(navigatingTimeout);
+  };
+  addEventListener("scrollend", done, { once: true });
+  navigatingTimeout = setTimeout(done, 600);
+
+  location.replace(`#${item.id}`);
 }
 
 export function init() {
@@ -53,7 +95,7 @@ export function init() {
     } else if (e.key === "Enter" && !e.shiftKey) {
       if (e.target instanceof HTMLElement && e.target.matches("a, button")) return;
 
-      const link = getSelected(list)?.querySelector(":scope > header a");
+      const link = getCurrent(list)?.querySelector(":scope > header a");
       if (!(link instanceof HTMLAnchorElement)) return;
 
       e.preventDefault();
