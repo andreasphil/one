@@ -104,14 +104,14 @@ hr {
 }
 
 blockquote {
-  border-left: .25rem solid var(--c-border-variant);
-  padding: .5rem 1rem;
+  border-left: .1875rem solid var(--c-border-variant);
+  padding: .25rem 1rem;
 
-  & :first-child {
+  & > :first-child {
     margin-top: 0;
   }
 
-  & :last-child {
+  & > :last-child {
     margin-bottom: 0;
   }
 }
@@ -124,7 +124,7 @@ figure > blockquote {
     color: var(--c-fg-variant);
     font-size: var(--font-size-small);
     margin-bottom: var(--outer-spacing-y);
-    padding: 0 1rem .5rem;
+    padding: 0 1rem .25rem;
   }
 }
 
