@@ -68,7 +68,7 @@ menu {
 
 .prose {
   --disabled-opacity: 1;
-  --prose-font-size: clamp(14px, 0.417vw + 8px, 16px);
+  --prose-font-size: calc(14px + 2px * progress(100vw, 90rem, 120rem));
 
   h1 {
     font-variant-numeric: tabular-nums;
