@@ -68,10 +68,10 @@ export function init() {
       select(getRelative(-1));
     } else if (e.key === "J") {
       e.preventDefault();
-      select(getItems()[0]);
+      select(getItems().at(-1));
     } else if (e.key === "K") {
       e.preventDefault();
-      select(getItems().at(-1));
+      select(getItems()[0]);
     }
   });
 }

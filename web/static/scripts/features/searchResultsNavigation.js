@@ -83,10 +83,10 @@ export function init() {
       select(getRelative(list, -1));
     } else if (e.key === "J") {
       e.preventDefault();
-      select(getItems(list)[0]);
+      select(getItems(list).at(-1));
     } else if (e.key === "K") {
       e.preventDefault();
-      select(getItems(list).at(-1));
+      select(getItems(list)[0]);
     } else if (e.key === "Enter" && !e.shiftKey) {
       if (e.target instanceof HTMLElement && e.target.matches("a, button")) return;
 
