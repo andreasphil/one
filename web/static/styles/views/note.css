@@ -32,15 +32,5 @@
       top: 0;
       width: 17rem;
     }
-
-    nav {
-      > section > * {
-        padding-block: 0.375rem;
-
-        &:last-child {
-          padding-bottom: 0;
-        }
-      }
-    }
   }
 }
