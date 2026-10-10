@@ -1,14 +1,18 @@
 import { isEditable } from "../lib/keyboard.js";
 
 export function init() {
-  document.addEventListener("keydown", (e) => {
-    if (isEditable(e.target)) return;
+  document.addEventListener("keydown", (event) => {
+    if (isEditable(event.target)) return;
 
-    const el = document.querySelector(`[data-focuskey=${CSS.escape(e.key)}]`);
-    if (!(el instanceof HTMLInputElement)) return;
-
-    e.preventDefault();
+    const el = document.querySelector(`[data-focuskey=${CSS.escape(event.key)}]`);
+    if (!el) return;
+    event.preventDefault();
     el.focus();
-    el.setSelectionRange(0, el.value.length);
+
+    if (el instanceof HTMLInputElement) {
+      el.setSelectionRange(0, el.value.length);
+    } else if (el instanceof HTMLButtonElement) {
+      el.click();
+    }
   });
 }
