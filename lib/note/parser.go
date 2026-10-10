@@ -17,6 +17,7 @@ var ErrMissingHeading = errors.New("invalid format: file must start with a headi
 var ErrUnclosedFence = errors.New("invalid notes file content, fenced code block was not closed")
 
 var tagsExp = regexp.MustCompile(`(?:^|\s)#(\w+)`)
+var linksExp = regexp.MustCompile(`\[\[(.+?)\]\]`)
 var dateTitleExp = regexp.MustCompile(`^\d{2}\.\d{2}\.\d{4}$`)
 
 func last[T ~[]I, I any](slice T) *I {
@@ -72,6 +73,8 @@ func isFence(line string) bool {
 //     no child notes will be created.
 //   - notes can be tagged. A tag starts with a "#", followed by letters,
 //     numbers, and underscores (word characters)
+//   - notes can link to other notes with a wiki link, i.e. a target in double
+//     square brackets. Links belong to the note (or child note) they appear in.
 //   - for code blocks, only fenced code blocks are supported. A fence is
 //     exactly 3 backticks at the beginning of a line, optionally followed by an
 //     info string, which is ignored. Lines starting with 4 or more backticks
@@ -121,6 +124,11 @@ func Parse(input io.Reader) ([]Note, error) {
 			tags := tagsExp.FindAllStringSubmatch(line, -1)
 			for _, tag := range tags {
 				current.Tags.Add(NewTag(tag[1]))
+			}
+
+			// Parse wiki links
+			for _, link := range linksExp.FindAllStringSubmatch(line, -1) {
+				current.Links.Add(link[1])
 			}
 
 			if strings.HasPrefix(strings.TrimLeft(line, " \t"), ">") {

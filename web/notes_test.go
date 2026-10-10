@@ -354,3 +354,19 @@ func TestStaticAssetsAreServed(t *testing.T) {
 		t.Errorf("status = %d, want %d", rec.Code, http.StatusOK)
 	}
 }
+
+func TestGetNoteRendersConnections(t *testing.T) {
+	router, _ := newTestRouter(t, "# A\n\nSee [[B]]\n\n# B\n\n# C\n\nBack to [[A]]\n\n# D\n")
+
+	body := get(t, router, "/notes/a/").Body.String()
+	assertContainsAll(t, body, `href="/notes/b/"`, `href="/notes/c/"`)
+
+	if !strings.Contains(body, "Connections") {
+		t.Errorf("connections are not shown, got:\n%s", body)
+	}
+
+	body = get(t, router, "/notes/d/").Body.String()
+	if strings.Contains(body, "Connections") {
+		t.Errorf("connections are shown without connections, got:\n%s", body)
+	}
+}

@@ -26,8 +26,9 @@ func getNotes(provider NotesProvider, renderer markdownRenderer) handler {
 
 func getNote(provider NotesProvider, renderer markdownRenderer) handler {
 	type getNoteData struct {
-		Note note.Note
-		HTML template.HTML
+		Note        note.Note
+		HTML        template.HTML
+		Connections []note.Note
 	}
 
 	render := newRenderFunc[getNoteData](provider, "get_note.html")
@@ -47,7 +48,11 @@ func getNote(provider NotesProvider, renderer markdownRenderer) handler {
 
 		return render(w, r, data[getNoteData]{
 			Title: n.Title,
-			Data:  getNoteData{Note: n, HTML: html},
+			Data: getNoteData{
+				Note:        n,
+				HTML:        html,
+				Connections: note.Connections(provider.Notes(), n),
+			},
 		})
 	}
 }

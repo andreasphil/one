@@ -715,3 +715,62 @@ func TestTags(t *testing.T) {
 		})
 	}
 }
+
+func TestConnections(t *testing.T) {
+	links := func(targets ...string) util.Set[string] {
+		return util.NewSetFrom(targets)
+	}
+
+	notes := []note.Note{
+		{Title: "A", Links: links("B", "Missing", "A")},
+		{Title: "B", Links: links("A")},
+		{Title: "C", Links: links("a")},
+		{Title: "D", Links: links("c")},
+		{Title: "E"},
+		{
+			Title: "01.02.2026",
+			Kind:  note.KindDaily,
+			Date:  time.Date(2026, time.February, 1, 0, 0, 0, 0, time.UTC),
+			Children: []note.Note{
+				{
+					Title: "Child",
+					Kind:  note.KindChild,
+					Date:  time.Date(2026, time.February, 1, 0, 0, 0, 0, time.UTC),
+					Links: links("E"),
+				},
+			},
+		},
+	}
+
+	titles := func(n []note.Note) []string {
+		result := []string{}
+		for _, i := range n {
+			result = append(result, i.Title)
+		}
+
+		return result
+	}
+
+	testcases := []struct {
+		name     string
+		target   note.Note
+		expected []string
+	}{
+		{"outgoing and incoming, deduplicated and sorted", notes[0], []string{"B", "C"}},
+		{"incoming only", notes[2], []string{"A", "D"}},
+		{"unresolved and self links are ignored", notes[1], []string{"A"}},
+		{"child links do not count for the parent", notes[5], []string{}},
+		{"links from child notes", notes[4], []string{"Child"}},
+		{"no connections", note.Note{Title: "Z"}, []string{}},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := titles(note.Connections(notes, tc.target))
+
+			if diff := cmp.Diff(tc.expected, result); diff != "" {
+				t.Errorf("Connections() mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}

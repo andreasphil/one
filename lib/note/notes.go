@@ -2,6 +2,7 @@ package note
 
 import (
 	"cmp"
+	"maps"
 	"slices"
 	"strings"
 
@@ -100,6 +101,40 @@ func Tags(notes []Note) []Tag {
 	})
 
 	return values
+}
+
+// Connections returns the notes that target links to, as well as the notes that
+// link to target, without duplicates and sorted like Sort. Links that do not
+// resolve to a note and links from a note to itself are ignored.
+func Connections(notes []Note, target Note) []Note {
+	slug := target.Slug()
+	connected := map[string]Note{}
+
+	for _, link := range target.Links.Values() {
+		if linked, ok := ResolveSlug(notes, link); ok {
+			if n, ok := FindBySlug(notes, linked); ok {
+				connected[linked] = n
+			}
+		}
+	}
+
+	Walk(notes, func(n Note) bool {
+		for _, link := range n.Links.Values() {
+			if linked, ok := ResolveSlug(notes, link); ok && linked == slug {
+				connected[n.Slug()] = n
+				break
+			}
+		}
+
+		return true
+	})
+
+	delete(connected, slug)
+
+	result := slices.Collect(maps.Values(connected))
+	slices.SortStableFunc(result, compare)
+
+	return result
 }
 
 func compare(a Note, b Note) int {

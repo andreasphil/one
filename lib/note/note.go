@@ -54,6 +54,7 @@ type Note struct {
 	HasSnippet bool
 	Icon       string
 	Tags       util.Set[Tag]
+	Links      util.Set[string]
 	Children   []Note
 	Raw        string
 }
@@ -62,6 +63,7 @@ func New(title string) Note {
 	return Note{
 		Title: title,
 		Tags:  util.NewSet[Tag](),
+		Links: util.NewSet[string](),
 	}
 }
 

@@ -213,7 +213,7 @@ func TestParseSplitsNotesOnHeadings(t *testing.T) {
 		},
 	}
 
-	ignoreTags := cmpopts.IgnoreFields(note.Note{}, "Tags", "Icon")
+	ignoreTags := cmpopts.IgnoreFields(note.Note{}, "Tags", "Links", "Icon")
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -473,6 +473,75 @@ func TestParseExtractsTags(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestParseExtractsLinks(t *testing.T) {
+	type testcase struct {
+		name     string
+		input    string
+		expected util.Set[string]
+	}
+
+	testcases := []testcase{
+		{
+			name:     "no links",
+			input:    "# Note 1\n\nLine 1\n",
+			expected: util.NewSet[string](),
+		},
+		{
+			name:     "link in body",
+			input:    "# Note 1\n\nSee [[Note 2]]\n",
+			expected: util.NewSetFrom([]string{"Note 2"}),
+		},
+		{
+			name:     "multiple links in one line",
+			input:    "# Note 1\n\n[[Note 2]] and [[Note 3]]\n",
+			expected: util.NewSetFrom([]string{"Note 2", "Note 3"}),
+		},
+		{
+			name:     "duplicate links",
+			input:    "# Note 1\n\n[[Note 2]]\n\n[[Note 2]]\n",
+			expected: util.NewSetFrom([]string{"Note 2"}),
+		},
+		{
+			name:     "empty link",
+			input:    "# Note 1\n\n[[]]\n",
+			expected: util.NewSet[string](),
+		},
+		{
+			name:     "link in fenced code block",
+			input:    "# Note 1\n\n```\n[[Note 2]]\n```\n",
+			expected: util.NewSet[string](),
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := note.Parse(strings.NewReader(tc.input))
+			if err != nil {
+				t.Fatalf("Parse() error = %v", err)
+			}
+
+			if diff := cmp.Diff(tc.expected, result[0].Links); diff != "" {
+				t.Errorf("Parse(%q) links mismatch (-want +got):\n%s", tc.input, diff)
+			}
+		})
+	}
+
+	t.Run("links of child notes do not belong to the parent", func(t *testing.T) {
+		result, err := note.Parse(strings.NewReader("# 01.02.2026\n\n[[A]]\n\n## Child\n\n[[B]]\n"))
+		if err != nil {
+			t.Fatalf("Parse() error = %v", err)
+		}
+
+		if diff := cmp.Diff(util.NewSetFrom([]string{"A"}), result[0].Links); diff != "" {
+			t.Errorf("parent links mismatch (-want +got):\n%s", diff)
+		}
+
+		if diff := cmp.Diff(util.NewSetFrom([]string{"B"}), result[0].Children[0].Links); diff != "" {
+			t.Errorf("child links mismatch (-want +got):\n%s", diff)
+		}
+	})
 }
 
 func TestParseExtractsDate(t *testing.T) {
