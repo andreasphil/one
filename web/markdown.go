@@ -19,15 +19,17 @@ type markdownRenderer struct {
 }
 
 func newMarkdownRenderer(resolveNote func(target string) (string, bool)) markdownRenderer {
-	p := parser.New(parser.WithExtensions(
-		extension.GFMParser,
-		extension.TypographerParser,
-		extension.DefinitionListParser,
+	p := parser.New(
+		parser.WithAutoHeadingID(),
+		parser.WithExtensions(
+			extension.GFMParser,
+			extension.TypographerParser,
+			extension.DefinitionListParser,
 
-		markdown.CalloutParser,
-		markdown.TagParser,
-		markdown.WikiLinkParser,
-	))
+			markdown.CalloutParser,
+			markdown.TagParser,
+			markdown.WikiLinkParser,
+		))
 
 	r := html.New(html.WithExtensions(
 		extension.GFMHTMLRenderer,

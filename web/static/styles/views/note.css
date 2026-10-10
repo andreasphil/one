@@ -33,4 +33,18 @@
       width: 17rem;
     }
   }
+
+  h2 {
+    border-radius: var(--border-radius-small);
+    scroll-margin: 10vh;
+
+    &:target {
+      outline: var(--outline);
+      outline-offset: 0.25em;
+    }
+  }
+}
+
+:is(html, main):has(.note-view) {
+  scroll-behavior: smooth;
 }
