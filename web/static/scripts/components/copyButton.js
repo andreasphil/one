@@ -47,6 +47,10 @@ export class CopyButton extends HTMLElement {
     return this.getAttribute("variant");
   }
 
+  get size() {
+    return this.getAttribute("size");
+  }
+
   // Lifecycle ----------------------------------------------
 
   #disconnect = new AbortController();
@@ -119,6 +123,9 @@ export class CopyButton extends HTMLElement {
 
     this.#element.removeAttribute("variant");
     if (this.variant) this.#element.setAttribute("variant", this.variant);
+
+    this.#element.removeAttribute("size");
+    if (this.size) this.#element.setAttribute("size", this.size);
 
     this.classList.remove("copied");
     if (this.#didCopy) this.classList.add("copied");
