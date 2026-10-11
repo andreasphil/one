@@ -4,7 +4,7 @@
 {{ end }}
 
 {{ define "content" }}
-  <div class="tags-view">
+  <x-tagsview>
     <div has-fallback="{{ if not .Tags }}empty{{ end }}">
       <div>
         <h1>{{ len .Tags }} tags</h1>
@@ -45,5 +45,5 @@
         </div>
       </div>
     {{ end }}
-  </div>
+  </x-tagsview>
 {{ end }}

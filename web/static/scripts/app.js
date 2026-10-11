@@ -7,6 +7,7 @@ import { init as initGlobalCommands } from "./features/globalCommands.js";
 import { init as initHighlightCodeBlocks } from "./features/highlightCodeBlocks.js";
 import { NoteView } from "./pages/note.js";
 import { SearchView } from "./pages/search.js";
+import { TagsView } from "./pages/tags.js";
 
 CopyButton.define();
 RecentSearches.define();
@@ -14,6 +15,7 @@ StickyTitle.define();
 
 NoteView.define();
 SearchView.define();
+TagsView.define();
 
 initCopyCodeBlock();
 initFocusKey();
