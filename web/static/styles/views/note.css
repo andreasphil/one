@@ -42,7 +42,7 @@
     }
   }
 
-  h2 {
+  :is(h2, h3, h4, h5, h6) {
     border-radius: var(--border-radius-small);
     scroll-margin: 10vh;
 

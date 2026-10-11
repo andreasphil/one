@@ -47,7 +47,7 @@ export class NoteView extends HTMLElement {
 
     this.maximized = localStorage.getItem(maximizedKey) === "true";
 
-    useListNavigation("#note h2[id]");
+    useListNavigation("#note :is(h2, h3, h4, h5, h6)[id]");
 
     document.addEventListener("keydown", this, { signal: this.#disconnect.signal });
 
