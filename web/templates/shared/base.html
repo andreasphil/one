@@ -17,7 +17,8 @@
     <script type="importmap">
       {
         "imports": {
-          "@andreasphil/command-bar": "/static/common/command-bar/commandBar.js"
+          "@andreasphil/command-bar": "/static/common/command-bar/commandBar.js",
+          "microlighter": "/static/common/microlighter/dist/index.js"
         }
       }
     </script>
@@ -26,7 +27,7 @@
     <script src="/static/scripts/app.js" type="module"></script>
   </head>
 
-  <body>
+  <body data-syntax-theme="github">
     {{ template "page" . }}
 
 

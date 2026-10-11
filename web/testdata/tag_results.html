@@ -17,7 +17,8 @@
     <script type="importmap">
       {
         "imports": {
-          "@andreasphil/command-bar": "/static/common/command-bar/commandBar.js"
+          "@andreasphil/command-bar": "/static/common/command-bar/commandBar.js",
+          "microlighter": "/static/common/microlighter/dist/index.js"
         }
       }
     </script>
@@ -26,7 +27,7 @@
     <script src="/static/scripts/app.js" type="module"></script>
   </head>
 
-  <body>
+  <body data-syntax-theme="github">
     
   <div class="layout">
     <aside id="sidebar">
@@ -215,9 +216,7 @@
     <header>
       <a href="/notes/2026-02-01-groceries-run/">Groceries run</a>
       
-      <span class="color-variant font-weight-medium">
-        (01.02.2026)
-      </span>
+      <span class="color-variant font-weight-medium">(01.02.2026)</span>
       
     </header>
     <div class="prose"><p>Went to the store for milk.</p>

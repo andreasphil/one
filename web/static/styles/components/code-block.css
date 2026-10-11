@@ -32,3 +32,8 @@
     margin-bottom: 0;
   }
 }
+
+[data-syntax-theme] pre:has(code) {
+  background-color: var(--c-surface-variant-bg);
+  color: var(--c-surface-variant-fg);
+}

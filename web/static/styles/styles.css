@@ -2,6 +2,7 @@
 
 @import "/static/common/design-system/design-system.css" layer(base);
 @import "/static/common/design-system/design-system-utils.css" layer(utils);
+@import "/static/common/microlighter/dist/themes/github.css" layer(base);
 
 @import "./components/callout.css" layer(components);
 @import "./components/code-block.css" layer(components);

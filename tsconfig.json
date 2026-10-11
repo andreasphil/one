@@ -8,7 +8,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "paths": {
-      "@andreasphil/command-bar": ["./web/static/common/command-bar/commandBar.d.ts"]
+      "@andreasphil/command-bar": ["./web/static/common/command-bar/commandBar.d.ts"],
+      "microlighter": ["./web/static/common/microlighter/dist/index.d.ts"]
     },
     "skipLibCheck": true,
     "target": "esnext",

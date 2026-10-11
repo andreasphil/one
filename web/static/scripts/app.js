@@ -4,6 +4,7 @@ import { init as initCopyCodeBlock } from "./features/copyCodeBlock.js";
 import { init as initFocusKey } from "./features/focusKey.js";
 import { init as initGlobalCommands } from "./features/globalCommands.js";
 import { init as initHeadingNavigation } from "./features/headingNavigation.js";
+import { init as initHighlightCodeBlocks } from "./features/highlightCodeBlocks.js";
 import { init as initSearchResultsNavigation } from "./features/searchResultsNavigation.js";
 
 CopyButton.define();
@@ -13,4 +14,5 @@ initCopyCodeBlock();
 initFocusKey();
 initGlobalCommands();
 initHeadingNavigation();
+initHighlightCodeBlocks();
 initSearchResultsNavigation();

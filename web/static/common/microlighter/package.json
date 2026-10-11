@@ -1,0 +1,59 @@
+{
+  "name": "microlighter",
+  "version": "2.2.0",
+  "description": "A tiny, dependency-free syntax highlighter built on the CSS Custom Highlight API and TextMate grammars.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./*": "./dist/*"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "./dist/microlighter.js",
+    "./dist/microlighter.min.js",
+    "./dist/micro-lighter-element.js",
+    "./dist/micro-lighter-element.min.js"
+  ],
+  "sizeLimit": {
+    "dist/microlighter.min.js": 2150
+  },
+  "scripts": {
+    "build": "./build.sh",
+    "typecheck": "tsc --noEmit",
+    "size": "node scripts/report-size.mjs",
+    "prepare": "git config core.hooksPath .githooks",
+    "pretest": "./build.sh",
+    "test": "node --test test/*.spec.js && playwright test",
+    "docs:update-homepage-stats": "./build.sh && node scripts/report-size.mjs --update-homepage",
+    "prepack": "./build.sh"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "syntax-highlighting",
+    "highlighter",
+    "textmate",
+    "css-custom-highlight",
+    "code"
+  ],
+  "author": "Dave Rupert <rupato@gmail.com> (https://daverupert.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davatron5000/microlighter.git"
+  },
+  "homepage": "https://github.com/davatron5000/microlighter#readme",
+  "bugs": {
+    "url": "https://github.com/davatron5000/microlighter/issues"
+  }
+}
