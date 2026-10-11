@@ -87,6 +87,7 @@ export class StickyTitle extends HTMLElement {
 
     this.#current = next;
     this.classList.toggle("active", !!next);
-    if (next) this.#pill.textContent = next.querySelector(":scope > header a")?.textContent?.trim() ?? "";
+    if (next)
+      this.#pill.textContent = next.querySelector(":scope > header a")?.textContent?.trim() ?? "";
   }
 }

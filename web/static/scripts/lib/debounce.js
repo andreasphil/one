@@ -17,10 +17,13 @@ export function debounce(fn, wait, maxWait = Infinity) {
     clearTimeout(timeout);
 
     const remaining = Math.min(wait, maxWait - (Date.now() - start));
-    timeout = setTimeout(() => {
-      start = undefined;
-      fn(...args);
-    }, Math.max(remaining, 0));
+    timeout = setTimeout(
+      () => {
+        start = undefined;
+        fn(...args);
+      },
+      Math.max(remaining, 0),
+    );
   }
 
   debounced.cancel = () => {

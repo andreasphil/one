@@ -4,9 +4,7 @@
     <header>
       <a href="/notes/{{ .Slug }}/">{{ .Title }}</a>
       {{ if not .Date.IsZero }}
-      <span class="color-variant font-weight-medium">
-        ({{ .Date.Format "02.01.2006" }})
-      </span>
+      <span class="color-variant font-weight-medium">({{ .Date.Format "02.01.2006" }})</span>
       {{ end }}
     </header>
     <div class="prose">{{- .HTML -}}</div>
