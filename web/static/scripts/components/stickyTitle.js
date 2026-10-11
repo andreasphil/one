@@ -8,16 +8,12 @@ export class StickyTitle extends HTMLElement {
     customElements.define(tag, this);
   }
 
-  // State, refs --------------------------------------------
-
   #pill;
 
   /** @type {Element | null} */
   #current = null;
 
   #scheduleUpdate = debounce(() => this.#update(), 50, 200);
-
-  // Public API ---------------------------------------------
 
   /** ID of the list whose items' titles are shown. */
   get for() {

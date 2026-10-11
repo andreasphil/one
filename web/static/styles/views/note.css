@@ -1,4 +1,4 @@
-@scope (.note-view) {
+@scope (x-noteview) {
   :scope {
     display: flex;
     flex-direction: column;
@@ -8,9 +8,17 @@
       flex-direction: row;
       min-height: 100dvh;
     }
+
+    &[maximized] .content {
+      inset: 0;
+      overflow: auto;
+      position: fixed;
+      z-index: 1;
+    }
   }
 
   .content {
+    background: var(--c-surface-bg);
     flex: 1;
     min-width: 0;
     padding: 4rem 2rem;

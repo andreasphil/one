@@ -13,13 +13,9 @@ export class CopyButton extends HTMLElement {
     customElements.define(tag, this);
   }
 
-  // State, refs --------------------------------------------
-
   #element;
 
   #didCopy = false;
-
-  // Public API ---------------------------------------------
 
   get label() {
     return this.getAttribute("label");

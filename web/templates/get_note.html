@@ -4,7 +4,7 @@
 {{ end }}
 
 {{ define "content" }}
-  <div class="note-view">
+  <x-noteview>
     <div class="content">
       <div class="prose" id="note">
         <h1>
@@ -129,5 +129,5 @@
     </menu>
 
     <script id="clientState.NoteRaw" type="text/plain">{{ .Data.Note.Raw }}</script>
-  </div>
+  </x-noteview>
 {{ end }}
