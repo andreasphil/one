@@ -151,7 +151,7 @@
 
     <main>
       
-  <div class="search-view">
+  <x-searchview>
     <form action="/search/">
       <label for="searchbox" class="visually-hidden">Search</label>
       <input
@@ -198,7 +198,7 @@
         </div>
       </div>
     
-  </div>
+  </x-searchview>
 
     </main>
   </div>
@@ -215,6 +215,7 @@
 <template id="clientState.Icons.Search"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg></template>
 <template id="clientState.Icons.StickyNote"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sticky-note-icon lucide-sticky-note"><path d="M21 9a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"/><path d="M15 3v5a1 1 0 0 0 1 1h5"/></svg></template>
 <template id="clientState.Icons.Tag"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tag-icon lucide-tag"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></svg></template>
+<template id="clientState.Icons.X"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x preview-icon"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></template>
 
 <script type="application/json" id="clientState.NotesMeta">
   [{"Title":"Groceries","Slug":"groceries","IsDailyNote":false,"IsChildNote":false},{"Title":"Reading list","Slug":"reading-list","IsDailyNote":false,"IsChildNote":false},{"Title":"01.02.2026","Slug":"2026-02-01","Date":"2026-02-01","IsDailyNote":true,"IsChildNote":false},{"Title":"Groceries run","Slug":"2026-02-01-groceries-run","Date":"2026-02-01","IsDailyNote":false,"IsChildNote":true}]

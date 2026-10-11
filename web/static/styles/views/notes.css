@@ -1,8 +1,8 @@
 @scope (.notes-view) {
   :scope {
-    padding: 4rem 2rem;
-    max-width: 80rem;
     margin-inline: auto;
+    max-width: 80rem;
+    padding: 4rem 2rem;
   }
 
   h1 {

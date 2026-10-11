@@ -4,7 +4,7 @@
 {{ end }}
 
 {{ define "content" }}
-  <div class="search-view">
+  <x-searchview>
     <form action="/search/">
       <label for="searchbox" class="visually-hidden">Search</label>
       <input
@@ -33,6 +33,9 @@
           <p>No search results.</p>
         </div>
       </div>
+    {{ else }}
+      <h2 class="caps font-size-small color-primary font-weight-medium">Recent searches</h2>
+      <x-recentsearches></x-recentsearches>
     {{ end }}
-  </div>
+  </x-searchview>
 {{ end }}

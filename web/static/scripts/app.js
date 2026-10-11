@@ -1,4 +1,5 @@
 import { CopyButton } from "./components/copyButton.js";
+import { RecentSearches } from "./components/recentSearches.js";
 import { StickyTitle } from "./components/stickyTitle.js";
 import { init as initCopyCodeBlock } from "./features/copyCodeBlock.js";
 import { init as initFocusKey } from "./features/focusKey.js";
@@ -8,6 +9,7 @@ import { NoteView } from "./pages/note.js";
 import { SearchView } from "./pages/search.js";
 
 CopyButton.define();
+RecentSearches.define();
 StickyTitle.define();
 
 NoteView.define();

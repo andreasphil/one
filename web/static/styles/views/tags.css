@@ -1,8 +1,8 @@
 @scope (.tags-view) to (.search-results) {
   :scope {
-    padding: 4rem 2rem;
-    max-width: 60rem;
     margin-inline: auto;
+    max-width: 60rem;
+    padding: 4rem 2rem;
   }
 
   h1 {

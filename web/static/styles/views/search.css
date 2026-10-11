@@ -1,8 +1,9 @@
-@scope (.search-view) to (.search-results) {
+@scope (x-searchview) to (.search-results) {
   :scope {
-    padding: 4rem 2rem;
-    max-width: 60rem;
+    display: block;
     margin-inline: auto;
+    max-width: 60rem;
+    padding: 4rem 2rem;
   }
 
   form {
@@ -17,7 +18,7 @@
     width: unset;
   }
 
-  output {
+  :is(output, h2) {
     all: unset;
     display: block;
     margin-bottom: 0.75rem;
