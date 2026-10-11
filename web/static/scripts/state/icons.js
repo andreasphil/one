@@ -4,11 +4,12 @@ function createIconsState(selector = "template[id^='clientState.Icons.']") {
 
   /**
    * @param {string} key
-   * @returns {Element | undefined}
+   * @returns {Element}
    */
   function getElement(key) {
     const node = icons.get(key)?.cloneNode(true);
-    return node instanceof Element ? node : undefined;
+    if (!(node instanceof Element)) throw new Error("invalid icon");
+    return node;
   }
 
   const templates = document.querySelectorAll(selector);

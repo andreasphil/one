@@ -5,14 +5,11 @@ export function init() {
     if (isEditable(event.target)) return;
 
     const el = document.querySelector(`[data-focuskey=${CSS.escape(event.key)}]`);
-    if (!el) return;
+    if (!(el instanceof HTMLElement)) return;
     event.preventDefault();
     el.focus();
 
-    if (el instanceof HTMLInputElement) {
-      el.setSelectionRange(0, el.value.length);
-    } else if (el instanceof HTMLButtonElement) {
-      el.click();
-    }
+    if (el instanceof HTMLInputElement) el.setSelectionRange(0, el.value.length);
+    else if (el instanceof HTMLButtonElement) el.click();
   });
 }

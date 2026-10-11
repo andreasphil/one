@@ -27,10 +27,9 @@ export class CopyButton extends HTMLElement {
   }
 
   /**
-   * Should be set to the ID of an HTML element. When set, the value is taken
-   * from that HTML element. If it is a script tag with type `text/plain`,
-   * the content is copied as plain text. If it is a regular HTML element, the
-   * content is copied as rich text.
+   * Should be set to the ID of an HTML element. When set, the value is taken from that HTML
+   * element. If it is a script tag with type `text/plain`, the content is copied as plain text. If
+   * it is a regular HTML element, the content is copied as rich text.
    */
   get valueFrom() {
     return this.getAttribute("valuefrom");
@@ -44,7 +43,6 @@ export class CopyButton extends HTMLElement {
     return this.hasAttribute("icononly");
   }
 
-  /** One of the variants supported by the button styles of the design system. */
   get variant() {
     return this.getAttribute("variant");
   }
@@ -108,12 +106,16 @@ export class CopyButton extends HTMLElement {
 
   #render() {
     const label = this.#element.querySelector(".label > span");
-    label.textContent = this.label;
-    if (this.iconOnly) label.classList.add("visually-hidden");
+    if (label) {
+      label.textContent = this.label;
+      if (this.iconOnly) label.classList.add("visually-hidden");
+    }
 
     const copied = this.#element.querySelector(".copied-message > span");
-    copied.textContent = this.copiedMessage;
-    if (this.iconOnly) copied.classList.add("visually-hidden");
+    if (copied) {
+      copied.textContent = this.copiedMessage;
+      if (this.iconOnly) copied.classList.add("visually-hidden");
+    }
 
     this.#element.removeAttribute("variant");
     if (this.variant) this.#element.setAttribute("variant", this.variant);
