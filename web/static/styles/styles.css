@@ -40,6 +40,10 @@
   --font-family-display: Georgia, serif;
 }
 
+h1 {
+  text-transform: capitalize;
+}
+
 table {
   display: block;
   overflow-x: auto;
@@ -80,7 +84,6 @@ button:has(svg + .visually-hidden) {
 
   h1 {
     font-variant-numeric: tabular-nums;
-    text-transform: capitalize;
   }
 
   em,
