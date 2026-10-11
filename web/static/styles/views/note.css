@@ -53,6 +53,6 @@
   }
 }
 
-:is(html, main):has(.note-view) {
+:is(html, main):has(x-noteview) {
   scroll-behavior: smooth;
 }
