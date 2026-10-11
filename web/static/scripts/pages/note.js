@@ -1,5 +1,6 @@
 import { useCommands } from "../lib/commands.js";
 import { isEditable } from "../lib/keyboard.js";
+import { useListNavigation } from "../lib/listNavigation.js";
 import { getIcons } from "../state/icons.js";
 
 export class NoteView extends HTMLElement {
@@ -38,6 +39,8 @@ export class NoteView extends HTMLElement {
 
   connectedCallback() {
     this.#disconnect = new AbortController();
+
+    useListNavigation("#note h2[id]");
 
     document.addEventListener("keydown", this, { signal: this.#disconnect.signal });
 

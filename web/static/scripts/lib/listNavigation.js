@@ -1,4 +1,4 @@
-import { isEditable } from "../lib/keyboard.js";
+import { isEditable } from "./keyboard.js";
 
 /** @param {Element} item */
 function isInView(item) {
@@ -63,7 +63,7 @@ function select(item) {
  * @param {{ activate?: string }} [options] If set, Enter clicks the link matching this selector
  * inside the current item.
  */
-export function init(selector, { activate } = {}) {
+export function useListNavigation(selector, { activate } = {}) {
   document.addEventListener("keydown", (e) => {
     if (e.altKey || e.ctrlKey || e.metaKey || isEditable(e.target)) return;
 
