@@ -3,6 +3,8 @@ import { isEditable } from "../lib/keyboard.js";
 import { useListNavigation } from "../lib/listNavigation.js";
 import { getIcons } from "../state/icons.js";
 
+const maximizedKey = "maximize_note";
+
 export class NoteView extends HTMLElement {
   static tag = "x-noteview";
 
@@ -21,6 +23,9 @@ export class NoteView extends HTMLElement {
 
   set maximized(value) {
     this.toggleAttribute("maximized", value);
+
+    if (value) localStorage.setItem(maximizedKey, "true");
+    else localStorage.removeItem(maximizedKey);
   }
 
   toggleMaximized(value = !this.maximized) {
@@ -39,6 +44,8 @@ export class NoteView extends HTMLElement {
 
   connectedCallback() {
     this.#disconnect = new AbortController();
+
+    this.maximized = localStorage.getItem(maximizedKey) === "true";
 
     useListNavigation("#note h2[id]");
 
