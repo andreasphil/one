@@ -84,6 +84,7 @@ button:has(svg + .visually-hidden) {
 
   h1 {
     font-variant-numeric: tabular-nums;
+    line-height: 1.4;
   }
 
   em,
