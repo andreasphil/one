@@ -14,7 +14,7 @@ export function init() {
     button.setAttribute("label", "Copy");
     button.setAttribute("value", code.textContent ?? "");
     button.toggleAttribute("icononly", true);
-    button.setAttribute("variant", "inverted");
+    button.setAttribute("variant", "muted");
     button.setAttribute("size", "small");
     button.dataset.tooltip = "Copy this code";
     wrapper.append(button);
