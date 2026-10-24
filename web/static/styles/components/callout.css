@@ -11,6 +11,14 @@
     font-weight: var(--font-weight-medium);
   }
 
+  .prose &:first-child {
+    margin-top: 0;
+  }
+
+  .prose &:last-child {
+    margin-bottom: 0;
+  }
+
   > :nth-child(2) {
     margin-top: 0;
   }
