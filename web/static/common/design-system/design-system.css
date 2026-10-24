@@ -829,7 +829,7 @@ nav {
   --internal-space-x: .75rem;
   --internal-space-y: .375rem;
   --internal-space: var(--internal-space-y) var(--internal-space-x);
-  flex-flow: column wrap;
+  flex-direction: column;
   gap: 1.25rem;
   padding: 0;
   display: flex;
@@ -892,7 +892,7 @@ nav {
 
   header > & {
     white-space: nowrap;
-    flex-direction: row;
+    flex-flow: wrap;
     justify-content: space-between;
     align-items: center;
 

@@ -5,6 +5,7 @@
 }
 
 .tag {
+  background: var(--c-surface-bg);
   border-radius: var(--border-radius-small);
   border: var(--border-width) solid var(--c-border);
   color: var(--c-fg-variant);

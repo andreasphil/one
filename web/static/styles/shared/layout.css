@@ -11,30 +11,28 @@
   }
 
   main {
-    background-color: var(--c-surface-bg);
     container-type: inline-size;
     flex: 1;
     min-width: 0;
+    padding-inline: 1rem;
 
     @media (width >= 640px) {
       align-self: stretch;
+      padding-right: 2rem;
     }
   }
 
   aside {
-    border: 0px solid var(--c-border);
-    border-bottom-width: var(--border-width);
     container-type: inline-size;
     flex: none;
+    padding: 1rem;
 
     @media (width >= 640px) {
-      border-bottom-width: 0px;
-      border-right-width: var(--border-width);
       height: 100dvh;
       overflow: auto;
       position: sticky;
       top: 0;
-      width: 17rem;
+      width: 18rem;
     }
   }
 }

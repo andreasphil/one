@@ -1,4 +1,10 @@
 .navigation {
+  background: var(--c-surface-bg);
+  border-radius: var(--border-radius-large);
+  box-shadow: var(--shadow-elevation-medium);
   font-variant-numeric: tabular-nums;
-  padding: 4rem 2rem;
+  height: 100%;
+  overflow: auto;
+  padding: 1rem 1.75rem;
+  scrollbar-width: thin;
 }
