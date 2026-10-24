@@ -1,5 +1,5 @@
 import { useCommands } from "../lib/commands.js";
-import { isEditable } from "../lib/keyboard.js";
+import { isEditable, matchShortcut } from "../lib/keyboard.js";
 import { useListNavigation } from "../lib/listNavigation.js";
 import { getIcons } from "../state/icons.js";
 
@@ -78,7 +78,7 @@ export class NoteView extends HTMLElement {
 
   /** @param {KeyboardEvent} event */
   #handleKeydown(event) {
-    if (event.key !== "f" || isEditable(event.target)) return;
+    if (!matchShortcut({ key: "f" }, event) || isEditable(event.target)) return;
     this.toggleMaximized();
   }
 }

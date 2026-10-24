@@ -1,4 +1,4 @@
-import { isEditable } from "./keyboard.js";
+import { isEditable, matchShortcut } from "./keyboard.js";
 
 /** @param {Element} item */
 function isInView(item) {
@@ -65,24 +65,24 @@ function select(item) {
  */
 export function useListNavigation(selector, { activate } = {}) {
   document.addEventListener("keydown", (e) => {
-    if (e.altKey || e.ctrlKey || e.metaKey || isEditable(e.target)) return;
+    if (isEditable(e.target)) return;
 
     const items = [...document.querySelectorAll(selector)];
     if (!items.length) return;
 
-    if (e.key === "j") {
+    if (matchShortcut({ key: "j" }, e)) {
       e.preventDefault();
       select(getRelative(selector, 1));
-    } else if (e.key === "k") {
+    } else if (matchShortcut({ key: "k" }, e)) {
       e.preventDefault();
       select(getRelative(selector, -1));
-    } else if (e.key === "J") {
+    } else if (matchShortcut({ key: "J", shiftKey: true }, e)) {
       e.preventDefault();
       select(items.at(-1));
-    } else if (e.key === "K") {
+    } else if (matchShortcut({ key: "K", shiftKey: true }, e)) {
       e.preventDefault();
       select(items[0]);
-    } else if (e.key === "Enter" && activate && !e.shiftKey) {
+    } else if (matchShortcut({ key: "Enter" }, e) && activate) {
       if (e.target instanceof HTMLElement && e.target.matches("a, button")) return;
 
       const link = getCurrent(selector)?.querySelector(activate);
