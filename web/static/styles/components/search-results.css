@@ -8,8 +8,9 @@
   }
 
   li {
+    background: var(--c-surface-bg);
     border-radius: var(--border-radius);
-    border: var(--border-width) solid var(--c-border);
+    border: var(--border-width) solid var(--c-border-variant);
     padding: 1rem 1.25rem;
     scroll-margin: 10vh;
 

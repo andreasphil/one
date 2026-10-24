@@ -18,27 +18,31 @@
   }
 
   .content {
-    background: var(--c-surface-bg);
+    background: var(--c-bg);
     flex: 1;
     min-width: 0;
-    padding: 4rem 2rem;
+    padding-block: 3rem;
+
+    @container(width >= 640px) {
+      padding-right: 2rem;
+    }
   }
 
   aside {
     border: 0px solid var(--c-border);
     border-top-width: var(--border-width);
     flex: none;
-    padding: 2rem;
+    padding-block: 2rem;
 
     @container (width >= 640px) {
       border-left-width: var(--border-width);
       border-top-width: 0px;
       height: 100dvh;
       overflow: auto;
-      padding-block: 4rem;
+      padding-left: 2rem;
       position: sticky;
       top: 0;
-      width: 17rem;
+      width: 16rem;
     }
   }
 

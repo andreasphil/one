@@ -5,10 +5,9 @@
 
 {{ define "page" }}
   <div class="layout">
-    <aside id="sidebar">
+    <aside>
       {{ template "sidebar" . }}
     </aside>
-    <script src="/static/scripts/features/blocking/sidebarScroll.js"></script>
 
     <main>
       {{ template "content" . }}
