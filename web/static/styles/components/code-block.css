@@ -21,6 +21,10 @@
   }
 
   button {
+    --internal-bg: var(--c-surface-variant-bg);
+    --internal-fg: var(--c-fg-variant);
+    --internal-hover: var(--internal-bg);
+
     border-radius: var(--border-radius-small);
   }
 
