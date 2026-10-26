@@ -8,7 +8,7 @@
     <link rel="apple-touch-icon" href="/static/public/apple-touch-icon.png" />
     <link rel="icon" href="/static/public/favicon.png" sizes="any" />
     <link rel="manifest" href="/static/manifest.json" />
-    <title>Notes | One</title>
+    <title>Notes - One</title>
 
     
     <link rel="stylesheet" href="/static/styles/styles.css" />
@@ -30,10 +30,12 @@
   <body data-syntax-theme="github">
     
   <div class="layout">
-    <aside id="sidebar">
+    <aside>
       
-  <nav class="navigation">
-  <strong>One</strong>
+  <nav class="navigation" id="navigation">
+  <section>
+    <strong>One</strong>
+  </section>
 
   <ul>
     <li>
@@ -130,9 +132,10 @@
   </ul>
 </nav>
 
+<script src="/static/scripts/features/blocking/navigationScroll.js"></script>
+
 
     </aside>
-    <script src="/static/scripts/features/blocking/sidebarScroll.js"></script>
 
     <main>
       
@@ -142,7 +145,7 @@
       <ul>
         
           <li>
-            <a href="/notes/2026-02-01/" class="card border no-shadow">
+            <a href="/notes/2026-02-01/" class="card">
               
               <p class="font-size-base text-pretty">01.02.2026</p>
               
@@ -152,7 +155,7 @@
           </li>
         
           <li>
-            <a href="/notes/2026-02-01-groceries-run/" class="card border no-shadow">
+            <a href="/notes/2026-02-01-groceries-run/" class="card">
               
               <p class="font-size-base text-pretty">Groceries run</p>
               
@@ -162,7 +165,7 @@
           </li>
         
           <li>
-            <a href="/notes/reading-list/" class="card border no-shadow">
+            <a href="/notes/reading-list/" class="card">
               
               <p class="font-size-base text-pretty">Reading list</p>
               

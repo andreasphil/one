@@ -35,7 +35,7 @@ func TestGetSearchWithoutQueryShowsOnlySearchBox(t *testing.T) {
 	body := rec.Body.String()
 
 	assertContainsAll(t, body,
-		"<title>Search | One</title>",
+		"<title>Search - One</title>",
 		`id="searchbox"`,
 		`value=""`,
 		"4 Notes",
@@ -107,7 +107,7 @@ func TestGetSearchShowsQueryInTitle(t *testing.T) {
 
 	rec := get(t, router, "/search/?query=milk")
 
-	assertContainsAll(t, rec.Body.String(), `<title>Search for &#34;milk&#34; | One</title>`)
+	assertContainsAll(t, rec.Body.String(), `<title>Search for &#34;milk&#34; - One</title>`)
 }
 
 func TestGetSearchEscapesQuery(t *testing.T) {
