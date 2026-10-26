@@ -2,7 +2,7 @@
   :scope {
     margin-inline: auto;
     max-width: 80rem;
-    padding-block: 3rem;
+    padding-block: var(--main-section-spacing-y);
   }
 
   h1 {

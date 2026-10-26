@@ -21,7 +21,7 @@
     background: var(--c-bg);
     flex: 1;
     min-width: 0;
-    padding-block: 3rem;
+    padding-block: var(--main-section-spacing-y);
 
     @container(width >= 640px) {
       padding-right: 2rem;
