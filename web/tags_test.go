@@ -116,7 +116,7 @@ func TestGetTagShowsTagInTitle(t *testing.T) {
 
 	rec := get(t, router, "/tags/groceries/")
 
-	assertContainsAll(t, rec.Body.String(), "<title>#groceries | One</title>")
+	assertContainsAll(t, rec.Body.String(), "<title>#groceries - One</title>")
 }
 
 func TestGetTagMarksCurrentTagInList(t *testing.T) {

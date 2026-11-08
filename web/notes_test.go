@@ -145,7 +145,7 @@ func TestNavigationListsChildNotesFlat(t *testing.T) {
 	rec := get(t, router, "/notes/")
 
 	body := rec.Body.String()
-	nav := body[strings.Index(body, `<nav class="navigation">`):strings.Index(body, "</aside>")]
+	nav := body[strings.Index(body, `<nav class="navigation" id="navigation">`):strings.Index(body, "</aside>")]
 
 	assertContainsAll(t, nav,
 		"3 Notes",
@@ -318,7 +318,7 @@ func TestGetNoteWithIconShowsGlow(t *testing.T) {
 	rec := get(t, router, "/notes/"+slug+"/")
 
 	assertContainsAll(t, rec.Body.String(),
-		"<title>Party Planning | One</title>",
+		"<title>Party Planning - One</title>",
 		`data-content="`+"\U0001F389"+`"`,
 	)
 }
