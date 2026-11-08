@@ -38,6 +38,7 @@
 
 :root {
   --font-family-display: Georgia, serif;
+  --main-section-spacing-y: calc(3rem + 1rem * progress(100dvw, 90rem, 120rem));
 }
 
 h1 {

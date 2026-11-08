@@ -3,7 +3,7 @@
     display: block;
     margin-inline: auto;
     max-width: 56rem;
-    padding-block: 3rem;
+    padding-block: var(--main-section-spacing-y);
   }
 
   form {
