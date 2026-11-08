@@ -28,7 +28,7 @@ export class StickyTitle extends HTMLElement {
     super();
 
     this.#pill = document.createElement("div");
-    this.#pill.classList.add("pill");
+    this.#pill.classList.add("pill", "glass");
     this.#pill.setAttribute("aria-hidden", "true");
   }
 
@@ -83,7 +83,9 @@ export class StickyTitle extends HTMLElement {
 
     this.#current = next;
     this.classList.toggle("active", !!next);
-    if (next)
+
+    if (next) {
       this.#pill.textContent = next.querySelector(":scope > header a")?.textContent?.trim() ?? "";
+    }
   }
 }

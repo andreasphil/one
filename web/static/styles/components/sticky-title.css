@@ -10,11 +10,7 @@
   }
 
   .pill {
-    backdrop-filter: var(--backdrop-glass);
-    background-color: var(--c-glass-bg);
     border-radius: 999px;
-    border: var(--border-width) solid var(--c-border-glass);
-    box-shadow: var(--shadow-glass);
     font-weight: var(--font-weight-medium);
     max-width: calc(100% - 4rem);
     opacity: 0;
